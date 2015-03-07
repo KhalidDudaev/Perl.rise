@@ -1,0 +1,38 @@
+VAR:
+	future:
+	
+	current:
+		code:	my $cnt; local *cnt; sub cnt ():lvalue; *cnt = sub ():lvalue { inser here access mod code; $cnt };
+
+FUNCTION:
+	future:
+	
+	current:
+		1. при объявлении функции модификатор доступа (public|protected|private) не писать.
+	
+NAMESPACE:
+	future:
+	
+	current:
+
+CLASS:
+	future:
+	
+	current:
+		1. наследование при помощи модуля dialect::extends LIST
+
+ABSTRACT:
+	future:
+	
+	current:
+		1. при объявлении переменной или функции модификатор доступа (public|protected|private) писать обязательно.
+
+INTERFACE:
+	future:
+		1. проверка интерфейса на уровне компиляции.
+	current:
+		1. наследование и проверка интерфейса на уровне исполнения.
+		2. применение при помощи модуля dialect::implements LIST
+		3. проверка интерфейса __PACKAGE__->implementation (dialect::base::interface)
+		4. perl-модули интерфейсов применимы только для dialect-а
+		5. при объявлении переменной или функции модификатор доступа (public|protected|private) писать обязательно.

@@ -1,0 +1,14 @@
+{
+	command 		=> @_ || 'framework',
+	sourse			=> {
+		fpath		=> '',
+		fext 		=> '.dclass',
+	},
+	perl 			=> {
+		fpath		=> '',
+		fext 		=> '.pm',
+	},
+	start_dir		=> 'bin/',
+	end				=> 0,
+	status	        => 'private'
+}
