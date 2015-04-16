@@ -26,7 +26,7 @@ sub interface_confirm {
 	no strict 'refs';
 	my $class				= shift;
 	#my $child			= caller(2);
-	#print "############ $class ###########\n";
+	print "############ $class ###########\n";
 
 	my $interfacelist		= \%{$class.'::IMPORT_INTERFACELIST'};
 	my @objnames 			= keys %$interfacelist;
@@ -41,35 +41,38 @@ sub interface_confirm {
 	
 	foreach my $object (@objnames) {
 		($obj_accmod, $obj_type, $obj_name) = $object =~ m/(\w+)-(\w+)-(\w+(?:\:\:\w+)*)/;
+		
+		print " --- ############ $object ###########\n";
+		
 		$ERROR_MESSAGES .= "INTERFACE ERROR: Not created $obj_accmod $obj_type \"$obj_name\" in class \"$class\"\n" if ($objlist !~ m/\b$object\b/);
 	}
 	die $ERROR_MESSAGES if $ERROR_MESSAGES ne '';
 }
 
-sub interface {
+# sub interface {
 
-	no strict 'refs';
-	no warnings;
+	# no strict 'refs';
+	# no warnings;
 	
-	my $class 			= shift;
-	my $interface		= shift;
-	my $child			= caller(2);
+	# my $class 			= shift;
+	# my $interface		= shift;
+	# my $child			= caller(2);
 	
-	################################## access mod #################################
-	#my $childcode			= (caller(2))[3];
-	#$childcode eq 'rise::implements::import' or $class->_error($ERROR->{interface}); # protected interface with access mod
+	# ################################## access mod #################################
+	# #my $childcode			= (caller(2))[3];
+	# #$childcode eq 'rise::implements::import' or $class->_error($ERROR->{interface}); # protected interface with access mod
 	
-	#print "############ $interface - $child - $callercode - $callercode_eval ###########\n";
-	#print "############ $class - $child - $interface ###########\n";
+	# #print "############ $interface - $child - $callercode - $callercode_eval ###########\n";
+	# #print "############ $class - $child - $interface ###########\n";
 	
-	my $h_i 			= $interface;
-	my $h_ii 			= \%{$class.'::IMPORT_INTERFACELIST'};
-	my $h_ci 			= \%{$child.'::IMPORT_INTERFACELIST'};
+	# my $h_i 			= $interface;
+	# my $h_ii 			= \%{$class.'::IMPORT_INTERFACELIST'};
+	# my $h_ci 			= \%{$child.'::IMPORT_INTERFACELIST'};
 	
-	%$h_i				= (%$h_i, %$h_ii);
-	%$h_ci				= (%$h_ci, %$h_i);
-	#print dump($h_ci) . "\n"; 
-}
+	# %$h_i				= (%$h_i, %$h_ii);
+	# %$h_ci				= (%$h_ci, %$h_i);
+	# #print dump($h_ci) . "\n"; 
+# }
 
 sub set_interface {
 	no strict 'refs';

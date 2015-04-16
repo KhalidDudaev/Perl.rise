@@ -7,7 +7,7 @@ use utf8;
 use lib qw |
 ../
 ../lib/
-../lib/Seven/
+../lib/rise/
 |;
 
 use rise::grammar;

@@ -8,7 +8,7 @@ use utf8;
 use lib qw |
 ../
 ../lib/
-../lib/Seven/
+../lib/rise/
 |;
 
 use rise::grammar qw/:simple/;
@@ -441,7 +441,7 @@ sub _syntax_prepare_function {
 		$args = '';
 	}
 
-	$arguments				= "<kw_public> <kw_variable> <code_args> = __PACKAGE__->__class_ref(\@_);" if $args ne '';
+	$arguments				= "<kw_local> <kw_variable> <code_args> = __PACKAGE__->__class_ref(\@_);" if $args ne '';
 
 	return "${accmod}... _<code_type>_ ...${name}...${attr}...{ ${arguments}${block}}";
 }
@@ -555,6 +555,7 @@ sub _syntax_variable {
 
 	#return q/my $<name>; { no warnings; sub <name> ():lvalue { $<name> } } IF: ( !'<endop>' ) {<name><endop>}/;
 	#return "my \$$name; $local_var { no warnings; sub $name ():lvalue { \$$name } } $end_op";
+	#return "my \$$name; { no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { $accmod\$$name };}$end_op";
 	return "my \$$name; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { $accmod\$$name };$end_op";
 }
 

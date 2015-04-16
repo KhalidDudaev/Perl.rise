@@ -21,11 +21,25 @@ sub import {
 		$path 		=~ s/::/\//g;
 		warn "Class '$child' tried to inherit from itself\n" if $child eq $parent;
 		require $path.".pm" if !grep($parent->isa($parent), ($child, @parents));
-		interface_join($parent, $child);
+		 interface_join($parent, $child);
 	}
  
     { no strict 'refs';	push @{"$child\::ISA"}, @parents; };
 }
+
+# sub interface_join {
+	# no strict 'refs';
+	# no warnings;
+	
+	# my $interface 		= shift;
+	# my $class			= shift;
+	
+	# # print "### $interface - $class ###\n";
+ 
+	# %{$class.'::IMPORT_INTERFACELIST'} = (%{$class.'::IMPORT_INTERFACELIST'}, (%{$interface->interface}, %{$interface.'::IMPORT_INTERFACELIST'}));
+	# # print "### " . $interface . ' - ' . dump (\%{$class.'::IMPORT_INTERFACELIST'}) . " ###\n";
+	# # print "### " . dump (\%{$interface.'::IMPORT_INTERFACELIST'}) . " ###\n";
+# }
 
 sub interface_join {
 	no strict 'refs';
@@ -34,24 +48,10 @@ sub interface_join {
 	my $interface 		= shift;
 	my $class			= shift;
 	
-	#print "### $interface - $class ###\n";
- 
-	%{$class.'::IMPORT_INTERFACELIST'} = (%{$class.'::IMPORT_INTERFACELIST'}, (%{$interface->interface}, %{$interface.'::IMPORT_INTERFACELIST'}));
-	#print "### " . $interface . ' - ' . dump (\%{$class.'::IMPORT_INTERFACELIST'}) . " ###\n";
-	#print "### " . dump (\%{$interface.'::IMPORT_INTERFACELIST'}) . " ###\n";
+	%{$class.'::IMPORT_INTERFACELIST'} = (%{$class.'::IMPORT_INTERFACELIST'}, %{$interface.'::IMPORT_INTERFACELIST'});
+	#print dump (\%{$class.'::IMPORT_INTERFACELIST'}), "\n";
+	#print "### - " . dump (\%{$interface.'::IMPORT_INTERFACELIST'}) . "\n";
 }
-
-#sub interface_join {
-#	no strict 'refs';
-#	no warnings;
-#	
-#	my $interface 		= shift;
-#	my $class			= shift;
-#	
-#	%{$class.'::IMPORT_INTERFACELIST'} = (%{$class.'::IMPORT_INTERFACELIST'}, %{$interface.'::IMPORT_INTERFACELIST'});
-#	#print dump (\%{$class.'::IMPORT_INTERFACELIST'}), "\n";
-#	#print "### - " . dump (\%{$interface.'::IMPORT_INTERFACELIST'}) . "\n";
-#}
 
 #sub interface_confirm {
 #	no strict 'refs';
