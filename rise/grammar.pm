@@ -79,8 +79,9 @@ sub token {
 	(my $self, @_) 			= _class_ref(@_);
 	my ($token, $lexem) 	= @_;
 	my $res;
+	
 	if ($lexem) {	
-		$res = __token($self, $token, $lexem);
+		$res				= __token($self, $token, $lexem);
 	} elsif (exists &grammar->{TOKEN}{$token}) {
 		$res = &grammar->{TOKEN}{$token};
 	} else {
@@ -92,8 +93,8 @@ sub token {
 sub rule {
 	(my $self, @_) 			= _class_ref(@_);
 	my ($action, $rule) 	= @_;
-	
 	my $res;
+	
 	if ($rule) {
 		$rule 				= __precompile_rule($rule) if $rule !~ m/^\(\?\^\w*\:/;
 		$res = __rule($self, $action, $rule);
@@ -151,8 +152,9 @@ sub parse {
 			
 			#print "###$rule\n\n";
 			print "$rule_name - \n";
-			1 while $source =~ s/$rule/exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name)/gsxe;
+			1 while $source =~ s/$rule/exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name)/gmsxe;
 			#$source =~ s/$rule/exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name)/gsxe for 1..3;
+			#$source =~ s/$rule/exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name)/gmsxe;
 		} &order;
 	};
 	die _error('"the action \"'.$rule_name.'\" not correct $file at line $line from $file\n'.$@.'"') if $@;

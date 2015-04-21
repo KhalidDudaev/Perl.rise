@@ -28,6 +28,7 @@ sub new {
 	return $this;
 }
 
+var('env')						= '$rise::object::object::renv';
 var('app_stack')				= [];
 #var('parse_token_sign')			= '-';
 var('accessmod')				= 'private';
@@ -43,8 +44,8 @@ var('members')					= {};
 var('BOOST_VARS')				= '';
 var('members_export')			= {};
 
-var('private_class')			= '';
-var('protected_class')			= '';
+var('private_class')			= q/'__PACKAGE__->private_class("' . $parent_name . '", "' . $sname .'");'/;
+var('protected_class')			= q/'__PACKAGE__->protected_class("' . $parent_name . '", "' . $sname .'");'/;
 var('public_class')				= '';
 
 var('private_abstract')			= '';
@@ -55,17 +56,31 @@ var('private_interface')		= '';
 var('protected_interface')		= '';
 var('public_interface')			= '';
 
-var('private_var')				= q/((ref $_[0] || $_[0]) || __PACKAGE__) eq __PACKAGE__ || __PACKAGE__->__error('var_priv');/;
-var('protected_var')			= q/((ref $_[0] || $_[0]) || __PACKAGE__) !~ \/\=\w+\(0x\w+\)\/ || __PACKAGE__->__error('var_prot');/;
+var('private_var')				= q/'__PACKAGE__->private_var("' . $parent_name . '", "' . $sname .'");'/;
+var('protected_var')			= q/'__PACKAGE__->protected_var("' . $parent_name . '", "' . $sname .'");'/;
+var('public_var')				= '';
+
+var('private_code')				= q/'__PACKAGE__->private_code("' . $parent_name . '", "' . $sname .'");'/;
+var('protected_code')			= q/'__PACKAGE__->protected_code("' . $parent_name . '", "' . $sname .'");'/;
+var('public_code')				= '';
+
+#var('private_var')				= q/((ref $_[0] || $_[0]) || __PACKAGE__) eq __PACKAGE__ || __PACKAGE__->__error('var_priv');/;
+#var('private_var')				= var('env')."->{caller}{name} eq __PACKAGE__ || __PACKAGE__->__error('var_priv');";
+
+
+#var('protected_var')			= q/((ref $_[0] || $_[0]) || __PACKAGE__) !~ \/\=\w+\(0x\w+\)\/ || __PACKAGE__->__error('var_prot');/;
 #var('protected_var')	= q/shift !~ \/\=\w+\(0x\w+\)\/ || __PACKAGE__->__error('var_prot');/;
 #tvar('protected_var')	= q/__PACKAGE__->__error('var_prot') if (($_[0] || __PACKAGE__) ne __PACKAGE__ and (($_[0] || __PACKAGE__) ne $__class)); /;
-var('public_var')				= '';
+
+
 	
-var('private_code')				= q/((ref $_[0] || $_[0]) || __PACKAGE__) eq __PACKAGE__ || __PACKAGE__->__error('code_priv');/;
-var('protected_code')			= q/((ref $_[0] || $_[0]) || __PACKAGE__) !~ \/\=\w+\(0x\w+\)\/ || __PACKAGE__->__error('code_prot');/;
-#var('protected_code')	= q/shift !~ \/\=\w+\(0x\w+\)\/ || __PACKAGE__->__error('code_prot');/;
-#var('protected_var')	= q/__PACKAGE__->__error('code_prot') if (($_[0] || __PACKAGE__) ne __PACKAGE__ and (($_[0] || __PACKAGE__) ne $__class)); /;
-var('public_code')				= '';
+#var('private_code')				= q/((ref $_[0] || $_[0]) || __PACKAGE__) eq __PACKAGE__ || __PACKAGE__->__error('code_priv');/;
+#var('protected_code')			= q/((ref $_[0] || $_[0]) || __PACKAGE__) !~ \/\=\w+\(0x\w+\)\/ || __PACKAGE__->__error('code_prot');/;
+##var('protected_code')	= q/shift !~ \/\=\w+\(0x\w+\)\/ || __PACKAGE__->__error('code_prot');/;
+##var('protected_var')	= q/__PACKAGE__->__error('code_prot') if (($_[0] || __PACKAGE__) ne __PACKAGE__ and (($_[0] || __PACKAGE__) ne $__class)); /;
+#var('public_code')				= '';.
+
+
 
 keyword namespace				=> 'namespace';
 keyword class					=> 'class';
@@ -452,23 +467,36 @@ sub _syntax_function {
 	my $name			= &name;
 	my $attr			= &code_attr || '';
 	my $block			= &block_brace;
+	my $sname			= $name;
 	my $parent_name		= $name;
+	my $fn_name			= $name;
 	my $anon_code		= '';
+	
 	
 	
 	#$accmod				= '_'.uc($accmod).'_CODE_;';
 	$accmod				= var($accmod.'_code');
 	$code_type			=~ s/\_(\w+)\_/$1/gsx;
+	$sname				=~ s/\w+(?:::\w+)*::(\w+)/$1/gsx;
 	$parent_name		=~ s/(\w+(?:::\w+)*)::\w+/$1/gsx;
+	$fn_name			=~ s/\w+(?:::\w+)*::(\w+)/$1/gsx;
 	$block 				=~ s/\{(.*)\}/$1/gsx;
 	
 	if($name =~ /ACODE\d+/){
 		$anon_code = '\&'.$name.'::code; ' ;
 		$accmod = '';
 	}
+	
+	$accmod				= eval $accmod if $accmod ne '';
+	
+	#$accmod				= $accmod . '("' . $name . '", "' . $parent_name .'");' if $accmod ne '';
 
 	#return "$anon_code<kw_public> prepared_<kw_class> $name _extends_ $parent_name { use function; sub this { '$parent_name' } sub code $attr { $accmod $block}}";
-	return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub this { '$parent_name' }...sub...code...${attr}...{ ${accmod}${block}}}";
+	#return "${anon_code}{ package ${parent_name}::CODE::${fn_name}; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub this { '$parent_name' }...sub...code...${attr}...{ ${accmod}${block}}}";
+	
+	#return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub this { '$parent_name' }...sub...code...${attr}...{${accmod}${block}}}";
+	return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub this { '$parent_name' }...sub...code...${attr}...{ ${accmod} ${block}}}";
+	#return "${anon_code}{ package <name>; my \$__caller__ = '<name>'; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub this { '$parent_name' }...sub...code...${attr}...{${accmod}${block}}}";
 }
 
 sub _syntax_prepare_function_args {
@@ -532,14 +560,18 @@ sub _syntax_prepare_variable {
 }
 
 sub _syntax_variable {
-	my $accmod		= &accessmod || var 'accessmod';
-	my $name		= &name;
-	my $boost_vars	= '';
-	my $or			= '';
-	my $local_var	= '';
-	my $end_op		= '';
+	my $accmod			= &accessmod || var 'accessmod';
+	my $name			= &name;
+	my $sname			= $name;
+	my $parent_name		= $name;
+	my $boost_vars		= '';
+	my $or				= '';
+	my $local_var		= '';
+	my $end_op			= '';
 	
-	$name			=~ s/\w+(?:::\w+)*::(\w+)/$1/sx;
+	$name				=~ s/\w+(?:::\w+)*::(\w+)/$1/gsx;
+	$sname				= $name;
+	$parent_name		=~ s/(\w+(?:::\w+)*)::\w+/$1/gsx;
 	#$accmod			= '_'.uc($accmod).'_VAR_; ' ;
 	$accmod				= var($accmod.'_var');
 	
@@ -548,15 +580,18 @@ sub _syntax_variable {
 		$local_var		= "local *$name; ";
 	}
 	
-	$end_op			= " $name<endop> " if !&endop;
-	$boost_vars		= var('BOOST_VARS') || '';
-	$or				= '|' if $boost_vars;
-	var('BOOST_VARS') .= $or . &name if &name !~ /$boost_vars/;
+	$end_op				= " $name<endop> " if !&endop;
+	$boost_vars			= var('BOOST_VARS') || '';
+	$or					= '|' if $boost_vars;
+	var('BOOST_VARS')	.= $or . &name if &name !~ /$boost_vars/;
+	
+	$accmod				= eval $accmod if $accmod ne '';
+	#$accmod				= $accmod . '("' . $name . '", "' . $parent_name .'");' if $accmod ne '';
 
 	#return q/my $<name>; { no warnings; sub <name> ():lvalue { $<name> } } IF: ( !'<endop>' ) {<name><endop>}/;
 	#return "my \$$name; $local_var { no warnings; sub $name ():lvalue { \$$name } } $end_op";
 	#return "my \$$name; { no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { $accmod\$$name };}$end_op";
-	return "my \$$name; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { $accmod\$$name };$end_op";
+	return "my \$$name; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name };$end_op";
 }
 
 sub _syntax_variable_boost {
@@ -567,18 +602,24 @@ sub _syntax_variable_boost {
 }
 #-------------------------------------------------------------------------------------< constant
 sub _syntax_constant {
-	my $accmod		= &accessmod || var 'accessmod';
-	my $name		= &name;
-	my $local_var	= '';
+	my $accmod			= &accessmod || var 'accessmod';
+	my $name			= &name;
+	my $sname			= $name;
+	my $parent_name		= $name;
+	my $local_var		= '';
 	
 	if (&accessmod eq 'local') {
 		$accmod			= '';
 		$local_var		= "local *$name; ";
 	}
 	
-	$name			=~ s/\w+(?:::\w+)*::(\w+)/$1/sx;
+	$name				=~ s/\w+(?:::\w+)*::(\w+)/$1/sx;
+	$sname				= $name;
+	$parent_name		=~ s/(\w+(?:::\w+)*)::\w+/$1/gsx;
 	#$accmod			= '_'.uc($accmod).'_VAR_; ' ;
 	$accmod				= var($accmod.'_var');
+	$accmod				= eval $accmod if $accmod ne '';
+	#$accmod				= $accmod . '("' . $name . '", "' . $parent_name .'");' if $accmod ne '';
 
 	return "${local_var}sub $name () { $accmod<content> }";
 }
@@ -782,6 +823,7 @@ sub _syntax_class {
 	my $accmod			= &accessmod || var 'accessmod';
 	#my $object			= &_class_type_;
 	my $name			= &name;
+	my $sname			= $name;
 	my $agrs_attr		= &content;
 	my $list_extends	= '';
 	my $list_implements	= '';
@@ -794,6 +836,9 @@ sub _syntax_class {
 	my $tk_name_list	= token 'name_list';
 	my ($parent_class)	= $name =~ m/(\w+(?:::\w+)*)::\w+/gsx;
 	my $comma			= '';
+	my $parent_name		= $parent_class;
+	
+	$sname				=~ s/\w+(?:::\w+)*::(\w+)/$1/gsx;
 	
 	$parent_class		= ",'$parent_class'" if $parent_class;
 	$parent_class 		||= '';
@@ -801,6 +846,8 @@ sub _syntax_class {
 	
 	#$accmod				= ' _'.uc($accmod).'_CLASS_;';
 	$accmod				= var($accmod.'_class');
+	$accmod				= eval $accmod if $accmod ne '';
+	#$accmod				= $accmod . '("' . $name . '", "' . $parent_name .'");' if $accmod ne '';
 	
 	#$base_class		= "'rise::object::class'" if &_class_type_ eq '_base_';
 	
@@ -842,8 +889,11 @@ sub _syntax_class {
 	#$extends				= "use rise::core::extends '" . $parent_list . "'$class_ext";
 	#$$implements			= "use rise::core::implements  '"
 	
-	return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
 	#return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' }...";
+	#return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
+	#return "{ package <name>; ".var('env')."->{caller}{parent} = '${parent_name}'; ".var('env')."->{caller}{name} = __PACKAGE__; ".var('env')."->{caller}{type} = 'class'; ...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
+	return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
+	#return "{ package <name>; my \$__caller__ = '<name>';...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
 	
 }
 

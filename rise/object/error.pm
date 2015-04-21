@@ -8,15 +8,15 @@ our $VERSION = '0.01';
 #our $INHERIT = 0;
 my $VARS		= {};
 my $ERROR		= {
-	class_priv				=> [ [ 0, 1 ], '"CLASS ERROR: Can\'t access class \"$parent\" at $file line $line\n"' ],
-	class_prot				=> [ [ 0, 1 ], '"CLASS ERROR: Class \"$parent\" only extends at $file line $line\n"' ],
-	class_priv_inherit		=> [ [ 0, 2 ], '"CLASS ERROR: Can\'t access class \"$parent\" at $file line $line\n"' ],
+	class_priv				=> [ [ 1, 2 ], '"CLASS ERROR: Can\'t access class \"$parent\" at $file line $line\n"' ],
+	class_priv_inherit		=> [ [ 1, 3 ], '"CLASS ERROR: Can\'t access class \"$parent\" at $file line $line\n"' ],	
+	class_prot				=> [ [ 1, 2 ], '"CLASS ERROR: Class \"$parent\" only extends at $file line $line\n"' ],
 	
-	code_priv				=> [ [ 0, 1 ], '"FUNCTION ERROR: Can\'t access function \"$func\" from \"$parent\" at $file line $line\n"' ],
-	code_prot				=> [ [ 0, 1 ], '"FUNCTION ERROR: Function \"$func\" from \"$parent\" only inheritable at $file line $line\n"' ],
+	code_priv				=> [ [ 1, 2 ], '"FUNCTION ERROR: Can\'t access function \"$name\" from \"$class\" at $file line $line\n"' ],
+	code_prot				=> [ [ 1, 2 ], '"FUNCTION ERROR: Function \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
 	
-	var_priv				=> [ [ 0, 1 ], '"VARIABLE ERROR: Can\'t access variable \"$func\" from \"$parent\" at $file line $line\n"' ],
-	var_prot				=> [ [ 0, 1 ], '"VARIABLE ERROR: Variable \"$func\" from \"$parent\" only inheritable at $file line $line\n"' ],
+	var_priv				=> [ [ 1, 2 ], '"VARIABLE ERROR: Can\'t access variable \"$name\" from \"$class\" at $file line $line\n"' ],
+	var_prot				=> [ [ 1, 2 ], '"VARIABLE ERROR: Variable \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
 };
 #my $conf						= {
 #	class_priv				=> [0,1],
@@ -76,16 +76,19 @@ my $ERROR		= {
 sub __error {
 	my $self		= shift;
 	my $err			= shift;
+	my $class		= shift;
+	my $name		= shift;
+	my $caller		= shift;
+	
+	my $err_msg;
+	
 	my $err_conf	= $ERROR->{$err};
 	my $level		= $err_conf->[0];
 
 	my $parent		= (caller($level->[0]))[0];
 	my ($child, $file, $line, $func) = (caller($level->[1]));
 	
-	#my $parent		= (caller($level->[0] + 1))[0];
-	#my ($child, $file, $line, $func) = (caller($level->[1] + 1));
 	
-	my $err_msg;
 	
 	$file =~ s/(.*?)bin\/(\w+)\.pm/$1source\/$2.dclass/gsx;
 	$func =~ s/.*::(\w+)/$1/g;

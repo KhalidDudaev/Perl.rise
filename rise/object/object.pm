@@ -6,6 +6,10 @@ use utf8;
 our $VERSION = '0.01';
 
 #our $INHERIT = 0;
+our $caller = 'rise::object::object';
+#our @renv = ('rise::object::object');
+our $renv = { caller => { class => 'rise::object::object'}};
+
 my $VARS		= {};
 #my $ERROR		= {
 #	class_priv				=> [ [ 0, 1 ], '"CLASS ERROR: Can\'t access class \"$parent\" at $file line $line\n"' ],

@@ -24,11 +24,11 @@ my $conf		= {
 	caller_data		=> 'DATA'
 };
 
-my $ERROR		= {
-	class_priv				=> [ [ 0, 1 ], '"CLASS ERROR: Can\'t access class \"$parent\" at $file line $line\n"' ],
-	class_prot				=> [ [ 0, 1 ], '"CLASS ERROR: Class \"$parent\" only extends at $file line $line\n"' ],
-	class_priv_inherit		=> [ [ 0, 2 ], '"CLASS ERROR: Can\'t access class \"$parent\" at $file line $line\n"' ],
-};
+#my $ERROR		= {
+#	class_priv				=> [ [ 0, 1 ], '"CLASS ERROR: Can\'t access class \"$parent\" at $file line $line\n"' ],
+#	class_prot				=> [ [ 0, 1 ], '"CLASS ERROR: Class \"$parent\" only extends at $file line $line\n"' ],
+#	class_priv_inherit		=> [ [ 0, 2 ], '"CLASS ERROR: Can\'t access class \"$parent\" at $file line $line\n"' ],
+#};
 
 sub new {
 	my $class					= ref $_[0] || $_[0];
@@ -86,7 +86,7 @@ sub private_class {
 	
 	my $access			= ($callercode eq 'import' || $callercode_eval eq 'import') ? 'class_priv_inherit' : 'class_priv';
 	
-	$starter eq 'RUN' or $self->_error($ERROR->{$access});
+	$starter eq 'RUN' or $self->__error($access);
 }
 
 sub protected_class {
@@ -94,7 +94,7 @@ sub protected_class {
 	my $callercode		= (caller(2))[3]; $callercode		=~ s/.*::(\w+)/$1/;
 	my $callercode_eval	= (caller(3))[3]; $callercode_eval	=~ s/.*::(\w+)/$1/;
 	
-	($callercode eq 'import' || $callercode_eval eq 'import') or $self->_error($ERROR->{class_prot});
+	($callercode eq 'import' || $callercode_eval eq 'import') or $self->__error('class_prot');
 }
 
 sub public_class {}
