@@ -10,6 +10,8 @@ our $VERSION 	= '0.01';
 #	var_prot				=> [ [ 0, 1 ], '"VARIABLE ERROR: Variable \"$func\" from \"$parent\" only inheritable at $file line $line\n"' ],
 #};
 
+sub obj_type {'variable'};
+
 ################################ ACCESS MODE #################################
 #sub _private_var {
 #	my $class			= shift;

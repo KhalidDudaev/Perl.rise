@@ -3,51 +3,81 @@ use strict;
 use warnings;
 use utf8;
 
-use Data::Dump 'dump';
+#use Data::Dump 'dump';
+#local $\ = "\n";
 
-use parent 'rise::object::object';
+use parent 'rise::object::object', 'rise::object::error', 'rise::object::function', 'rise::object::variable';
 
 our $VERSION			= '0.01';
 my $VARS				= {};
 
 my $ERROR_MESSAGES		= '';
 
-my $ERROR				= {
-	abstract				=> [ [ 0, 1 ], '"ABSTRACT ERROR: Abstract class \"$parent\" only extends at $file line $line\n"' ],
-	abstract_inherit		=> [ 1, 4 ],
-};
+#my $ERROR				= {
+#	abstract				=> [ [ 0, 1 ], '"ABSTRACT ERROR: Abstract class \"$parent\" only extends at $file line $line\n"' ],
+#	abstract_inherit		=> [ 1, 4 ],
+#};
 
 #die "INTERFACE ERROR: Interface $interface only implements or extends" if $parent ne 'parent';
 #die "INTERFACE ERROR: Interface $class only implements or extends" if $func ne 'rise::extends::import';
 #implements();
 
+sub obj_type {'ABSTRACT'};
 
-sub interface_confirm {
+sub interface_join {
 	no strict 'refs';
-	my $class				= shift;
-	#my $child			= caller(2);
-	print "############ $class ###########\n";
-
-	my $interfacelist		= \%{$class.'::IMPORT_INTERFACELIST'};
-	my @objnames 			= keys %$interfacelist;
-	my $objlist;
-	my $obj_name;
-	my $obj_type;
-	my $obj_accmod;
-	#my $obj_tmpl;
-
-	$objlist 				= $class->__OBJLIST__;
-	#$objlist->{variable}	= $class->__VARLIST__;
+	no warnings;
 	
-	foreach my $object (@objnames) {
-		($obj_accmod, $obj_type, $obj_name) = $object =~ m/(\w+)-(\w+)-(\w+(?:\:\:\w+)*)/;
-		
-		print " --- ############ $object ###########\n";
-		
-		$ERROR_MESSAGES .= "INTERFACE ERROR: Not created $obj_accmod $obj_type \"$obj_name\" in class \"$class\"\n" if ($objlist !~ m/\b$object\b/);
-	}
-	die $ERROR_MESSAGES if $ERROR_MESSAGES ne '';
+	#my $self			= shift;
+	my $interface 		= shift;
+	my $class			= caller(2); #shift;
+	
+	#print ">>>>>>>>>> $interface <<<<<<<<<<\n";
+	#print "\n###### interface - $interface | class - $class ######\n";
+	
+	%{$class.'::IMPORT_INTERFACELIST'} = (%{$class.'::IMPORT_INTERFACELIST'}, %{$interface.'::IMPORT_INTERFACELIST'});
+	
+	#interface_confirm($class);
+	
+	#print dump (\%{$class.'::IMPORT_INTERFACELIST'}), "\n";
+	#print "### - " . dump (\%{$interface.'::IMPORT_INTERFACELIST'}) . "\n";
 }
+
+#sub interface_confirm {
+#	no strict 'refs';
+#	my $class				= shift;
+#	#my $child			= caller(2);
+#	print "############ $class ###########";
+#
+#	my $interfacelist		= \%{$class.'::IMPORT_INTERFACELIST'};
+#	my @objnames 			= keys %$interfacelist;
+#	my $objlist;
+#	my $obj_name;
+#	my $obj_type;
+#	my $obj_accmod;
+#	#my $obj_tmpl;
+#
+#	print "### - " . dump $interfacelist;
+#	print "\n";
+#	
+#	if (exists &{$class.'::__OBJLIST__'}) {
+#		#$objlist 				= $class->__OBJLIST__ if exists &{$class.'::__OBJLIST__'};
+#		$objlist 				= $class->__OBJLIST__;
+#		#$objlist->{variable}	= $class->__VARLIST__;
+#		
+#	print ">>>>>>> " . $objlist;
+#	print "\n";
+#		
+#		foreach my $object (@objnames) {
+#			($obj_accmod, $obj_type, $obj_name) = $object =~ m/(\w+)-(\w+)-(\w+(?:\:\:\w+)*)/;
+#			
+#			#print " --- ############ $object ###########\n";
+#			
+#			$ERROR_MESSAGES .= "INTERFACE ERROR: Not created $obj_accmod $obj_type \"$obj_name\" in class \"$class\"\n" if ($objlist !~ m/\b$object\b/);
+#		}
+#	}
+#	die $ERROR_MESSAGES if $ERROR_MESSAGES ne '';
+#}
 
 # sub interface {
 
@@ -88,17 +118,25 @@ sub set_interface {
 }
 
 ################################# access mod #################################
+#sub protected_abstract {
+#	my ($self)			= @_;
+#
+#	#my $callercode			= (caller(2))[3]; $callercode		=~ s/.*::(\w+)/$1/g;
+#	#my $callercode_eval		= (caller(3))[3]; $callercode_eval	=~ s/.*::(\w+)/$1/g;
+#	#
+#	#($callercode eq 'import' || $callercode_eval eq 'import') or $self->_error($ERROR->{interface});
+#	
+#	my $childcode			= (caller(2))[3];
+#	$childcode eq 'rise::core::extends::import' or $self->__error($ERROR->{abstract}); # protected interface with access mod
+#	
+#}
+
 sub protected_abstract {
 	my ($self)			= @_;
-
-	#my $callercode			= (caller(2))[3]; $callercode		=~ s/.*::(\w+)/$1/g;
-	#my $callercode_eval		= (caller(3))[3]; $callercode_eval	=~ s/.*::(\w+)/$1/g;
-	#
-	#($callercode eq 'import' || $callercode_eval eq 'import') or $self->_error($ERROR->{interface});
+	my $callercode		= (caller(2))[3]; $callercode		=~ s/.*::(\w+)/$1/;
+	my $callercode_eval	= (caller(3))[3]; $callercode_eval	=~ s/.*::(\w+)/$1/;
 	
-	my $childcode			= (caller(2))[3];
-	$childcode eq 'rise::core::extends::import' or $self->_error($ERROR->{abstract}); # protected interface with access mod
-	
+	($callercode eq 'import' || $callercode_eval eq 'import') or $self->__error('abstract_prot');
 }
 
 sub DESTROY {}

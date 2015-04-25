@@ -8,15 +8,18 @@ our $VERSION = '0.01';
 #our $INHERIT = 0;
 my $VARS		= {};
 my $ERROR		= {
-	class_priv				=> [ [ 1, 2 ], '"CLASS ERROR: Can\'t access class \"$parent\" at $file line $line\n"' ],
-	class_priv_inherit		=> [ [ 1, 3 ], '"CLASS ERROR: Can\'t access class \"$parent\" at $file line $line\n"' ],	
-	class_prot				=> [ [ 1, 2 ], '"CLASS ERROR: Class \"$parent\" only extends at $file line $line\n"' ],
+	class_priv				=> [ [ 1, 2 ], '"ERROR CLASS: Can\'t access class \"$parent\" at $file line $line\n"' ],
+	class_priv_inherit		=> [ [ 1, 3 ], '"ERROR CLASS: Can\'t access class \"$parent\" at $file line $line\n"' ],	
+	class_prot				=> [ [ 1, 2 ], '"ERROR CLASS: Class \"$parent\" only extends at $file line $line\n"' ],
 	
-	code_priv				=> [ [ 1, 2 ], '"FUNCTION ERROR: Can\'t access function \"$name\" from \"$class\" at $file line $line\n"' ],
-	code_prot				=> [ [ 1, 2 ], '"FUNCTION ERROR: Function \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
+	abstract_prot			=> [ [ 1, 2 ], '"ERROR ABSTRACT: Abstract class \"$parent\" only extends at $file line $line\n"' ],
+	interface_prot			=> [ [ 1, 2 ], '"ERROR INTERFACE: Interface \"$parent\" only extends at $file line $line\n"' ],
 	
-	var_priv				=> [ [ 1, 2 ], '"VARIABLE ERROR: Can\'t access variable \"$name\" from \"$class\" at $file line $line\n"' ],
-	var_prot				=> [ [ 1, 2 ], '"VARIABLE ERROR: Variable \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
+	code_priv				=> [ [ 1, 2 ], '"ERROR FUNCTION: Can\'t access function \"$name\" from \"$class\" at $file line $line\n"' ],
+	code_prot				=> [ [ 1, 2 ], '"ERROR FUNCTION: Function \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
+	
+	var_priv				=> [ [ 1, 2 ], '"ERROR VARIABLE: Can\'t access variable \"$name\" from \"$class\" at $file line $line\n"' ],
+	var_prot				=> [ [ 1, 2 ], '"ERROR VARIABLE: Variable \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
 };
 #my $conf						= {
 #	class_priv				=> [0,1],

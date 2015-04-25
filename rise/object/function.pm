@@ -12,6 +12,9 @@ our $VERSION 	= '0.01';
 #	code_prot				=> [ [ 1, 2 ], '"FUNCTION ERROR: Function \"$func\" from \"$parent\" only inheritable at $file line $line\n"' ],
 #};
 #
+
+sub obj_type {'FUNCTION'};
+
 ################################# ACCESS MODE #################################
 #sub _private_code {
 #	my $class			= shift;

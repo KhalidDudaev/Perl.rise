@@ -40,6 +40,12 @@ my $VARS		= {};
 #	code_prot				=> [1,2],
 #};
 
+sub obj {
+	my $self	= shift;
+	my $caller	= caller(0);
+	return { self => $self, caller => $caller };
+}
+
 #sub import {
 #	strict		->import();	
 #	warnings	->import();

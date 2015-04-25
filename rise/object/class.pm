@@ -3,9 +3,14 @@ use strict;
 use warnings;
 use utf8;
 
+#use Data::Dump 'dump';
+#local $\ = "\n";
+
 use parent 'rise::object::object', 'rise::object::error', 'rise::object::function', 'rise::object::variable';
 
 our $VERSION 	= '0.01';
+
+my $ERROR_MESSAGES		= '';
 
 #my @export_list = qw/
 #this
@@ -23,6 +28,8 @@ my $conf		= {
 	caller_code		=> 'CODE',
 	caller_data		=> 'DATA'
 };
+
+#__PACKAGE__->interface_confirm();
 
 #my $ERROR		= {
 #	class_priv				=> [ [ 0, 1 ], '"CLASS ERROR: Can\'t access class \"$parent\" at $file line $line\n"' ],
@@ -58,6 +65,7 @@ sub new {
 #}
 			
 sub self { shift }
+sub obj_type {'CLASS'};
 
 #sub import {
 #	my $caller = caller;
@@ -73,6 +81,42 @@ sub self { shift }
 #	#	*{$caller . "::$_"} = *$_;
 #	#}
 #}
+
+sub interface_confirm {
+	no strict 'refs';
+	my $class				= shift; #caller(2);
+	#my $child			= caller(2);
+	#print "############ $class ###########";
+
+	my $interfacelist		= \%{$class.'::IMPORT_INTERFACELIST'};
+	my @objnames 			= keys %$interfacelist;
+	my $objlist				= '';
+	my $obj_name;
+	my $obj_type;
+	my $obj_accmod;
+	#my $obj_tmpl;
+
+	#print "### - " . dump $interfacelist;
+	#print "\n";
+	
+	#if (exists &{$class.'::__OBJLIST__'}) {
+		#$objlist 				= $class->__OBJLIST__ if exists &{$class.'::__OBJLIST__'};
+		$objlist 				= $class->__OBJLIST__;
+		#$objlist->{variable}	= $class->__VARLIST__;
+		
+	#print ">>>>>>> " . $objlist;
+	#print "\n";
+		
+		foreach my $object (@objnames) {
+			($obj_accmod, $obj_type, $obj_name) = $object =~ m/(\w+)-(\w+)-(\w+(?:\:\:\w+)*)/;
+			
+			#print " --- ############ $object ###########\n";
+			
+			$ERROR_MESSAGES .= "INTERFACE ERROR: Not created $obj_accmod $obj_type \"$obj_name\" in class \"$class\"\n" if ($objlist !~ m/\b$object\b/);
+		}
+	#}
+	die $ERROR_MESSAGES if $ERROR_MESSAGES ne '';
+}
 
 ################################# ACCESS MODE #################################
 sub private_class {

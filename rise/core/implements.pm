@@ -2,26 +2,23 @@ package rise::core::implements;
 use strict;
 use vars qw($VERSION);
 
-use Data::Dump qw 'dump';
-
 $VERSION = '0.001';
 
 my $ERROR_MESSAGES		= '';
 
 sub import {
+	
     my $class		= shift;
     my $child		= caller(0);
 	my @parents		= @_;
 	my $path;
-
-	
 	
 	foreach my $parent (@parents) {
 		$path 		= $parent;
 		$path 		=~ s/::/\//g;
 		warn "Class '$child' tried to inherit from itself\n" if $child eq $parent;
 		require $path.".pm" if !grep($parent->isa($parent), ($child, @parents));
-		 interface_join($parent, $child);
+		interface_join($parent, $child);
 	}
  
     { no strict 'refs';	push @{"$child\::ISA"}, @parents; };
