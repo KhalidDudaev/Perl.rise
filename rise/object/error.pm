@@ -101,6 +101,13 @@ sub __error {
 	die $err_msg;
 }
 
+sub __error_i {
+	my $self		= shift;
+	my $err_msg		= shift;
+	
+	die $err_msg;
+}
+
 sub _error {
 	my $self		= shift;
 	my $err_conf	= shift;

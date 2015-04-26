@@ -84,6 +84,7 @@ sub obj_type {'CLASS'};
 
 sub interface_confirm {
 	no strict 'refs';
+	no warnings;
 	my $class				= shift; #caller(2);
 	#my $child			= caller(2);
 	#print "############ $class ###########";
