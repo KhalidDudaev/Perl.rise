@@ -86,6 +86,21 @@ sub set_interface {
 	#print "### ".dump (\%$h_ii)." ###\n";
 }
 
+sub interface_compare {
+	my $interface		= shift;
+	my $name			= shift;
+	my $class			= caller(2);
+	print ">>>>>>>>> interface - $interface | class - $class | name - $name\n";
+	
+	my $objlist 		= $class->__OBJLIST__;
+	
+	my($obj_accmod, $obj_type, $obj_name) = $name =~ m/(\w+)-(\w+)-(\w+(?:\:\:\w+)*)/;
+	
+	#print " --- ############ $object ###########\n";
+	
+	$ERROR_MESSAGES .= "INTERFACE ERROR: Not created $obj_accmod $obj_type \"$obj_name\" in class \"$class\"\n" if ($objlist !~ m/\b$name\b/);
+	die $ERROR_MESSAGES if $ERROR_MESSAGES ne '';
+}
 
 ################################# access mod #################################
 

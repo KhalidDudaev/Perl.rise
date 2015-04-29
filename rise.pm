@@ -106,21 +106,27 @@ sub run {
 
 sub compile {
 	my ($this, $appname_dialect)				= __class_ref(@_);
-	my $file_perl = '';
+	my $assembly = '';
+	my $info;
 
 	my $time_start_compile = time;
 
 	if (__truefile($appname_dialect)){
 		__message("compilation $appname_dialect ...");
-		$file_perl = __assembly( $appname_dialect );
+		$assembly = __assembly( $appname_dialect );
+		$info = $assembly->{info};
+		print "$info\n" if $info;
 	}
+	
 	
 	#print "#################################\n";
 	
 	foreach (@{&__syntax->{VAR}{app_stack}}) {
 		if (__truefile($_)){
+			
 			__message("compilation $_ ...");
-			__assembly($_);
+			$info = __assembly($_)->{info};
+			print "$info\n" if $info;
 		}
 	}
 	
@@ -128,7 +134,7 @@ sub compile {
 	my $time_compile = $time_end_compile - $time_start_compile;
 	__message("compilation time $time_compile seconds ...");
 
-	return $file_perl;
+	return $assembly;
 }
 
 sub __assembly {
@@ -136,6 +142,7 @@ sub __assembly {
 	
 	my $code_perl;
 	my $code_dialect;
+	my $info;
 	
 	my $fname_dialect			= $this->{sourse}{fpath} . $appname_dialect . $this->{sourse}{fext};
 	my $fname_perl				= $this->{perl}{fpath} . $appname_dialect . $this->{perl}{fext};
@@ -146,14 +153,15 @@ sub __assembly {
 		$fname_perl				= $fname_perl . $this->{perl}{fext};
 	}
 	
-	$code_dialect			= __file('read', $fname_dialect);
+	$code_dialect				= __file('read', $fname_dialect);
 	
 	if ($code_dialect) {
-		$code_perl				= __parse($code_dialect, &__syntax) . "\n1;";
+		($code_perl, $info)		= __parse($code_dialect, &__syntax);
+		$code_perl .= "\n1;";
 		__file('write', $fname_perl, $code_perl);
 	}
-	
-	return {code => $code_perl, fname => $fname_perl};
+	#print "$info";
+	return {code => $code_perl, fname => $fname_perl, info => $info};
 }
 
 #sub __obj__		{ $parser }

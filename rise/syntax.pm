@@ -44,6 +44,14 @@ var('members')					= {};
 var('BOOST_VARS')				= '';
 var('members_export')			= {};
 
+var('private_namesapce')		= '';
+var('protected_namesapce')		= '';
+var('public_namesapce')			= '';
+
+var('private_base')				= '';
+var('protected_base')			= '';
+var('public_base')				= '';
+
 var('private_class')			= q/'__PACKAGE__->private_class("' . $parent_name . '", "' . $sname .'");'/;
 var('protected_class')			= q/'__PACKAGE__->protected_class("' . $parent_name . '", "' . $sname .'");'/;
 var('public_class')				= '';
@@ -172,6 +180,7 @@ token name_ops					=> q/class_type|code_type|variable|import|inherits|implements
 token object					=> q/(?<!\S)(?:class_type|code_type|variable|constant)(?!\S)/;
 
 token _object_type_				=> q/\b_object_ word _\b/;
+token _object_					=> q/_class_|_abstract_|_interface_/;
 token _namespace_				=> q/_namespace_/;
 token _base_					=> q/_base_/;
 token _class_					=> q/_class_/;
@@ -275,8 +284,8 @@ rule _variable_boost					=> q/<all>/;
 
 rule _abstract							=> q/[<_object_type_>] [<accessmod>] <_abstract_> <name> [<content>] <block_brace>/;
 rule _interface							=> q/[<_object_type_>] [<accessmod>] <_interface_> <name> [<content>] <block_brace>/;
-
 rule _namespace							=> q/[<_object_type_>] [<accessmod>] <_namespace_> <name> \{/;
+rule _object							=> q/[<_object_type_>] [<accessmod>] <_object_> <name> [<content>] \{/;
 #rule _class								=> q/[<_object_type_>] [<accessmod>] prepared_class <name> [<content>] \{/;
 rule _class								=> q/[<_object_type_>] [<accessmod>] <_class_> <name> [<content>] \{/;
 
@@ -331,9 +340,10 @@ action _constant 						=> \&_syntax_constant;
 #action _variable_boost					=> \&_syntax_variable_boost;
 
 action _namespace 						=> \&_syntax_namespace;
-action _class 							=> \&_syntax_class;
-action _abstract 						=> \&_syntax_abstract;
-action _interface 						=> \&_syntax_interface;
+action _object 							=> \&_syntax_object;
+#action _class 							=> \&_syntax_class;
+#action _abstract 						=> \&_syntax_abstract;
+#action _interface 						=> \&_syntax_interface;
 
 action _op_dot							=> \&_syntax_op_dot;
 
@@ -705,7 +715,8 @@ sub _syntax_prepare_interface {
 		
 			 
 	
-	return "${accmod}... _<interface>_ ...<name>...<content>...{$block}";
+	return "${accmod}..._<interface>_...<name>...<content>...{$block}";
+	#return "${accmod}... <kw_interface> ...<name>...<content>...{$block}";
 }
 
 sub _syntax_prepare_interface_post {'<kw_interface>'}
@@ -788,7 +799,8 @@ sub _syntax_prepare_abstract {
 	$block				=~ s/($tk_accessmod)\s*$tk_variable\s*($tk_name)\;/BEGIN { __PACKAGE__->set_interface('$1-<kw_variable>-$2'); }/gsx;
 	$block				=~ s/($tk_accessmod)\s*$tk_function\s*($tk_name)\;/BEGIN { __PACKAGE__->set_interface('$1-<kw_function>-$2'); }/gsx;
 	
-	return "${accmod}... _<abstract>_ ...<name>...<content>...{$block}";
+	return "${accmod}..._<abstract>_...<name>...<content>...{$block}";
+	#return "${accmod}...<kw_abstract>...<name>...<content>...{$block}";
 }
 
 sub _syntax_prepare_abstract_post {'<kw_abstract>'}
@@ -862,6 +874,56 @@ sub _syntax_prepare_class {
 	return "${accmod}...prepared_class...<name>...${agrs_attr}...{";
 }
 
+sub _syntax_object {
+	my $accmod			= &accessmod || var 'accessmod';
+	my $object			= &_object_; $object =~ s/\_(\w+)\_/$1/sx;
+	my $name			= &name;
+	my $sname			= $name;
+	my $args_attr		= &content;
+	my $list_extends	= '';
+	my $list_implements	= '';
+	my $base_class		= "'rise::object::$object'";
+	#my $class_ext		= '';
+	#my $class_iface		= '';
+	my $extends			= '';
+	my $implements		= '';
+	my $tk_name			= token 'name';
+	my $tk_name_list	= token 'name_list';
+	my ($parent_class)	= $name =~ m/(\w+(?:::\w+)*)::\w+/gsx;
+	my $comma			= '';
+	my $parent_name		= $parent_class || 'main';
+	
+	return '' if !$name;
+	
+	$sname				=~ s/\w+(?:::\w+)*::(\w+)/$1/gsx;
+	
+	$parent_class		= ",'$parent_class'" if $parent_class;
+	$parent_class 		||= '';
+
+	#print ">>>>>> accmod - $accmod | base_class - $base_class | name - $name\n";
+	
+	$accmod				= var($accmod.'_'.$object);
+	$accmod				= eval $accmod if $accmod;
+
+	$list_extends		= list_extends($args_attr);
+
+	$extends			= "use rise::core::extends $base_class$parent_class$list_extends;";
+	
+	#return "{ package <name>; use strict; use warnings;...${extends}...${accmod}...__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
+	return "{ package <name>; use strict; use warnings;...${extends}...${accmod}..." . __object_header($object, $name || '');
+}
+
+sub __object_header {
+	my $obj_type		= shift;
+	my $name			= shift;
+	my $header			= {
+		class		=> "__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...",
+		abstract	=> "__PACKAGE__->interface_join;",
+		interface	=> "__PACKAGE__->interface_join;"
+	};
+	return $header->{$obj_type};
+}
+
 sub _syntax_class {
 	my $accmod			= &accessmod || var 'accessmod';
 	#my $object			= &_class_type_;
@@ -886,6 +948,8 @@ sub _syntax_class {
 	$parent_class		= ",'$parent_class'" if $parent_class;
 	$parent_class 		||= '';
 	#$base_class		.= ", '$parent_class'" if $parent_class;
+	
+	print ">>>>>> accmod - $accmod | base_class - $base_class | name - $name\n";
 	
 	#$accmod				= ' _'.uc($accmod).'_CLASS_;';
 	$accmod				= var($accmod.'_class');

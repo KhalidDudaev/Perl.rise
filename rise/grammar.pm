@@ -137,8 +137,8 @@ sub parse {
 	my $rule				= '';
 	my $rule_name			= '';
 	my $rmode				= '';
-	
-	
+	my $info;
+	my $passed = 0;	
 	
 	&grammar->{TOKEN}		= compile_RBNF(&grammar->{TOKEN});
 	&grammar->{RULE}		= compile_RBNF(&grammar->{RULE}, &grammar->{TOKEN});
@@ -149,12 +149,20 @@ sub parse {
 			$rule 			= &grammar->{RULE}{$rule_name} || '';
 			$rule			= '\b'.$rule if $rule !~ m/^\(\?\<\w+\>[^\\b]\W+/;
 
-			1 while $source =~ s/$rule/exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name)/gmsxe;
+			1 while $source =~ s/$rule/$passed++; exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name)/gmsxe;
+			
+			my $cnt			= 23 - length $rule_name;
+			my $indent		= 4 - length $passed;
+			$info .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $passed . " ] : PASSED\n" if $passed;
+			$passed = 0;			
+		
 		} &order;
 	};
 	die __error('"the action \"'.$rule_name.'\" not correct $file at line $line from $file\n'.$@.'"') if $@;
+	#print "$info";
+
 	
-	return $source, $rule_name if wantarray;
+	return ($source, $info) if wantarray;
 	return $source;
 }
 
