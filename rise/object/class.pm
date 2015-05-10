@@ -5,7 +5,10 @@ use utf8;
 
 #use Data::Dump 'dump';
 #local $\ = "\n";
-
+#use overload
+#  '""'	=> sub { @_ },
+#  '0+'	=> sub { @_ };
+  
 use parent 'rise::object::object', 'rise::object::error', 'rise::object::function', 'rise::object::variable';
 
 our $VERSION 	= '0.01';
@@ -36,6 +39,11 @@ my $conf		= {
 #	class_prot				=> [ [ 0, 1 ], '"CLASS ERROR: Class \"$parent\" only extends at $file line $line\n"' ],
 #	class_priv_inherit		=> [ [ 0, 2 ], '"CLASS ERROR: Can\'t access class \"$parent\" at $file line $line\n"' ],
 #};
+
+#sub new {
+#    my ($class, $string) = @_;
+#    return bless +{ string => $string }, $class;
+#}
 
 sub new {
 	my $class					= ref $_[0] || $_[0];

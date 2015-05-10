@@ -5,11 +5,9 @@ use warnings;
 use v5.008;
 use utf8;
 
-use lib qw |
-../
-../lib/
-../lib/rise/
-|;
+#use Data::Dump 'dump';
+
+use lib '../lib/rise/';
 
 use rise::grammar qw/:simple/;
 
@@ -22,337 +20,344 @@ my $PARSER							= {};
 #my $parser							= new rise::grammar;
 
 sub new {
-    my ($param, $class, $this)	= ($conf, ref $_[0] || $_[0], $_[1] || {});    	# получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
-	%$this						= (%$param, %$this);							# применяем умолчания, если имеются входные данные то сохраняем их в умолчаниях
-    $this                   	= bless($this, $class);                         # обьявляем класс и его свойства
-	return $this;
+    my ($class, $ARGS)			= (ref $_[0] || $_[0], $_[1] || {});    	# получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
+	%$conf						= (%$conf, %$ARGS);							# применяем умолчания, если имеются входные данные то сохраняем их в умолчаниях
+    #__init();
+	return bless($conf, $class);                         					# обьявляем класс и его свойства
 }
 
-var('env')						= '$rise::object::object::renv';
-var('app_stack')				= [];
-#var('parse_token_sign')			= '-';
-var('accessmod')				= 'private';
-#var('command_inherit')			= 'use parents';
-#var('text')						= [];
-#var('namespace')				= '';
-#var('class')					= '';
-#var('function')					= '';
-var('anon_fn_count')			= 0;
-var('anon_code_pref')			= 'ACODE';
-#var('class_blocknum')			= undef;
-var('members')					= {};
-var('BOOST_VARS')				= '';
-var('members_export')			= {};
-
-var('private_namesapce')		= '';
-var('protected_namesapce')		= '';
-var('public_namesapce')			= '';
-
-var('private_base')				= '';
-var('protected_base')			= '';
-var('public_base')				= '';
-
-var('private_class')			= q/'__PACKAGE__->private_class("' . $parent_name . '", "' . $sname .'");'/;
-var('protected_class')			= q/'__PACKAGE__->protected_class("' . $parent_name . '", "' . $sname .'");'/;
-var('public_class')				= '';
-
-var('private_abstract')			= '';
-var('protected_abstract')		= q/'__PACKAGE__->protected_abstract("' . $parent_name . '", "' . $sname .'");'/;
-var('public_abstract')			= '';
-
-var('private_interface')		= '';
-var('protected_interface')		= q/'__PACKAGE__->protected_interface("' . $parent_name . '", "' . $sname .'");'/;
-var('public_interface')			= '';
-
-var('private_var')				= q/'__PACKAGE__->private_var("' . $parent_name . '", "' . $sname .'");'/;
-var('protected_var')			= q/'__PACKAGE__->protected_var("' . $parent_name . '", "' . $sname .'");'/;
-var('public_var')				= '';
-
-var('private_code')				= q/'__PACKAGE__->private_code("' . $parent_name . '", "' . $sname .'");'/;
-var('protected_code')			= q/'__PACKAGE__->protected_code("' . $parent_name . '", "' . $sname .'");'/;
-var('public_code')				= '';
-
-#var('private_var')				= q/((ref $_[0] || $_[0]) || __PACKAGE__) eq __PACKAGE__ || __PACKAGE__->__error('var_priv');/;
-#var('private_var')				= var('env')."->{caller}{name} eq __PACKAGE__ || __PACKAGE__->__error('var_priv');";
-
-
-#var('protected_var')			= q/((ref $_[0] || $_[0]) || __PACKAGE__) !~ \/\=\w+\(0x\w+\)\/ || __PACKAGE__->__error('var_prot');/;
-#var('protected_var')	= q/shift !~ \/\=\w+\(0x\w+\)\/ || __PACKAGE__->__error('var_prot');/;
-#tvar('protected_var')	= q/__PACKAGE__->__error('var_prot') if (($_[0] || __PACKAGE__) ne __PACKAGE__ and (($_[0] || __PACKAGE__) ne $__class)); /;
-
-
+sub confirm {
+	my $self						= shift;
 	
-#var('private_code')				= q/((ref $_[0] || $_[0]) || __PACKAGE__) eq __PACKAGE__ || __PACKAGE__->__error('code_priv');/;
-#var('protected_code')			= q/((ref $_[0] || $_[0]) || __PACKAGE__) !~ \/\=\w+\(0x\w+\)\/ || __PACKAGE__->__error('code_prot');/;
-##var('protected_code')	= q/shift !~ \/\=\w+\(0x\w+\)\/ || __PACKAGE__->__error('code_prot');/;
-##var('protected_var')	= q/__PACKAGE__->__error('code_prot') if (($_[0] || __PACKAGE__) ne __PACKAGE__ and (($_[0] || __PACKAGE__) ne $__class)); /;
-#var('public_code')				= '';.
+	var('env')						= '$rise::object::object::renv';
+	var('app_stack')				= [];
+	#var('parse_token_sign')			= '-';
+	var('accessmod')				= $self->{accmod} || 'private';
+	#var('command_inherit')			= 'use parents';
+	#var('text')						= [];
+	#var('namespace')				= '';
+	#var('class')					= '';
+	#var('function')					= '';
+	var('anon_fn_count')			= 0;
+	var('anon_code_pref')			= 'ACODE';
+	#var('class_blocknum')			= undef;
+	var('members')					= {};
+	var('BOOST_VARS')				= '';
+	var('members_export')			= {};
+	
+	var('private_namesapce')		= '';
+	var('protected_namesapce')		= '';
+	var('public_namesapce')			= '';
+	
+	var('private_base')				= '';
+	var('protected_base')			= '';
+	var('public_base')				= '';
+	
+	var('private_class')			= q/'__PACKAGE__->private_class("' . $parent_name . '", "' . $sname .'");'/;
+	var('protected_class')			= q/'__PACKAGE__->protected_class("' . $parent_name . '", "' . $sname .'");'/;
+	var('public_class')				= '';
+	
+	var('private_abstract')			= '';
+	var('protected_abstract')		= q/'__PACKAGE__->protected_abstract("' . $parent_name . '", "' . $sname .'");'/;
+	var('public_abstract')			= '';
+	
+	var('private_interface')		= '';
+	var('protected_interface')		= q/'__PACKAGE__->protected_interface("' . $parent_name . '", "' . $sname .'");'/;
+	var('public_interface')			= '';
+	
+	var('private_var')				= q/'__PACKAGE__->private_var("' . $parent_name . '", "' . $sname .'");'/;
+	var('protected_var')			= q/'__PACKAGE__->protected_var("' . $parent_name . '", "' . $sname .'");'/;
+	var('public_var')				= '';
+	
+	var('private_code')				= q/'__PACKAGE__->private_code("' . $parent_name . '", "' . $sname .'");'/;
+	var('protected_code')			= q/'__PACKAGE__->protected_code("' . $parent_name . '", "' . $sname .'");'/;
+	var('public_code')				= '';
+	
+	#var('private_var')				= q/((ref $_[0] || $_[0]) || __PACKAGE__) eq __PACKAGE__ || __PACKAGE__->__error('var_priv');/;
+	#var('private_var')				= var('env')."->{caller}{name} eq __PACKAGE__ || __PACKAGE__->__error('var_priv');";
+	
+	
+	#var('protected_var')			= q/((ref $_[0] || $_[0]) || __PACKAGE__) !~ \/\=\w+\(0x\w+\)\/ || __PACKAGE__->__error('var_prot');/;
+	#var('protected_var')	= q/shift !~ \/\=\w+\(0x\w+\)\/ || __PACKAGE__->__error('var_prot');/;
+	#tvar('protected_var')	= q/__PACKAGE__->__error('var_prot') if (($_[0] || __PACKAGE__) ne __PACKAGE__ and (($_[0] || __PACKAGE__) ne $__class)); /;
+	
+	
+		
+	#var('private_code')				= q/((ref $_[0] || $_[0]) || __PACKAGE__) eq __PACKAGE__ || __PACKAGE__->__error('code_priv');/;
+	#var('protected_code')			= q/((ref $_[0] || $_[0]) || __PACKAGE__) !~ \/\=\w+\(0x\w+\)\/ || __PACKAGE__->__error('code_prot');/;
+	##var('protected_code')	= q/shift !~ \/\=\w+\(0x\w+\)\/ || __PACKAGE__->__error('code_prot');/;
+	##var('protected_var')	= q/__PACKAGE__->__error('code_prot') if (($_[0] || __PACKAGE__) ne __PACKAGE__ and (($_[0] || __PACKAGE__) ne $__class)); /;
+	#var('public_code')				= '';.
+	
+	
+	
+	keyword namespace				=> 'namespace';
+	keyword class					=> 'class';
+	keyword abstract				=> 'abstract';
+	keyword interface				=> 'interface';
+	keyword import					=> 'using';
+	keyword inherits				=> 'extends';
+	keyword implements				=> 'implements';
+	keyword inject					=> 'inject';
+	keyword function				=> 'function';
+	keyword method					=> 'method';
+	keyword fmethod					=> 'fmethod';
+	keyword variable				=> 'var';
+	keyword constant				=> 'const';
+	keyword private					=> 'private';
+	keyword protected				=> 'protected';
+	keyword public					=> 'public';
+	keyword local					=> 'local';
+	
+	keyword for						=> 'for';
+	keyword foreach					=> 'foreach';
+	keyword while					=> 'while';
+	
+	################################################## rules ####################################################
+	
+	token namespace					=> keyword 'namespace';
+	token class						=> keyword 'class';
+	token abstract					=> keyword 'abstract';
+	token interface					=> keyword 'interface';
+	token inject					=> keyword 'inject';
+	token import					=> keyword 'import';
+	token inherits					=> keyword 'inherits';
+	token implements				=> keyword 'implements';
+	token function					=> keyword 'function';
+	token method					=> keyword 'method';
+	token fmethod					=> keyword 'fmethod';
+	token variable					=> keyword 'variable';
+	token constant					=> keyword 'constant';
+	token private					=> keyword 'private';
+	token protected					=> keyword 'protected';
+	token public					=> keyword 'public';
+	token local						=> keyword 'local';
+	token for						=> keyword 'for';
+	token foreach					=> keyword 'foreach';
+	token while 					=> keyword 'while';
+	
+	token '"'						=> '\"';
+	token comma						=> q/\,/;
+	
+	token before					=> q/^all/;
+	token after						=> q/all$/;
+	#token content					=> q/string+/;
+	token content					=> q/all?/;
+	
+	token string					=> q/(?^s:.(?^:all))/;
+	
+	token ident						=> q/letter*/;
+	token word						=> q/letter+/;
+	token number					=> q/digit+/;
+	#token letter					=> q/(?!nletter+|digit+)?\w/;
+	token letter					=> q/[^\W\d]\w/;
+	token digit						=> q/\d/;
+	token nletter					=> q/\W/;
+	token all						=> q/.*/;
+	#token all						=> q/string*/;
+	token sps						=> q/\s*/;
+	
+	
+	token nnline					=> q/[^\r\n]/;
+	token nline						=> q/[\r\n]/;
+	token endop						=> q/\;/;
+	token name						=> q/word(?:\:\:word)*/;
+	token name_list					=> q/name(?:\s*\,\s*name)*/;
+	token namestrong				=> q/[^\d\W][\w:]+[^\W]/;
+	token name_ext					=> q/name/;
+	token name_impl					=> q/name_list/;
+	
+	#token comment					=> q/[#][^\n]*/;
+	token comment					=> q/(?<![$@%])[#] nnline*/;
+	#token comment					=> q/(?<![$@%])\#string/;
+	#token comment					=> q/(?<![$@%])\#string\n/;
+	#token comment2					=> q/(?<![\$\@\%])\#.*?\n/;
+	
+	
+	token for_each					=> q/foreach|for/;
+	
+	token accessmod					=> q/local|private|protected|public/;
+	token class_type				=> q/namespace|class|abstract|interface/;
+	token code_type					=> q/function|method|fmethod/;
+	token name_ops					=> q/class_type|code_type|variable|import|inherits|implements|new/;
+	token object					=> q/(?<!\S)(?:class_type|code_type|variable|constant)(?!\S)/;
+	
+	token _object_type_				=> q/\b_object_ word _\b/;
+	token _object_					=> q/_class_|_abstract_|_interface_/;
+	token _namespace_				=> q/_namespace_/;
+	token _base_					=> q/_base_/;
+	token _class_					=> q/_class_/;
+	token _interface_				=> q/_interface_/;
+	token _abstract_				=> q/_abstract_/;
+	token _class_type_				=> q/_namespace_|_base_|_class_|_abstract_|_interface_/;
+	token _code_type_				=> q/_function_|_method_|_fmethod_/;
+	token _var_						=> q/_var_/;
+	token _const_					=> q/_const_/;
+	
+	token obj_type					=> q/OBJECT \_ (?:code_type)/;
+	token type_all					=> q/class_type|code_type/;
+	token class_attr				=> q/\s*content\s*/;
+	token namespace_attr			=> q/class_attr/;
+	token code_attr					=> q/(?:\(\W+\))?\:\s*content\s*/;
+	token code_args					=> q/\(content\)/;
+	token agrs_attr					=> q/(?:[^{};](?!object|accessmod))*/;
+	token list						=> q/\(content\)/;
+	token inherit_list				=> q/inherits/;
+	token implement_list			=> q/implements/;
+	
+	token excluding					=> q/POD|DATA|END|comment|text/;
+	token including					=> q/%%%TEXT_ number %%%/;
+	
+	token EOP 						=> q/(?:\n\n|\Z)/;
+	token CUT 						=> q/(?:\n=cut.*EOP)/;
+	token POD 						=> q/(?:^=(?:head[1-4]|item).*?CUT|^=pod.*?CUT|^=for.*?CUT|^=begin.*?CUT)/;
+	token DATA 						=> q/(?:^__DATA__\r?\n.*)/;
+	token END 						=> q/(?:^__END__\r?\n.*)/;
+	
+	token text						=> q/(?:qtext|textqq|textqw)/;
+	#token textqq					=> q/(?:''|'content[^\\\]')/;
+	#token textqw					=> q/(?:""|"content[^\\\]")/;
+	token textqq					=> q/(?:\'content[^\\\']?\')/;
+	token textqw					=> q/(?:\"content[^\\\"]?\")/;
+	token qtext 					=> q/qtext_paren|qtext_brace|qtext_square|qtext_angle|qtext_slash|qtext_char/;
+	token qtext_paren				=> q/(?:q[qwr]?\s*\(content[^\\\)]\))/;
+	token qtext_brace				=> q/(?:q[qwr]?\s*\{content[^\\\}]\})/;
+	token qtext_square				=> q/(?:q[qwr]?\s*\[content[^\\\]]\])/;
+	token qtext_angle				=> q/(?:q[qwr]?\s*\<content[^\\\>]\>)/;
+	token qtext_slash				=> q/(?:q[qwr]?\s*\/content[^\\\/]\/)/;
+	token qtext_char				=> q/(?:q[qwr]?\s*(?<qchar>[\W\w])content(?!\\\&qchar)&qchar)/;
+	
+	token block_paren				=> q/(?<BLOCK_PAREN>\((?>[^\(\)]+|(?&BLOCK_PAREN))*\))/; # (...)
+	token block_brace				=> q/(?<BLOCK_BRACE>\{(?>[^\{\}]+|(?&BLOCK_BRACE))*\})/; # {...}
+	token block_square				=> q/(?<BLOCK_SQUARE>\[(?>[^\[\]]+|(?&BLOCK_SQUARE))*\])/; # [...]
+	token block_angle				=> q/(?<BLOCK_ANGLE>\<(?>[^\<\>]+|(?&BLOCK_ANGLE))*\>)/; # <...>
+	token block_slash				=> q/(?<BLOCK_SLASH>\/(?>[^\/]+|(?&BLOCK_SLASH))*\/)/; # /.../
+	
+	
+	token unblk_pref				=> q/[\}\;]\s*/;
+	
+	token brackets_brace			=> q/(?:\{(?!\s)|(?<!\s)\})/;
+	
+	token CONDITION					=> q/content/;
+	token STATEMENT					=> q/content/;
+	token THEN						=> q/content/;
+	token ELSE						=> q/content/;
+	
+	token op_dot					=> q/(?<![\s\W])\.(?![\s\d\.])/;
+	#token op_dot					=> q/(?:[^\s])\.(?:[^\s\d\.])/;
+	
+	################################################## rules ####################################################
+	
+	rule _excluding							=> q/<excluding>/;
+	
+	rule _inject							=> q/<inject> <content> <endop>/;
+	rule _using								=> q/<import> <name>[<content>]<endop>/;
+	rule _inherits							=> q/<inherits> <name>/;
+	rule _implements						=> q/<implements> <name_list>/;
+	
+	#rule _inherits_implements				=> q/<class> <name> (<inherits>|<implements>) <name_ext> [<implements> <name_impl>]/;
+	rule _prepare_interface					=> q/<interface> <name> [<content>] <block_brace>/;
+	rule _prepare_interface_post			=> q/<_interface_>/;
+	
+	rule _prepare_abstract					=> q/<abstract> <name> [<content>] <block_brace>/;
+	rule _prepare_abstract_post				=> q/<_abstract_>/;
+	
+	rule _prepare_foreach					=> q/<for_each> [<variable>] <name> \(<CONDITION>\) \{<STATEMENT>\}/;
+	rule _prepare_for						=> q/<for_each> \( <variable> <name> <CONDITION>\) \{<STATEMENT>\}/;
+	rule _prepare_while						=> q/<while> \( <variable> <name> <CONDITION>\) \{<STATEMENT>\}/;
+	rule _prepare_variable_list				=> q/[<accessmod>] <variable> \( <name_list> \) [<endop>]/;
+	rule _prepare_variable_unnamedblock		=> q/<unblk_pref><block_brace>/;
+	rule _prepare_variable 					=> q/[<accessmod>] <variable> <name> [<endop>]/;
+	
+	rule _function_defs 					=> q/[<accessmod>] <code_type> <name> <string> <endop>/;
+	rule _prepare_function 					=> q/[<accessmod>] <code_type> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
+	rule _prepare_function_post				=> q/<_code_type_>/;
+	
+	rule _prepare_name_namespace			=> q/<namespace> <name> \{/;
+	rule _prepare_name_object				=> q/[<accessmod>] <object> [<name>] [<agrs_attr>] [<block_brace>]/;
+	
+	rule _prepare_namespace					=> q/[<accessmod>] <_namespace_> <name> \{/;
+	#rule _prepare_class						=> q/[<accessmod>] <_class_> <name> [<agrs_attr>] \{/;
+	
+	#rule _function_defs 					=> q/[<_object_type_>] [<accessmod>] <_code_type_> <name> [<string>] <endop>/;
+	rule _function 							=> q/[<_object_type_>] [<accessmod>] <_code_type_> <name> [<code_attr>] <block_brace>/;
+	rule _variable							=> q/[<_object_type_>] [<accessmod>] <_var_> <name> [<endop>]/;
+	rule _constant							=> q/[<_object_type_>] [<accessmod>] <_const_> <name> = <content> <endop>/;
+	
+	rule _variable_boost					=> q/<all>/;
+	
+	rule _abstract							=> q/[<_object_type_>] [<accessmod>] <_abstract_> <name> [<content>] <block_brace>/;
+	rule _interface							=> q/[<_object_type_>] [<accessmod>] <_interface_> <name> [<content>] <block_brace>/;
+	rule _namespace							=> q/[<_object_type_>] [<accessmod>] <_namespace_> <name> \{/;
+	rule _object							=> q/[<_object_type_>] [<accessmod>] <_object_> <name> [<content>] \{/;
+	#rule _class								=> q/[<_object_type_>] [<accessmod>] prepared_class <name> [<content>] \{/;
+	rule _class								=> q/[<_object_type_>] [<accessmod>] <_class_> <name> [<content>] \{/;
+	
+	rule _op_dot							=> q/op_dot/;
+	
+	rule _including							=> q/<including>/;
+	
+	rule _optimise4 						=> q/\s+\;/;
+	rule _optimise5 						=> q/\s\s+/;
+	rule _optimise6 						=> q/\_UNNAMEDBLOCK\_/;
+	############################# post rules ########################################
+	rule _parser_list_iter					=> q/LI: \( <name_list> \) \{ <content> \}/;
+	rule _parser_if							=> q/IF: \( [<CONDITION>] \) \{<THEN>\}[ ELSE: \{<ELSE>\} ]/;
+	
+	
+	############################# actions ########################################
+	
+	
+	action _excluding 						=> \&_syntax_excluding;
+	
+	action _inject 							=> \&_syntax_inject;
+	action _using 							=> \&_syntax_using;
+	action _inherits			 			=> \&_syntax_inherits;
+	action _implements 						=> \&_syntax_implements;
+	
+	action _prepare_interface 				=> \&_syntax_prepare_interface;
+	action _prepare_interface_post			=> \&_syntax_prepare_interface_post;
+	action _prepare_abstract 				=> \&_syntax_prepare_abstract;
+	action _prepare_abstract_post			=> \&_syntax_prepare_abstract_post;
+	
+	action _prepare_foreach 				=> \&_syntax_prepare_foreach;
+	action _prepare_for 					=> \&_syntax_prepare_for;
+	action _prepare_while 					=> \&_syntax_prepare_while;
+	
+	action _function_defs 					=> \&_syntax_function_defs;
+	action _prepare_function 				=> \&_syntax_prepare_function;
+	action _prepare_function_post 			=> \&_syntax_prepare_function_post;
+	
+	action _prepare_variable_list 			=> \&_syntax_prepare_variable_list;
+	action _prepare_variable_unnamedblock	=> \&_syntax_prepare_variable_unnamedblock;
+	
+	
+	action _prepare_name_object				=> \&_syntax_prepare_name_object;
+	
+	#action _prepare_namespace 				=> \&_syntax_prepare_namespace;
+	#action _prepare_class 					=> \&_syntax_prepare_class;
+	
+	#action _function_defs 					=> \&_syntax_function_defs;
+	action _function 						=> \&_syntax_function;
+	action _variable 						=> \&_syntax_variable;
+	action _constant 						=> \&_syntax_constant;
+	
+	#action _variable_boost					=> \&_syntax_variable_boost;
+	
+	action _namespace 						=> \&_syntax_namespace;
+	action _object 							=> \&_syntax_object;
+	#action _class 							=> \&_syntax_class;
+	#action _abstract 						=> \&_syntax_abstract;
+	#action _interface 						=> \&_syntax_interface;
+	
+	action _op_dot							=> \&_syntax_op_dot;
+	
+	action _optimise4		 				=> \&_syntax_optimise4;
+	#action _optimise5		 				=> \&_syntax_optimise5;
+	action _optimise6		 				=> \&_syntax_optimise6;
+	action _including						=> \&_syntax_including;
 
-
-
-keyword namespace				=> 'namespace';
-keyword class					=> 'class';
-keyword abstract				=> 'abstract';
-keyword interface				=> 'interface';
-keyword import					=> 'using';
-keyword inherits				=> 'extends';
-keyword implements				=> 'implements';
-keyword inject					=> 'inject';
-keyword function				=> 'function';
-keyword method					=> 'method';
-keyword fmethod					=> 'fmethod';
-keyword variable				=> 'var';
-keyword constant				=> 'const';
-keyword private					=> 'private';
-keyword protected				=> 'protected';
-keyword public					=> 'public';
-keyword local					=> 'local';
-
-keyword for						=> 'for';
-keyword foreach					=> 'foreach';
-
-################################################## rules ####################################################
-
-token namespace					=> keyword 'namespace';
-token class						=> keyword 'class';
-token abstract					=> keyword 'abstract';
-token interface					=> keyword 'interface';
-token inject					=> keyword 'inject';
-token import					=> keyword 'import';
-token inherits					=> keyword 'inherits';
-token implements				=> keyword 'implements';
-token function					=> keyword 'function';
-token method					=> keyword 'method';
-token fmethod					=> keyword 'fmethod';
-token variable					=> keyword 'variable';
-token constant					=> keyword 'constant';
-token private					=> keyword 'private';
-token protected					=> keyword 'protected';
-token public					=> keyword 'public';
-token local						=> keyword 'local';
-token for						=> keyword 'for';
-token foreach					=> keyword 'foreach';
-
-token '"'						=> '\"';
-token comma						=> q/\,/;
-
-token before					=> q/^all/;
-token after						=> q/all$/;
-#token content					=> q/string+/;
-token content					=> q/all?/;
-
-token string					=> q/(?^s:.(?^:all))/;
-
-token ident						=> q/letter*/;
-token word						=> q/letter+/;
-token number					=> q/digit+/;
-#token letter					=> q/(?!nletter+|digit+)?\w/;
-token letter					=> q/[^\W\d]\w/;
-token digit						=> q/\d/;
-token nletter					=> q/\W/;
-token all						=> q/.*/;
-#token all						=> q/string*/;
-token sps						=> q/\s*/;
-
-
-token nnline					=> q/[^\r\n]/;
-token nline						=> q/[\r\n]/;
-token endop						=> q/\;/;
-token name						=> q/word(?:\:\:word)*/;
-token name_list					=> q/name(?:\s*\,\s*name)*/;
-token namestrong				=> q/[^\d\W][\w:]+[^\W]/;
-token name_ext					=> q/name/;
-token name_impl					=> q/name_list/;
-
-#token comment					=> q/[#][^\n]*/;
-token comment					=> q/(?<![$@%])[#] nnline*/;
-#token comment					=> q/(?<![$@%])\#string/;
-#token comment					=> q/(?<![$@%])\#string\n/;
-#token comment2					=> q/(?<![\$\@\%])\#.*?\n/;
-
-
-token for_each					=> q/foreach|for/;
-
-token accessmod					=> q/local|private|protected|public/;
-token class_type				=> q/namespace|class|abstract|interface/;
-token code_type					=> q/function|method|fmethod/;
-token name_ops					=> q/class_type|code_type|variable|import|inherits|implements|new/;
-token object					=> q/(?<!\S)(?:class_type|code_type|variable|constant)(?!\S)/;
-
-token _object_type_				=> q/\b_object_ word _\b/;
-token _object_					=> q/_class_|_abstract_|_interface_/;
-token _namespace_				=> q/_namespace_/;
-token _base_					=> q/_base_/;
-token _class_					=> q/_class_/;
-token _interface_				=> q/_interface_/;
-token _abstract_				=> q/_abstract_/;
-token _class_type_				=> q/_namespace_|_base_|_class_|_abstract_|_interface_/;
-token _code_type_				=> q/_function_|_method_|_fmethod_/;
-token _var_						=> q/_var_/;
-token _const_					=> q/_const_/;
-
-token obj_type					=> q/OBJECT \_ (?:code_type)/;
-token type_all					=> q/class_type|code_type/;
-token class_attr				=> q/\s*content\s*/;
-token namespace_attr			=> q/class_attr/;
-token code_attr					=> q/(?:\(\W+\))?\:\s*content\s*/;
-token code_args					=> q/\(content\)/;
-token agrs_attr					=> q/(?:[^{};](?!object|accessmod))*/;
-token list						=> q/\(content\)/;
-token inherit_list				=> q/inherits/;
-token implement_list			=> q/implements/;
-
-token excluding					=> q/POD|DATA|END|comment|text/;
-token including					=> q/%%%TEXT_ number %%%/;
-
-token EOP 						=> q/(?:\n\n|\Z)/;
-token CUT 						=> q/(?:\n=cut.*EOP)/;
-token POD 						=> q/(?:^=(?:head[1-4]|item).*?CUT|^=pod.*?CUT|^=for.*?CUT|^=begin.*?CUT)/;
-token DATA 						=> q/(?:^__DATA__\r?\n.*)/;
-token END 						=> q/(?:^__END__\r?\n.*)/;
-
-token text						=> q/(?:qtext|textqq|textqw)/;
-#token textqq					=> q/(?:''|'content[^\\\]')/;
-#token textqw					=> q/(?:""|"content[^\\\]")/;
-token textqq					=> q/(?:\'content[^\\\']?\')/;
-token textqw					=> q/(?:\"content[^\\\"]?\")/;
-token qtext 					=> q/qtext_paren|qtext_brace|qtext_square|qtext_angle|qtext_slash|qtext_char/;
-token qtext_paren				=> q/(?:q[qwr]?\s*\(content[^\\\)]\))/;
-token qtext_brace				=> q/(?:q[qwr]?\s*\{content[^\\\}]\})/;
-token qtext_square				=> q/(?:q[qwr]?\s*\[content[^\\\]]\])/;
-token qtext_angle				=> q/(?:q[qwr]?\s*\<content[^\\\>]\>)/;
-token qtext_slash				=> q/(?:q[qwr]?\s*\/content[^\\\/]\/)/;
-token qtext_char				=> q/(?:q[qwr]?\s*(?<qchar>[\W\w])content(?!\\\&qchar)&qchar)/;
-
-token block_paren				=> q/(?<BLOCK_PAREN>\((?>[^\(\)]+|(?&BLOCK_PAREN))*\))/; # (...)
-token block_brace				=> q/(?<BLOCK_BRACE>\{(?>[^\{\}]+|(?&BLOCK_BRACE))*\})/; # {...}
-token block_square				=> q/(?<BLOCK_SQUARE>\[(?>[^\[\]]+|(?&BLOCK_SQUARE))*\])/; # [...]
-token block_angle				=> q/(?<BLOCK_ANGLE>\<(?>[^\<\>]+|(?&BLOCK_ANGLE))*\>)/; # <...>
-token block_slash				=> q/(?<BLOCK_SLASH>\/(?>[^\/]+|(?&BLOCK_SLASH))*\/)/; # /.../
-
-
-token unblk_pref				=> q/[\}\;]\s*/;
-
-token brackets_brace			=> q/(?:\{(?!\s)|(?<!\s)\})/;
-
-token CONDITION					=> q/content/;
-token STATEMENT					=> q/content/;
-token THEN						=> q/content/;
-token ELSE						=> q/content/;
-
-token op_dot					=> q/(?<![\s\W])\.(?![\s\d\.])/;
-#token op_dot					=> q/(?:[^\s])\.(?:[^\s\d\.])/;
-
-################################################## rules ####################################################
-
-rule _excluding							=> q/<excluding>/;
-
-rule _inject							=> q/<inject> <content> <endop>/;
-rule _using								=> q/<import> <name>[<content>]<endop>/;
-rule _inherits							=> q/<inherits> <name>/;
-rule _implements						=> q/<implements> <name_list>/;
-
-#rule _inherits_implements				=> q/<class> <name> (<inherits>|<implements>) <name_ext> [<implements> <name_impl>]/;
-rule _prepare_interface					=> q/<interface> <name> [<content>] <block_brace>/;
-rule _prepare_interface_post			=> q/<_interface_>/;
-
-rule _prepare_abstract					=> q/<abstract> <name> [<content>] <block_brace>/;
-rule _prepare_abstract_post				=> q/<_abstract_>/;
-
-rule _prepare_foreach					=> q/<for_each> [<variable>] <name> \(<CONDITION>\) \{<STATEMENT>\}/;
-rule _prepare_for						=> q/<for_each> \( <variable> <name> <CONDITION>\) \{<STATEMENT>\}/;
-rule _prepare_variable_list				=> q/[<accessmod>] <variable> \( <name_list> \) [<endop>]/;
-rule _prepare_variable_unnamedblock		=> q/<unblk_pref><block_brace>/;
-rule _prepare_variable 					=> q/[<accessmod>] <variable> <name> [<endop>]/;
-
-rule _function_defs 					=> q/[<accessmod>] <code_type> <name> <string> <endop>/;
-rule _prepare_function 					=> q/[<accessmod>] <code_type> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
-rule _prepare_function_post				=> q/<_code_type_>/;
-
-rule _prepare_name_namespace			=> q/<namespace> <name> \{/;
-rule _prepare_name_object				=> q/[<accessmod>] <object> [<name>] [<agrs_attr>] [<block_brace>]/;
-
-rule _prepare_namespace					=> q/[<accessmod>] <_namespace_> <name> \{/;
-#rule _prepare_class						=> q/[<accessmod>] <_class_> <name> [<agrs_attr>] \{/;
-
-#rule _function_defs 					=> q/[<_object_type_>] [<accessmod>] <_code_type_> <name> [<string>] <endop>/;
-rule _function 							=> q/[<_object_type_>] [<accessmod>] <_code_type_> <name> [<code_attr>] <block_brace>/;
-rule _variable							=> q/[<_object_type_>] [<accessmod>] <_var_> <name> [<endop>]/;
-rule _constant							=> q/[<_object_type_>] [<accessmod>] <_const_> <name> = <content> <endop>/;
-
-rule _variable_boost					=> q/<all>/;
-
-rule _abstract							=> q/[<_object_type_>] [<accessmod>] <_abstract_> <name> [<content>] <block_brace>/;
-rule _interface							=> q/[<_object_type_>] [<accessmod>] <_interface_> <name> [<content>] <block_brace>/;
-rule _namespace							=> q/[<_object_type_>] [<accessmod>] <_namespace_> <name> \{/;
-rule _object							=> q/[<_object_type_>] [<accessmod>] <_object_> <name> [<content>] \{/;
-#rule _class								=> q/[<_object_type_>] [<accessmod>] prepared_class <name> [<content>] \{/;
-rule _class								=> q/[<_object_type_>] [<accessmod>] <_class_> <name> [<content>] \{/;
-
-rule _op_dot							=> q/op_dot/;
-
-rule _including							=> q/<including>/;
-
-rule _optimise4 						=> q/\s+\;/;
-rule _optimise5 						=> q/\s\s+/;
-rule _optimise6 						=> q/\_UNNAMEDBLOCK\_/;
-############################# post rules ########################################
-rule _parser_list_iter					=> q/LI: \( <name_list> \) \{ <content> \}/;
-rule _parser_if							=> q/IF: \( [<CONDITION>] \) \{<THEN>\}[ ELSE: \{<ELSE>\} ]/;
-
-
-############################# actions ########################################
-
-
-action _excluding 						=> \&_syntax_excluding;
-
-action _inject 							=> \&_syntax_inject;
-action _using 							=> \&_syntax_using;
-action _inherits			 			=> \&_syntax_inherits;
-action _implements 						=> \&_syntax_implements;
-
-action _prepare_interface 				=> \&_syntax_prepare_interface;
-action _prepare_interface_post			=> \&_syntax_prepare_interface_post;
-action _prepare_abstract 				=> \&_syntax_prepare_abstract;
-action _prepare_abstract_post			=> \&_syntax_prepare_abstract_post;
-
-action _prepare_foreach 				=> \&_syntax_prepare_foreach;
-action _prepare_for 					=> \&_syntax_prepare_for;
-
-action _function_defs 					=> \&_syntax_function_defs;
-action _prepare_function 				=> \&_syntax_prepare_function;
-action _prepare_function_post 			=> \&_syntax_prepare_function_post;
-
-action _prepare_variable_list 			=> \&_syntax_prepare_variable_list;
-action _prepare_variable_unnamedblock	=> \&_syntax_prepare_variable_unnamedblock;
-
-
-action _prepare_name_object				=> \&_syntax_prepare_name_object;
-
-#action _prepare_namespace 				=> \&_syntax_prepare_namespace;
-#action _prepare_class 					=> \&_syntax_prepare_class;
-
-#action _function_defs 					=> \&_syntax_function_defs;
-action _function 						=> \&_syntax_function;
-action _variable 						=> \&_syntax_variable;
-action _constant 						=> \&_syntax_constant;
-
-#action _variable_boost					=> \&_syntax_variable_boost;
-
-action _namespace 						=> \&_syntax_namespace;
-action _object 							=> \&_syntax_object;
-#action _class 							=> \&_syntax_class;
-#action _abstract 						=> \&_syntax_abstract;
-#action _interface 						=> \&_syntax_interface;
-
-action _op_dot							=> \&_syntax_op_dot;
-
-action _optimise4		 				=> \&_syntax_optimise4;
-#action _optimise5		 				=> \&_syntax_optimise5;
-action _optimise6		 				=> \&_syntax_optimise6;
-action _including						=> \&_syntax_including;
-
-
+}
 
 #$parser->grammar = grammar;
 
@@ -452,7 +457,7 @@ sub _syntax_implements {
 	return "_<implements>_...<name_list>";
 }
 
-#-------------------------------------------------------------------------------------< for | foreach
+#-------------------------------------------------------------------------------------< for | foreach | while
 sub _syntax_prepare_foreach {
 	my $for = '<for_each>...(...<CONDITION>...)...{ <name> = $_;<STATEMENT>}';
 	$for = '{ <kw_local> <variable> <name>; '.$for.'}' if &variable;
@@ -460,6 +465,8 @@ sub _syntax_prepare_foreach {
 }
 
 sub _syntax_prepare_for { "{ <kw_local> <variable> <name>; <for_each>...(...<name>...<CONDITION>...)...{<STATEMENT>}}" }
+
+sub _syntax_prepare_while { "{ <kw_local> <variable> <name>; <while>...(...<name>...<CONDITION>...)...{<STATEMENT>}}" }
 
 #-------------------------------------------------------------------------------------< function_defs | prepare function | function
 sub _syntax_function_defs { "sub <name><string><endop>" }
@@ -1162,7 +1169,7 @@ sub _syntax_prepare_name_object_helper {
 				(?<sps4>\s*)(?<block_brace>$tk_block)?
 		}{
 			$accessmod = $+{accessmod}||var('accessmod');
-			var('members')->{$name} .= $accessmod.'-'.$+{object}.'-'.$+{name} . ' ';
+			var('members')->{$name} .= $accessmod.'-'.$+{object}.'-'.$+{name} . ' ' if $accessmod ne 'local';
 			'_object_'.$+{object}.'_ '.
 				$accessmod.
 				$+{sps1}.' _'.$+{object}.'_ '.

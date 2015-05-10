@@ -10,5 +10,5 @@
 	},
 	start_dir		=> 'bin/',
 	end				=> 0,
-	status	        => 'private'
+	accmod	        => 'private'
 }
