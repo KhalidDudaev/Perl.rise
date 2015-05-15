@@ -69,13 +69,28 @@ sub keyword {
 	} elsif (exists &grammar->{KEYWORD}{$key}) {
 		$res = &grammar->{KEYWORD}{$key};
 	} else {
-		__error('"this keyword is missing at $file line $line\n"');
+		__error('"this keyword is missing at line $line from $file\n"');
 	}
 	
 	return $res;
 }
 
 sub token {
+	(my $self, @_) 			= __class_ref(@_);
+	my ($token, $lexem) 	= @_;
+	my $res;
+	
+	if ($lexem) {	
+		$res				= __rule($self, $token, $lexem);
+	} elsif (exists &grammar->{RULE}{$token}) {
+		$res = &grammar->{RULE}{$token};
+	} else {
+		__error('"this token is missing at line $line from $file\n"');
+	}
+	return $res;
+}
+
+sub off_token {
 	(my $self, @_) 			= __class_ref(@_);
 	my ($token, $lexem) 	= @_;
 	my $res;
@@ -98,6 +113,7 @@ sub rule {
 	if ($rule) {
 		$rule 				= __precompile_rule($rule) if $rule !~ m/^\(\?\^\w*\:/;
 		$res = __rule($self, $action, $rule);
+		&grammar->{RULE}		= compile_RBNF(&grammar->{RULE});
 	} elsif (exists &grammar->{RULE}{$action}) {
 		$res = &grammar->{RULE}{$action};
 	} else {
@@ -140,8 +156,9 @@ sub parse {
 	my $info;
 	my $passed = 0;	
 	
-	&grammar->{TOKEN}		= compile_RBNF(&grammar->{TOKEN});
-	&grammar->{RULE}		= compile_RBNF(&grammar->{RULE}, &grammar->{TOKEN});
+	#&grammar->{TOKEN}		= compile_RBNF(&grammar->{TOKEN});
+	#&grammar->{RULE}		= compile_RBNF(&grammar->{RULE}, &grammar->{TOKEN});
+	#&grammar->{RULE}		= compile_RBNF(&grammar->{RULE});
 	
 	eval {
 		map {
@@ -150,6 +167,7 @@ sub parse {
 			$rule			= '\b'.$rule if $rule !~ m/^\(\?\<\w+\>[^\\b]\W+/;
 
 			1 while $source =~ s/$rule/$passed++; exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name)/gmsxe;
+			#$source =~ s/$rule/$passed++; exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name)/gmsxe for &order;
 			
 			my $cnt			= 23 - length $rule_name;
 			my $indent		= 4 - length $passed;
@@ -212,19 +230,33 @@ sub rule_last_var :lvalue {
 
 sub __arr2list { return '\b' . join ('\b|\b', @_) . '\b' }
 
-sub _rule_or_token {
-	my ($self, $name) 			= @_;
-	return &grammar->{RULE}{$name} if exists &grammar->{RULE}{$name};
-	return &grammar->{TOKEN}{$name} if exists &grammar->{TOKEN}{$name};
-}
+#sub _rule_or_token {
+#	my ($self, $name) 			= @_;
+#	return &grammar->{RULE}{$name} if exists &grammar->{RULE}{$name};
+#	return &grammar->{TOKEN}{$name} if exists &grammar->{TOKEN}{$name};
+#}
 
 sub __rule {
+	my ($self, $token, $rule) 		= @_;
+	
+	$syntax_class = $self;
+	
+	{no strict; no warnings;
+		*{$self.'::'.$token}		= sub { &grammar->{RULE_LAST_VAR}{$token} || '' };
+		*{$self.'::tk_'.$token}		= sub { &grammar->{RULE}{$token} };
+	}
+
+	&grammar->{RULE}{$token} = $rule;
+	return $rule;
+}
+
+sub off__rule {
 	my ($self, $token, $rule) 		= @_;
 	&grammar->{RULE}{$token} = $rule;
 	return $rule;
 }
 
-sub __token {
+sub off__token {
 	my ($self, $token, $rule) 		= @_;
 	
 	$syntax_class = $self;
@@ -241,7 +273,7 @@ sub __token {
 sub __action {
 	my $action 		= shift;
 	my $res;
-	my $rule_list	= token_list();
+	my $rule_list	= rule_list();
 	my $sps;
 
 	__save_rule_last_var();
@@ -250,6 +282,7 @@ sub __action {
 	
 	$res =~ s/\.\.\./$sps++; &grammar->{RULE_LAST_VAR}{SPS}[$sps] || ''/gsxe;
 	$res =~ s/\<kw\_(\w+)\>/&grammar->{KEYWORD}{$1}/gsxe;
+	$res =~ s/\<tk\_(\w+)\>/&grammar->{RULE}{$1}/gsxe;
 	$res =~ s/\<($rule_list)\>/&grammar->{RULE_LAST_VAR}{$1} || ''/gsxe;
 	$res =~ s/\<sps(\d+)\>/&grammar->{RULE_LAST_VAR}{SPS}[$1] || ''/gsxe;
 	$res =~ s/\<spsall\>/&grammar->{RULE_LAST_VAR}{SPSALL} || ''/gsxe;
@@ -262,7 +295,7 @@ sub __compile_RBNF {
 	my $kw_list						= &grammar->{KW_LIST};
 	
 	$rule							=~ s/^(?<!\_)($kw_list)$/\\b$1\\b/gsx;
-	$rule							=~ s/(?<!\(\?\<)($rule_list)(?!\>)/__compile_RBNF(token($1), $rule_list)/gsxe if $rule ne ($1||'');
+	$rule							=~ s/(?<!\(\?\<)($rule_list)(?!\>)/__compile_RBNF(rule($1), $rule_list)/gsxe if $rule ne ($1||'');
 
 	return $rule;
 }
@@ -275,7 +308,7 @@ sub __save_rule_last_var {
 
 	map {
 		&grammar->{RULE_LAST_VAR}{$_} = $+{$_} if $+{$_};	
-	}&token_array;
+	}&rule_array;
 	
 	{no strict; no warnings;
 		for my $i (1..15) {
@@ -292,7 +325,7 @@ sub __save_rule_last_var {
 
 sub __precompile_rule {
 	my ($rule) = @_;
-	my $token_list	= token_list();
+	my $token_list	= rule_list();
 	my $snum		= 0;
 
 	$rule		=~ s/(?<!\\)[\[{(]/(?:/g;		#$token		=~ s/\((.*?)\)/\(?:$1\)/g;
@@ -301,9 +334,9 @@ sub __precompile_rule {
 	$rule		=~ s/(?<!\\)\]/)?/g;	#$token		=~ s/\[(.*?)\]/\($1\)?/g;
 	$rule		=~ s/(?<!\\)\>/)/g;		#$token		=~ s/\<(.*?)\>/\($1\)/g;							 
 	
-	$rule		=~ s/\(\?\:N\:/(?!/g;
-	$rule		=~ s/\(\?\:N<\:/(?<!/g;
-	$rule		=~ s/\(\?\:M(\w*)\:/(?^$1:/g;
+	$rule		=~ s/\(\?\:NOT\:/(?!/g;
+	$rule		=~ s/\(\?\:\_NOT\:/(?<!/g;
+	$rule		=~ s/\(\?\:M\s*(\w*)\:/(?^$1:/g;
 	
 	$rule		=~ s/\(($token_list)\)/(?<$1>$1)/gsx;
 	

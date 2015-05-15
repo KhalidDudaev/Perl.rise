@@ -246,6 +246,8 @@ sub confirm {
 	token op_dot					=> q/(?<![\s\W])\.(?![\s\d\.])/;
 	#token op_dot					=> q/(?:[^\s])\.(?:[^\s\d\.])/;
 	
+	token sigils					=> q/[\@\$\%\&\*]/;
+	
 	################################################## rules ####################################################
 	
 	rule _excluding							=> q/<excluding>/;
@@ -266,6 +268,11 @@ sub confirm {
 	rule _prepare_for						=> q/<for_each> \( <variable> <name> <CONDITION>\) \{<STATEMENT>\}/;
 	rule _prepare_while						=> q/<while> \( <variable> <name> <CONDITION>\) \{<STATEMENT>\}/;
 	rule _prepare_variable_list				=> q/[<accessmod>] <variable> \( <name_list> \) [<endop>]/;
+	
+	rule _var_boost1						=> q/<variable> <name>/;
+	rule _var_boost_post1					=> q/_var_ \$/;
+	rule _var_boost_post2					=> q/\.\$/;
+	
 	rule _prepare_variable_unnamedblock		=> q/<unblk_pref><block_brace>/;
 	rule _prepare_variable 					=> q/[<accessmod>] <variable> <name> [<endop>]/;
 	
@@ -284,7 +291,7 @@ sub confirm {
 	rule _variable							=> q/[<_object_type_>] [<accessmod>] <_var_> <name> [<endop>]/;
 	rule _constant							=> q/[<_object_type_>] [<accessmod>] <_const_> <name> = <content> <endop>/;
 	
-	rule _variable_boost					=> q/<all>/;
+	rule _variable_boost					=> q/<word> (_NOT:sigils)<name>/;
 	
 	rule _abstract							=> q/[<_object_type_>] [<accessmod>] <_abstract_> <name> [<content>] <block_brace>/;
 	rule _interface							=> q/[<_object_type_>] [<accessmod>] <_interface_> <name> [<content>] <block_brace>/;
@@ -329,6 +336,12 @@ sub confirm {
 	action _prepare_function_post 			=> \&_syntax_prepare_function_post;
 	
 	action _prepare_variable_list 			=> \&_syntax_prepare_variable_list;
+	
+	action _var_boost1						=> \&_syntax_var_boost1;
+	action _var_boost2						=> \&_syntax_var_boost2;
+	action _var_boost_post1					=> \&_syntax_var_boost_post1;
+	action _var_boost_post2					=> \&_syntax_var_boost_post2;
+	
 	action _prepare_variable_unnamedblock	=> \&_syntax_prepare_variable_unnamedblock;
 	
 	
@@ -591,6 +604,28 @@ sub _syntax_prepare_variable_list {
 	#return "LI: ( <name_list> ) { <accessmod> <variable> _LI_; } IF: ( !'<endop>' ) {(<name_list>) <endop>}";
 }
 
+sub _syntax_var_boost1 {
+	
+	my $code_vars	= '';
+	my $or			= '';
+	#my $var_all		= '';
+	
+	$code_vars		= var('BOOST_VARS');
+	$or				= '|' if $code_vars;
+	var('BOOST_VARS') .= $or . &name if &name !~ /$code_vars/;
+
+	token 'var_all' => var('BOOST_VARS')||1;
+	rule '_var_boost2' => '(_NOT:\$)<var_all>';
+	
+	return "_<kw_variable>_ <name>";
+}
+
+sub _syntax_var_boost2		{ var('BOOST_VARS') = ''; '$<var_all>' }
+
+sub _syntax_var_boost_post1	{ '<kw_variable> ' }
+
+sub _syntax_var_boost_post2	{ '->' }
+
 sub _syntax_prepare_variable {
 	my $accmod			= &accessmod || var 'accessmod';
 	return "$accmod _<variable><constant>_ <name>; IF: ( !'<endop>' ) {<name> <endop>}";
@@ -617,10 +652,11 @@ sub _syntax_variable {
 		$local_var		= "local *$name; ";
 	}
 	
-	$end_op				= " $name<endop> " if !&endop;
+	$end_op				= " \$$name<endop> " if !&endop;
+	
 	$boost_vars			= var('BOOST_VARS') || '';
 	$or					= '|' if $boost_vars;
-	var('BOOST_VARS')	.= $or . &name if &name !~ /$boost_vars/;
+	var('BOOST_VARS')	.= $or . $name if $name !~ /$boost_vars/;
 	
 	$accmod				= eval $accmod if $accmod ne '';
 	#$accmod				= $accmod . '("' . $name . '", "' . $parent_name .'");' if $accmod ne '';
@@ -632,10 +668,14 @@ sub _syntax_variable {
 }
 
 sub _syntax_variable_boost {
-	my $content		= &all;
-	my $regexp		= var('BOOST_VARS');
-	$content 		=~ s/(?:(?<!(?:var|sub)\s)|(?<!\$|\*)|(?<!\-\>))\b($regexp)\b/\$$1/gsx if $regexp;
-	return $content;
+	my $word			= &word;
+	my $sigils			= &sigils;
+	my $name			= &name;
+	my $regexp			= var('BOOST_VARS');
+	var('BOOST_VARS')	= '';
+	#$content 			=~ s/(?:(?<!(?:var|sub)\s)|(?<!\$|\*)|(?<!\-\>))\b($regexp)\b/\$$1/gsx if $regexp;
+	$name 			=~ s/\b($regexp)\b/\$$1/gsx if $regexp;
+	return "$word $name";
 }
 #-------------------------------------------------------------------------------------< constant
 sub _syntax_constant {
