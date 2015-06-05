@@ -42,7 +42,8 @@ sub confirm {
 	var('anon_code_pref')			= 'ACODE';
 	#var('class_blocknum')			= undef;
 	var('members')					= {};
-	var('BOOST_VARS')				= '';
+	var('class_var')				= '';
+	var('class_func')				= '';
 	var('members_export')			= {};
 	
 	var('private_namesapce')		= '';
@@ -108,6 +109,7 @@ sub confirm {
 	keyword protected				=> 'protected';
 	keyword public					=> 'public';
 	keyword local					=> 'local';
+	keyword self					=> 'this';
 	
 	keyword for						=> 'for';
 	keyword foreach					=> 'foreach';
@@ -132,6 +134,7 @@ sub confirm {
 	token protected					=> keyword 'protected';
 	token public					=> keyword 'public';
 	token local						=> keyword 'local';
+	token self						=> keyword 'self';
 	token for						=> keyword 'for';
 	token foreach					=> keyword 'foreach';
 	token while 					=> keyword 'while';
@@ -167,8 +170,12 @@ sub confirm {
 	token name_ext					=> q/name/;
 	token name_impl					=> q/name_list/;
 	
-	#token comment					=> q/[#][^\n]*/;
-	token comment					=> q/(?<![$@%])[#] nnline*/;
+	#token comment					=> q`(?<![$@%])[#] nnline*`;
+	#token comment					=> q`(?<![$@%])(?:\#|//) nnline*`;
+	token comment_Perl				=> q`(?<![$@%])\# nnline*`;
+	token comment_C					=> q`(?<![$@%])\/\/ nnline*`;
+	token comment					=> q/comment_Perl|comment_C/;
+	
 	#token comment					=> q/(?<![$@%])\#string/;
 	#token comment					=> q/(?<![$@%])\#string\n/;
 	#token comment2					=> q/(?<![\$\@\%])\#.*?\n/;
@@ -178,9 +185,9 @@ sub confirm {
 	
 	token accessmod					=> q/local|private|protected|public/;
 	token class_type				=> q/namespace|class|abstract|interface/;
-	token code_type					=> q/function|method|fmethod/;
-	token name_ops					=> q/class_type|code_type|variable|import|inherits|implements|new/;
-	token object					=> q/(?<!\S)(?:class_type|code_type|variable|constant)(?!\S)/;
+	#token function					=> q/function/;
+	token name_ops					=> q/class_type|function|variable|import|inherits|implements|new/;
+	token object					=> q/(?<!\S)(?:class_type|function|variable|constant)(?!\S)/;
 	
 	token _object_type_				=> q/\b_object_ word _\b/;
 	token _object_					=> q/_class_|_abstract_|_interface_/;
@@ -190,20 +197,22 @@ sub confirm {
 	token _interface_				=> q/_interface_/;
 	token _abstract_				=> q/_abstract_/;
 	token _class_type_				=> q/_namespace_|_base_|_class_|_abstract_|_interface_/;
-	token _code_type_				=> q/_function_|_method_|_fmethod_/;
+	#token _function_				=> q/_function_|_method_|_fmethod_/;
+	token _function_				=> q/_function_/;
 	token _var_						=> q/_var_/;
 	token _const_					=> q/_const_/;
 	
-	token obj_type					=> q/OBJECT \_ (?:code_type)/;
-	token type_all					=> q/class_type|code_type/;
+	token obj_type					=> q/OBJECT \_ (?:function)/;
+	token type_all					=> q/class_type|function/;
 	token class_attr				=> q/\s*content\s*/;
 	token namespace_attr			=> q/class_attr/;
-	token code_attr					=> q/(?:\(\W+\))?\:\s*content\s*/;
+	token code_attr					=> q/(?:\(\W+\))?(?:\:\s*content\s*)?/;
 	token code_args					=> q/\(content\)/;
 	token agrs_attr					=> q/(?:[^{};](?!object|accessmod))*/;
 	token list						=> q/\(content\)/;
 	token inherit_list				=> q/inherits/;
 	token implement_list			=> q/implements/;
+	#token var_all					=> var('class_var')||1;
 	
 	token excluding					=> q/POD|DATA|END|comment|text/;
 	token including					=> q/%%%TEXT_ number %%%/;
@@ -250,6 +259,7 @@ sub confirm {
 	
 	################################################## rules ####################################################
 	
+	
 	rule _excluding							=> q/<excluding>/;
 	
 	rule _inject							=> q/<inject> <content> <endop>/;
@@ -270,15 +280,20 @@ sub confirm {
 	rule _prepare_variable_list				=> q/[<accessmod>] <variable> \( <name_list> \) [<endop>]/;
 	
 	rule _var_boost1						=> q/<variable> <name>/;
+	#rule _var_boost2						=> q/(_NOT:\$)<var_all>/;
 	rule _var_boost_post1					=> q/_var_ \$/;
 	rule _var_boost_post2					=> q/\.\$/;
 	
 	rule _prepare_variable_unnamedblock		=> q/<unblk_pref><block_brace>/;
 	rule _prepare_variable 					=> q/[<accessmod>] <variable> <name> [<endop>]/;
 	
-	rule _function_defs 					=> q/[<accessmod>] <code_type> <name> <string> <endop>/;
-	rule _prepare_function 					=> q/[<accessmod>] <code_type> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
-	rule _prepare_function_post				=> q/<_code_type_>/;
+	rule _function_defs 					=> q/[<accessmod>] <function> <name> <string> <endop>/;
+	
+	rule _function_list 					=> q/<function> <name>/;
+	rule _function_list_post 				=> q/_function_/;
+	
+	rule _prepare_function 					=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
+	rule _prepare_function_post				=> q/<_function_>/;
 	
 	rule _prepare_name_namespace			=> q/<namespace> <name> \{/;
 	rule _prepare_name_object				=> q/[<accessmod>] <object> [<name>] [<agrs_attr>] [<block_brace>]/;
@@ -286,12 +301,14 @@ sub confirm {
 	rule _prepare_namespace					=> q/[<accessmod>] <_namespace_> <name> \{/;
 	#rule _prepare_class						=> q/[<accessmod>] <_class_> <name> [<agrs_attr>] \{/;
 	
-	#rule _function_defs 					=> q/[<_object_type_>] [<accessmod>] <_code_type_> <name> [<string>] <endop>/;
-	rule _function 							=> q/[<_object_type_>] [<accessmod>] <_code_type_> <name> [<code_attr>] <block_brace>/;
+	#rule _function_defs 					=> q/[<_object_type_>] [<accessmod>] <_function_> <name> [<string>] <endop>/;
+	rule _function 							=> q/[<_object_type_>] [<accessmod>] <_function_> <name> [<code_attr>] <block_brace>/;
 	rule _variable							=> q/[<_object_type_>] [<accessmod>] <_var_> <name> [<endop>]/;
 	rule _constant							=> q/[<_object_type_>] [<accessmod>] <_const_> <name> = <content> <endop>/;
 	
 	rule _variable_boost					=> q/<word> (_NOT:sigils)<name>/;
+	
+	rule _func2method_post					=> q/__PACKAGE__\, \)/;
 	
 	rule _abstract							=> q/[<_object_type_>] [<accessmod>] <_abstract_> <name> [<content>] <block_brace>/;
 	rule _interface							=> q/[<_object_type_>] [<accessmod>] <_interface_> <name> [<content>] <block_brace>/;
@@ -307,6 +324,8 @@ sub confirm {
 	rule _optimise4 						=> q/\s+\;/;
 	rule _optimise5 						=> q/\s\s+/;
 	rule _optimise6 						=> q/\_UNNAMEDBLOCK\_/;
+	
+	rule _commentC							=> q/<comment_C>/;
 	############################# post rules ########################################
 	rule _parser_list_iter					=> q/LI: \( <name_list> \) \{ <content> \}/;
 	rule _parser_if							=> q/IF: \( [<CONDITION>] \) \{<THEN>\}[ ELSE: \{<ELSE>\} ]/;
@@ -332,6 +351,10 @@ sub confirm {
 	action _prepare_while 					=> \&_syntax_prepare_while;
 	
 	action _function_defs 					=> \&_syntax_function_defs;
+	
+	action _function_list 					=> \&_syntax_function_list;
+	action _function_list_post 				=> \&_syntax_function_list_post;
+	
 	action _prepare_function 				=> \&_syntax_prepare_function;
 	action _prepare_function_post 			=> \&_syntax_prepare_function_post;
 	
@@ -347,28 +370,35 @@ sub confirm {
 	
 	action _prepare_name_object				=> \&_syntax_prepare_name_object;
 	
-	#action _prepare_namespace 				=> \&_syntax_prepare_namespace;
-	#action _prepare_class 					=> \&_syntax_prepare_class;
+		#action _prepare_namespace 				=> \&_syntax_prepare_namespace;
+		#action _prepare_class 					=> \&_syntax_prepare_class;
 	
-	#action _function_defs 					=> \&_syntax_function_defs;
+		#action _function_defs 					=> \&_syntax_function_defs;
 	action _function 						=> \&_syntax_function;
 	action _variable 						=> \&_syntax_variable;
 	action _constant 						=> \&_syntax_constant;
 	
-	#action _variable_boost					=> \&_syntax_variable_boost;
+
+	
+		#action _variable_boost					=> \&_syntax_variable_boost;
 	
 	action _namespace 						=> \&_syntax_namespace;
 	action _object 							=> \&_syntax_object;
-	#action _class 							=> \&_syntax_class;
-	#action _abstract 						=> \&_syntax_abstract;
-	#action _interface 						=> \&_syntax_interface;
+		#action _class 							=> \&_syntax_class;
+		#action _abstract 						=> \&_syntax_abstract;
+		#action _interface 						=> \&_syntax_interface;
 	
 	action _op_dot							=> \&_syntax_op_dot;
 	
+	action _func2method						=> \&_syntax_func2method;
+	action _func2method_post				=> \&_syntax_func2method_post;	
+	
 	action _optimise4		 				=> \&_syntax_optimise4;
-	#action _optimise5		 				=> \&_syntax_optimise5;
+		#action _optimise5		 				=> \&_syntax_optimise5;
 	action _optimise6		 				=> \&_syntax_optimise6;
 	action _including						=> \&_syntax_including;
+	
+	action _commentC 						=> \&_syntax_commentC;
 
 }
 
@@ -434,6 +464,13 @@ sub list_extends {
 }
 #######################################################################################
 #-------------------------------------------------------------------------------------< excluding_ON
+
+sub _syntax_commentC {
+	my $comment = &comment_C;
+	$comment =~ s/^\/\//\#/gsx;
+	return $comment;
+}
+
 sub _syntax_excluding { 
 		push @{&var('excluding')}, &excluding;
 		return '%%%TEXT_' . sprintf("%03d", $#{&var('excluding')}) . '%%%';
@@ -484,36 +521,57 @@ sub _syntax_prepare_while { "{ <kw_local> <variable> <name>; <while>...(...<name
 #-------------------------------------------------------------------------------------< function_defs | prepare function | function
 sub _syntax_function_defs { "sub <name><string><endop>" }
 
+sub _syntax_function_list {
+
+	var('class_func') 		.= '|' . &name;
+	var('class_func')		=~ s/^\|//;
+
+	token 'func_all'		=> var('class_func')||1;
+	rule '_func2method'		=> '<func_all>\((NOT:\_\_PACKAGE\_\_)';
+	
+	return "_<kw_function>_ <name>";
+}
+
+sub _syntax_function_list_post { '<kw_function>' }
+
+sub _syntax_func2method { '<func_all>(__PACKAGE__, ' }
+sub _syntax_func2method_post { '__PACKAGE__)' }
+
 sub _syntax_prepare_function { 
 	my $accmod			= &accessmod || var('accessmod');
-	my $code_type		= &code_type;
+	my $function		= &function;
 	my $name			= &name;
-	my $args			= &code_args || ''; 
+	my $args			= &code_args || '';
+	#my $args_comp		= $args;
 	my $attr			= &code_attr || '';
 	my $block			= &block_brace; 
 	my $arguments		= '';
+	my $self_args		= '<kw_self>';
+	
+	$args				=~ s/\s//gsx;
+	$block 				=~ s/\{(.*)\}/$1/gsx;
+
 
 	if(!$name){
 		var('anon_fn_count')++;
 		$name = var('anon_code_pref').sprintf("%05d", var('anon_fn_count'));
 	}
-
-	$args				=~ s/\s//gsx;
-	$block 				=~ s/\{(.*)\}/$1/gsx;
-
+	
 	if ($args !~ m/\((\w+.*?)\)/sx) {
 		$attr = $args . $attr;
 		$args = '';
 	}
+	
+	$args				=~ s/\((.*?)\)/$1/gsx;
+	$self_args			.= ','.$args if $args;
+	$arguments			= "<kw_local> <kw_variable> ($self_args) = \@_;";
 
-	$arguments				= "<kw_local> <kw_variable> <code_args> = __PACKAGE__->__class_ref(\@_);" if $args ne '';
-
-	return "${accmod}... _<code_type>_ ...${name}...${attr}...{ ${arguments}${block}}";
+	return "${accmod}... _<function>_ ...${name}...${attr}...{ ${arguments}${block}}";
 }
 
 sub _syntax_function { 
 	my $accmod			= &accessmod || var('accessmod');
-	my $code_type		= &_code_type_;
+	my $function		= &_function_;
 	my $name			= &name;
 	my $attr			= &code_attr || '';
 	my $block			= &block_brace;
@@ -526,7 +584,7 @@ sub _syntax_function {
 	
 	#$accmod				= '_'.uc($accmod).'_CODE_;';
 	$accmod				= var($accmod.'_code');
-	$code_type			=~ s/\_(\w+)\_/$1/gsx;
+	$function			=~ s/\_(\w+)\_/$1/gsx;
 	$sname				=~ s/\w+(?:::\w+)*::(\w+)/$1/gsx;
 	$parent_name		=~ s/(\w+(?:::\w+)*)::\w+/$1/gsx;
 	$fn_name			=~ s/\w+(?:::\w+)*::(\w+)/$1/gsx;
@@ -545,13 +603,14 @@ sub _syntax_function {
 	#return "${anon_code}{ package ${parent_name}::CODE::${fn_name}; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub this { '$parent_name' }...sub...code...${attr}...{ ${accmod}${block}}}";
 	
 	#return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub this { '$parent_name' }...sub...code...${attr}...{${accmod}${block}}}";
-	return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub this { '$parent_name' }...sub...code...${attr}...{ ${accmod} ${block}}}";
+	#return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub <kw_self> { '$parent_name' }...sub...code...${attr}...{ ${accmod} ${block}}}";
+	return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function;...sub...code...${attr}...{ ${accmod} ${block}}}";
 	#return "${anon_code}{ package <name>; my \$__caller__ = '<name>'; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub this { '$parent_name' }...sub...code...${attr}...{${accmod}${block}}}";
 }
 
 sub _syntax_prepare_function_args {
 	my $accmod			= &accessmod || var('accessmod');
-	my $code_type		= &code_type;
+	my $function		= &function;
 	my $name			= &name;
 	my $args			= &code_args || ''; 
 	my $attr			= &code_attr || '';
@@ -566,15 +625,15 @@ sub _syntax_prepare_function_args {
 	 
 	$arguments				= "<kw_public> <kw_variable> <code_args> = __PACKAGE__->__class_ref(\@_);" if $args ne '';
 
-	return "$accmod _<code_type>_ <name> $attr { $arguments";
+	return "$accmod _<function>_ <name> $attr { $arguments";
 }
 
 sub _syntax_prepare_function_post {
-	my $code_type 		= &_code_type_;
-	my $tk_code_type 	= token 'code_type';
-	$code_type 			=~ s/\_(\w+)\_/$1/sx;
+	my $function 		= &_function_;
+	my $tk_function 	= token 'function';
+	$function 			=~ s/\_(\w+)\_/$1/sx;
 	
-	return $code_type;
+	return $function;
 }
 #-------------------------------------------------------------------------------------< variable
 sub _syntax_prepare_variable_unnamedblock {
@@ -606,21 +665,19 @@ sub _syntax_prepare_variable_list {
 
 sub _syntax_var_boost1 {
 	
-	my $code_vars	= '';
-	my $or			= '';
-	#my $var_all		= '';
+	my $class_var			= '';
 	
-	$code_vars		= var('BOOST_VARS');
-	$or				= '|' if $code_vars;
-	var('BOOST_VARS') .= $or . &name if &name !~ /$code_vars/;
-
-	token 'var_all' => var('BOOST_VARS')||1;
-	rule '_var_boost2' => '(_NOT:\$)<var_all>';
+	$class_var				= var('class_var');
+	var('class_var') 		.= '|' . &name if &name !~ /$class_var/;
+	var('class_var')		=~ s/^\|//;
+	
+	token 'var_all'			=> var('class_var')||1;
+	rule '_var_boost2'		=> '(_NOT:\$)<var_all>';
 	
 	return "_<kw_variable>_ <name>";
 }
 
-sub _syntax_var_boost2		{ var('BOOST_VARS') = ''; '$<var_all>' }
+sub _syntax_var_boost2		{ '$<var_all>' }
 
 sub _syntax_var_boost_post1	{ '<kw_variable> ' }
 
@@ -654,9 +711,9 @@ sub _syntax_variable {
 	
 	$end_op				= " \$$name<endop> " if !&endop;
 	
-	$boost_vars			= var('BOOST_VARS') || '';
+	$boost_vars			= var('class_var') || '';
 	$or					= '|' if $boost_vars;
-	var('BOOST_VARS')	.= $or . $name if $name !~ /$boost_vars/;
+	var('class_var')	.= $or . $name if $name !~ /$boost_vars/;
 	
 	$accmod				= eval $accmod if $accmod ne '';
 	#$accmod				= $accmod . '("' . $name . '", "' . $parent_name .'");' if $accmod ne '';
@@ -671,8 +728,8 @@ sub _syntax_variable_boost {
 	my $word			= &word;
 	my $sigils			= &sigils;
 	my $name			= &name;
-	my $regexp			= var('BOOST_VARS');
-	var('BOOST_VARS')	= '';
+	my $regexp			= var('class_var');
+	var('class_var')	= '';
 	#$content 			=~ s/(?:(?<!(?:var|sub)\s)|(?<!\$|\*)|(?<!\-\>))\b($regexp)\b/\$$1/gsx if $regexp;
 	$name 			=~ s/\b($regexp)\b/\$$1/gsx if $regexp;
 	return "$word $name";
@@ -940,6 +997,9 @@ sub _syntax_object {
 	my $comma			= '';
 	my $parent_name		= $parent_class || 'main';
 	
+	var('class_func')		= '';
+	var('class_var')		= '';
+	
 	return '' if !$name;
 	
 	$sname				=~ s/\w+(?:::\w+)*::(\w+)/$1/gsx;
@@ -964,7 +1024,7 @@ sub __object_header {
 	my $obj_type		= shift;
 	my $name			= shift;
 	my $header			= {
-		class		=> "__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...",
+		class		=> "__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } my \$<kw_self> = '<name>'; sub <kw_self> { \$<kw_self> } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...",
 		abstract	=> "__PACKAGE__->interface_join;",
 		interface	=> "__PACKAGE__->interface_join;"
 	};
@@ -1050,7 +1110,7 @@ sub _syntax_class {
 	#return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' }...";
 	#return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
 	#return "{ package <name>; ".var('env')."->{caller}{parent} = '${parent_name}'; ".var('env')."->{caller}{name} = __PACKAGE__; ".var('env')."->{caller}{type} = 'class'; ...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
-	return "{ package <name>; use strict; use warnings;...${extends}...${accmod}...__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
+	return "{ package <name>; use strict; use warnings;...${extends}...${accmod}...__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } sub <kw_self> { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
 	#return "{ package <name>; my \$__caller__ = '<name>';...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
 	
 }
@@ -1115,7 +1175,7 @@ sub _syntax_class_OFF {
 	#$extends				= "use rise::core::extends '" . $parent_list . "'$class_ext";
 	#$$implements			= "use rise::core::implements  '"
 	
-	return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
+	return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub <kw_self> { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
 	
 }
 

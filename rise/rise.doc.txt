@@ -36,3 +36,12 @@ INTERFACE:
 		3. проверка интерфейса __PACKAGE__->implementation (dialect::base::interface)
 		4. perl-модули интерфейсов применимы только для dialect-а
 		5. при объявлении переменной или функции модификатор доступа (public|protected|private) писать обязательно.
+		
+
+switch: (?:case
+ \s+
+  (m\W.*?\W.*?|.*?)
+ \s*
+(\{
+ .*?
+\}))+ 

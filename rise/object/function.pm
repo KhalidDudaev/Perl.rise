@@ -53,14 +53,20 @@ sub protected_code {
 
 sub public_code {}
 
-sub __class_ref {
-	my $function		= shift;
-	my $class			= caller(0);
-	my $caller			= caller(1);
-	my $this			= ref $_[0] || $_[0] || '';
+#sub __class_ref {
+#	my $function		= shift;
+#	my $class			= caller(0);
+#	my $caller			= caller(1);
+#	my $this			= ref $_[0] || $_[0] || '';
+#
+#	shift if ($caller =~ /$this/ || $class =~ /$this/);
+#	return @_;
+#}
 
-	shift if ($caller =~ /$this/ || $class =~ /$this/);
-	return @_;
+sub __class_ref {
+	my $self = shift;
+	(ref $_[0] eq __PACKAGE__) ? $self = shift : $self = caller(1);
+	return $self, @_;
 }
 
 #sub __class_ref {
@@ -86,12 +92,6 @@ sub __class_ref {
 #	my $this			= ref $_[0] || $_[0] || '';
 #	shift if $this eq $class || $this eq $parent;
 #	return @_;
-#}
-
-#sub __class_ref {
-#	my $self = shift;
-#	(ref $_[0] eq __PACKAGE__) ? $self = shift : $self = caller(1);
-#	return $self, @_;
 #}
 
 #sub __class_ref {
