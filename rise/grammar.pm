@@ -38,6 +38,12 @@ my $all_v = '';
 my $or = '';
 my $word_b = '';
 my ($k, $v);
+my $last_rule_name					= '';
+
+my $info_rule						= {};
+my $info_all						= '';
+#my $passed 							= 0;
+
 our $syntax_class;
 
 my ($child, $file, $line, $func);
@@ -113,7 +119,9 @@ sub rule {
 	if ($rule) {
 		$rule 				= __precompile_rule($rule) if $rule !~ m/^\(\?\^\w*\:/;
 		$res = __rule($self, $action, $rule);
+		
 		&grammar->{RULE}		= compile_RBNF(&grammar->{RULE});
+		
 	} elsif (exists &grammar->{RULE}{$action}) {
 		$res = &grammar->{RULE}{$action};
 	} else {
@@ -134,10 +142,11 @@ sub action {
 		push @{&grammar->{ORDER}}, $action;
 	}
 	
-	if (exists &grammar->{ACTION}{$action}) { 
+	if (exists &grammar->{ACTION}{$action} && !$code) { 
 		$res = __action($action);
 	}
-	else {
+	
+	if (!exists(&grammar->{ACTION}{$action})){
 		__error('"action \"'.$action.'\" is missing at $file line $line\n"');
 	}
 	
@@ -153,8 +162,11 @@ sub parse {
 	my $rule				= '';
 	my $rule_name			= '';
 	my $rmode				= '';
-	my $info;
-	my $passed = 0;	
+
+	my $regex_mod			= '';
+	
+	#my $info				= '';
+	my $passed 				= 0;	
 	
 	#&grammar->{TOKEN}		= compile_RBNF(&grammar->{TOKEN});
 	#&grammar->{RULE}		= compile_RBNF(&grammar->{RULE}, &grammar->{TOKEN});
@@ -163,29 +175,99 @@ sub parse {
 	eval {
 		map {
 			$rule_name 		= $_;
+			
+			my $regex_g		= '';
+			my $last_sourse = '';
+			my $res_sourse	= '';
+			
 			$rule 			= &grammar->{RULE}{$rule_name} || '';
+			($regex_g)		= $rule =~ s/^(G\:)//gsx;
 			$rule			= '\b'.$rule if $rule !~ m/^\(\?\<\w+\>[^\\b]\W+/;
+														  
+			
 
-			1 while $source =~ s/$rule/$passed++; exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name)/gmsxe;
+			#1 while $source =~ s/$rule/$passed++; exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name)/gmsxe;
 			#$source =~ s/$rule/$passed++; exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name)/gmsxe for &order;
 			
-			my $cnt			= 23 - length $rule_name;
-			my $indent		= 4 - length $passed;
-			$info .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $passed . " ] : PASSED\n" if $passed;
-			$passed = 0;			
+			#1 while $source =~ s/$rule/$passed++; exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name)/msxe;
+			#1 while $source =~ s/$rule/__parse($rule_name, $source, \$last_sourse, \$passed)/msxe && $source ne $last_sourse;
+			#1 while $source =~ s/$rule/$passed++;  $res_sourse = (exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name)); $last_sourse = $source; $res_sourse/msxe  && $source ne $last_sourse;
+			
+			#$source =~ s/$rule/$passed++; exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name)/gmsxe for &order;
+			
+			#1 while $source =~ s/$rule/
+			#	$passed++;
+			#	$res_sourse = (exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name));
+			#	$last_sourse = $source;
+			#	$res_sourse;
+			#/gmsxe && $source ne $last_sourse;
+			
+			#do {
+			#	$source =~ s/$rule/
+			#		$passed++;
+			#		$res_sourse = (exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name));
+			#		$last_sourse = $source;
+			#		$res_sourse;
+			#	/gmsxe;
+			#} while ($source =~ m/$rule/sx && $source ne $last_sourse);
+			
+			#do { $source =~ s/$rule/__parse($rule_name, $source, \$last_sourse, \$passed)/gmsxe; } while ($source =~ m/$rule/sx && $source ne $last_sourse);
+			1 while $source ne $last_sourse && $source =~ s/$rule/__parse($rule_name, $source, \$last_sourse, \$passed)/gmsxe;
+			#$source = __parse_helper($rule_name, $rule, $source, \$last_sourse, \$passed);
+			
+			
+			#my $cnt			= 23 - length $rule_name;
+			#my $indent		= 4 - length $passed;
+			#
+			#$info .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $passed . " ] : PASSED\n" if $passed;
+			
+			$info_rule->{$rule_name} += $passed;
+			$passed = 0;
 		
 		} &order;
 	};
-	die __error('"the action \"'.$rule_name.'\" not correct $file at line $line from $file\n'.$@.'"') if $@;
-	#print "$info";
-
 	
-	return ($source, $info) if wantarray;
+	die __error('"the action \"'.$rule_name.'\" not correct $file at line $line from $file\n'.$@.'"') if $@;
+	
+	$info_all = '';
+	
+	map {
+		my $rule_name = $_;
+		my $cnt			= 23 - length $rule_name;
+		my $indent		= 4 - length $info_rule->{$rule_name};
+
+		$info_all .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $info_rule->{$rule_name} . " ] : PASSED\n" if $info_rule->{$rule_name};	
+	} &order;
+	
+	return ($source, $info_all) if wantarray;
 	return $source;
+}
+
+sub __parse_helper {
+	my ($rule_name, $rule, $source, $last_sourse, $passed) = @_;
+	
+	if ($source ne $$last_sourse && $source =~ s/$rule/__parse($rule_name, $source, $last_sourse, $passed)/gmsxe) {
+		#$source =~ s/$rule/__parse($rule_name, $source, $last_sourse, $passed)/gmsxe;
+		$source = __parse_helper($rule_name, $rule, $source, $last_sourse, $passed);
+	}
+	return $source;
+}
+
+sub __parse {
+	my ($rule_name, $source, $last_sourse, $passed) = @_;
+	my $res			= '';
+	
+	$$passed++;
+	$res			= (exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name));
+	$$last_sourse	= $source;
+	
+	return $res;
 }
 
 sub grammar :lvalue	{ $GRAMMAR }
 sub order		{ @{&grammar->{ORDER}} }
+sub action_array	{ keys(%{&grammar->{ACTION}}) }
+sub action_list	{ __arr2list( &action_array ) }
 sub rule_array	{ keys(%{&grammar->{RULE}}) }
 sub rule_list	{ __arr2list( &rule_array ) }
 sub token_array	{ keys(%{&grammar->{TOKEN}}) }
@@ -206,7 +288,7 @@ sub compile_RBNF {
 	
 	map {
 		$rule 							= ${$rule_hash}{$_};
-		$rule 							= __compile_RBNF($rule, $rule_list); # if $token_hash;
+		$rule 							= __compile_RBNF($rule, $rule_list, $_); # if $token_hash;
 		$rule_comp->{$_} 				= $rule;
 	} @rule_arr;
 
@@ -273,12 +355,13 @@ sub off__token {
 sub __action {
 	my $action 		= shift;
 	my $res;
-	my $rule_list	= rule_list();
 	my $sps;
-
+	my $rule_list	= rule_list();
+	
 	__save_rule_last_var();
 	
 	$res = &{&grammar->{ACTION}{$action}}; # or __error('"the action \"'.$action.'\" not correct $file at line $line from $file\n"');
+
 	
 	$res =~ s/\.\.\./$sps++; &grammar->{RULE_LAST_VAR}{SPS}[$sps] || ''/gsxe;
 	$res =~ s/\<kw\_(\w+)\>/&grammar->{KEYWORD}{$1}/gsxe;
@@ -290,12 +373,14 @@ sub __action {
 	return $res;
 }
 
+
+
 sub __compile_RBNF {
-	my ($rule, $rule_list)			= @_;
+	my ($rule, $rule_list, $rule_name)			= @_;
 	my $kw_list						= &grammar->{KW_LIST};
 	
 	$rule							=~ s/^(?<!\_)($kw_list)$/\\b$1\\b/gsx;
-	$rule							=~ s/(?<!\(\?\<)($rule_list)(?!\>)/__compile_RBNF(rule($1), $rule_list)/gsxe if $rule ne ($1||'');
+	$rule							=~ s/(?<!\(\?\<)($rule_list)(?!\>)/__compile_RBNF(rule($1), $rule_list, $1)/gsxe if $rule ne ($1||'');
 
 	return $rule;
 }

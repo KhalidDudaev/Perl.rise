@@ -97,6 +97,7 @@ sub confirm {
 	keyword abstract				=> 'abstract';
 	keyword interface				=> 'interface';
 	keyword import					=> 'using';
+	keyword import2					=> 'import';
 	keyword inherits				=> 'extends';
 	keyword implements				=> 'implements';
 	keyword inject					=> 'inject';
@@ -122,7 +123,7 @@ sub confirm {
 	token abstract					=> keyword 'abstract';
 	token interface					=> keyword 'interface';
 	token inject					=> keyword 'inject';
-	token import					=> keyword 'import';
+	token import					=> keyword 'import2';
 	token inherits					=> keyword 'inherits';
 	token implements				=> keyword 'implements';
 	token function					=> keyword 'function';
@@ -154,6 +155,7 @@ sub confirm {
 	token number					=> q/digit+/;
 	#token letter					=> q/(?!nletter+|digit+)?\w/;
 	token letter					=> q/[^\W\d]\w/;
+	#token letter					=> q/[_a-zA-Z]/;
 	token digit						=> q/\d/;
 	token nletter					=> q/\W/;
 	token all						=> q/.*/;
@@ -165,6 +167,7 @@ sub confirm {
 	token nline						=> q/[\r\n]/;
 	token endop						=> q/\;/;
 	token name						=> q/word(?:\:\:word)*/;
+	#token name						=> q/[^\d\s](?:word\:\:)*word/;
 	token name_list					=> q/name(?:\s*\,\s*name)*/;
 	token namestrong				=> q/[^\d\W][\w:]+[^\W]/;
 	token name_ext					=> q/name/;
@@ -280,7 +283,7 @@ sub confirm {
 	rule _prepare_variable_list				=> q/[<accessmod>] <variable> \( <name_list> \) [<endop>]/;
 	
 	rule _var_boost1						=> q/<variable> <name>/;
-	#rule _var_boost2						=> q/(_NOT:\$)<var_all>/;
+	rule _var_boost2						=> q/(_NOT:\$)<var_all>/;
 	rule _var_boost_post1					=> q/_var_ \$/;
 	rule _var_boost_post2					=> q/\.\$/;
 	
@@ -291,6 +294,7 @@ sub confirm {
 	
 	rule _function_list 					=> q/<function> <name>/;
 	rule _function_list_post 				=> q/_function_/;
+	rule _func2method						=> '<func_all>\((NOT:\_\_PACKAGE\_\_)';
 	
 	rule _prepare_function 					=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
 	rule _prepare_function_post				=> q/<_function_>/;
@@ -354,6 +358,8 @@ sub confirm {
 	
 	action _function_list 					=> \&_syntax_function_list;
 	action _function_list_post 				=> \&_syntax_function_list_post;
+	action _func2method						=> \&_syntax_func2method;
+	action _func2method_post				=> \&_syntax_func2method_post;	
 	
 	action _prepare_function 				=> \&_syntax_prepare_function;
 	action _prepare_function_post 			=> \&_syntax_prepare_function_post;
@@ -390,8 +396,7 @@ sub confirm {
 	
 	action _op_dot							=> \&_syntax_op_dot;
 	
-	action _func2method						=> \&_syntax_func2method;
-	action _func2method_post				=> \&_syntax_func2method_post;	
+	
 	
 	action _optimise4		 				=> \&_syntax_optimise4;
 		#action _optimise5		 				=> \&_syntax_optimise5;
@@ -488,22 +493,22 @@ sub _syntax_including {
 sub _syntax_inject {
 	my $content				= &content; 
 	$content 				=~ s/\<TEXT\_(\d+)\>/var('excluding')->[$1]/gsxe;
-	__add_stack($1) if $content =~ m/\'(\w+(?:\.\w+)?)\'/gsx;
+	#__add_stack($1) if $content =~ m/\'(\w+(?:\.\w+)?)\'/gsx;
 	return "require...${content}<endop>"
 }
 
 sub _syntax_using {  	
-	__add_stack(&name);
+	#__add_stack(&name);
 	return "use...<name>...<content><endop>";
 }
 
 sub _syntax_inherits {
-	__add_stack(&name);
+	#__add_stack(&name);
 	return "_<inherits>_...<name>";
 }
 
 sub _syntax_implements {
-	__add_stack(&name_list);
+	#__add_stack(&name_list);
 	return "_<implements>_...<name_list>";
 }
 

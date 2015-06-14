@@ -2,7 +2,7 @@
 	command 		=> @_ || 'framework',
 	sourse			=> {
 		fpath		=> '',
-		fext 		=> '.dclass',
+		fext 		=> '.class',
 	},
 	perl 			=> {
 		fpath		=> '',

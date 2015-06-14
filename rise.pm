@@ -115,20 +115,22 @@ sub compile {
 
 	my $time_start_compile = time;
 
-	if (__truefile($appname_dialect)){
-		__message_box("compilation $appname_dialect ...");
-		$assembly = __assembly( $appname_dialect );
-		$info = $assembly->{info};
-		__message ("$info\n") if $info ;
-	}
+	#if (__truefile($appname_dialect)){
+	#	__message_box("compilation $appname_dialect ...");
+	#	$assembly = __assembly( $appname_dialect );
+	#	$info = $assembly->{info};
+	#	__message ("$info\n") if $info ;
+	#}
 	
-	#push @{&__syntax->{VAR}{app_stack}}, $appname_dialect;
+	push @{&__syntax->{VAR}{app_stack}}, @$appname_dialect;
 	
 	foreach (@{&__syntax->{VAR}{app_stack}}) {
 		if (__truefile($_)){
 			
 			__message_box("compilation $_ ...");
-			$info = __assembly($_)->{info};
+			#$info = __assembly($_)->{info};
+			$assembly = __assembly($_);
+			$info = $assembly->{info};
 			__message ("$info\n") if $info;
 		}
 	}
