@@ -5,7 +5,7 @@ $VERSION = '0.001';
  
 sub import { no strict;
     my $child		= caller(0);
-	my $parent		= $child;
+	#my $parent		= $child;
 	my ($fn_name)	= $child =~ /(?:\w+::)*(\w+)/;
 	
 	#$parent			=~ s/\:\:CODE\:\:/::/;

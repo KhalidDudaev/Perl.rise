@@ -99,8 +99,8 @@ sub confirm {
 	keyword class					=> 'class';
 	keyword abstract				=> 'abstract';
 	keyword interface				=> 'interface';
-	keyword import					=> 'using';
-	keyword import2					=> 'import';
+	keyword using					=> 'using';
+	keyword using2					=> 'import';
 	keyword inherits				=> 'extends';
 	keyword implements				=> 'implements';
 	keyword inject					=> 'inject';
@@ -126,7 +126,7 @@ sub confirm {
 	token abstract					=> keyword 'abstract';
 	token interface					=> keyword 'interface';
 	token inject					=> keyword 'inject';
-	token import					=> keyword 'import2';
+	token using						=> keyword 'using';
 	token inherits					=> keyword 'inherits';
 	token implements				=> keyword 'implements';
 	token function					=> keyword 'function';
@@ -196,7 +196,7 @@ sub confirm {
 	token accessmod					=> q/local|private|protected|public/;
 	token class_type				=> q/namespace|class|abstract|interface/;
 	#token function					=> q/function/;
-	token name_ops					=> q/class_type|function|variable|import|inherits|implements|new/;
+	token name_ops					=> q/class_type|function|variable|using|inherits|implements|new/;
 	token object					=> q/(?<!\S)(?:class_type|function|variable|constant)(?!\S)/;
 	
 	token _object_type_				=> q/\b_object_ word _\b/;
@@ -295,7 +295,7 @@ sub confirm {
 	rule _excluding							=> q/<excluding>/;
 	
 	rule _inject							=> q/<inject> <content> <endop>/;
-	rule _using								=> q/<import> <name>[<content>]<endop>/;
+	rule _using								=> q/<using> <name>[<content>]<endop>/;
 	rule _inherits							=> q/<inherits> <name>/;
 	rule _implements						=> q/<implements> <name_list>/;
 	
@@ -364,7 +364,7 @@ sub confirm {
 	rule _op_dot							=> q/op_dot/;
 	
 	rule _optimise4 						=> q/\s+\;/;
-	rule _optimise5 						=> q/\s\s+/;
+	rule _optimise5 						=> q/\s\s+(_NOT:\n|\t)/;
 	rule _optimise6 						=> q/\_UNNAMEDBLOCK\_/;	
 	
 	rule _including							=> q/<including>/;
@@ -441,7 +441,7 @@ sub confirm {
 	
 	
 	action _optimise4		 				=> \&_syntax_optimise4;
-		action _optimise5		 				=> \&_syntax_optimise5;
+	action _optimise5		 				=> \&_syntax_optimise5;
 	action _optimise6		 				=> \&_syntax_optimise6;
 	action _including						=> \&_syntax_including;
 	
@@ -578,8 +578,10 @@ sub _syntax_function_list {
 
 	var('class_func') 				.= '|' . &name;
 	var('class_func')				=~ s/^\|//;
+	
+	#print ">>>>> ".var('class_func')."\n";
 
-	token func_all					=> var('class_func')||1;
+	token func_all					=> var('class_func')||'';
 	rule _func2method				=> q/<func_all>\((NOT:\_\_PACKAGE\_\_)/;
 	
 	return "_<kw_function>_ <name>";
@@ -592,7 +594,7 @@ sub _syntax_anon_function_list {
 	
 	#print ">>>>> ".var('class_anon_func')."\n";
 
-	token anon_func_all				=> var('class_anon_func')||1;
+	token anon_func_all				=> var('class_anon_func')||'';
 	rule _anon_func2method			=> q/<anon_func_all>(\-\>|\.)\((NOT:\_\_PACKAGE\_\_)/;
 	
 	return "<name> = _<kw_function>_";
@@ -886,9 +888,9 @@ sub _syntax_prepare_interface {
 	#$block				=~ s/($tk_accessmod)\s*$tk_variable\s*($tk_name)\;/__PACKAGE__->add_interface({'$1-<kw_variable>-$2' => 1});/gsx;
 	#$block				=~ s/($tk_accessmod)\s*$tk_function\s*($tk_name)\;/__PACKAGE__->add_interface({'$1-<kw_function>-$2' => 1});/gsx;
 	
-	$block				=~ s/($tk_accessmod)\s*$tk_constant\s*($tk_name)\;/BEGIN { __PACKAGE__->set_interface('$1-<kw_constant>-$2'); }/gsx;
-	$block				=~ s/($tk_accessmod)\s*$tk_variable\s*($tk_name)\;/BEGIN { __PACKAGE__->set_interface('$1-<kw_variable>-$2'); }/gsx;
-	$block				=~ s/($tk_accessmod)\s*$tk_function\s*($tk_name)\;/BEGIN { __PACKAGE__->set_interface('$1-<kw_function>-$2'); }/gsx;
+	$block				=~ s/($tk_accessmod)\s*$tk_constant\s*($tk_name)/BEGIN { __PACKAGE__->set_interface('$1-<kw_constant>-$2'); }/gsx;
+	$block				=~ s/($tk_accessmod)\s*$tk_variable\s*($tk_name)/BEGIN { __PACKAGE__->set_interface('$1-<kw_variable>-$2'); }/gsx;
+	$block				=~ s/($tk_accessmod)\s*$tk_function\s*($tk_name)/BEGIN { __PACKAGE__->set_interface('$1-<kw_function>-$2'); }/gsx;
 	
 	#$block				=~ s/my\s+\$(\w+(?:\:\:\w+)*)\;\s*\{\s*no\swarnings\;\s*sub\s+\1\s*\(\)\:lvalue\s*\{\s*\_\_PACKAGE\_\_\-\>\_\_(\w+)\_VAR\_\_\;\s*\$\1\s*\}\s*\}/'$2-variable-$1' => 1,/gsx;
 		
@@ -1092,7 +1094,7 @@ sub _syntax_object {
 	$extends			= "use rise::core::extends $base_class$parent_class$list_extends;";
 	
 	#return "{ package <name>; use strict; use warnings;...${extends}...${accmod}...__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
-	return "{ package <name>; use strict; use warnings;...${extends}...${accmod}..." . __object_header($object, $name || '');
+	return "{ package <name>; use strict; use warnings;...${extends}...${accmod}..." . __object_header($object, $name || '') . "...";
 }
 
 sub __object_header {

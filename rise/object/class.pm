@@ -49,13 +49,13 @@ sub new {
 	my $class					= ref $_[0] || $_[0];
 
 	my $this					= $conf;
-	my $lock = sub {
-		my $field				= shift;
-		$this->{$field} 		= shift if @_;
-		$this->{$field};
-	};
+	#my $lock = sub {
+	#	my $field				= shift;
+	#	$this->{$field} 		= shift if @_;
+	#	$this->{$field};
+	#};
 	
-	$this                   	= bless($lock, $class);                         # обьявляем класс и его свойства
+	$this                   	= bless($this, $class);                         # обьявляем класс и его свойства
 	
 	return $this;
 }
