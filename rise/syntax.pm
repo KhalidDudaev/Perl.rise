@@ -10,6 +10,7 @@ use utf8;
 use lib '../lib/rise/';
 
 use rise::grammar qw/:simple/;
+#use rise::action;
 
 our $VERSION = '0.000';
 our $conf							= {};
@@ -18,6 +19,7 @@ my $cenv 							= {};
 my $this							= {};
 my $PARSER							= {};
 #my $parser							= new rise::grammar;
+#my $a								= __PACKAGE__->new();
 
 sub new {
     my ($class, $ARGS)			= (ref $_[0] || $_[0], $_[1] || {});    	# получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
@@ -44,6 +46,7 @@ sub confirm {
 	var('members')					= {};
 	var('class_var')				= '';
 	var('class_func')				= '';
+	var('class_anon_func')			= '';
 	var('members_export')			= {};
 	
 	var('private_namesapce')		= '';
@@ -152,10 +155,12 @@ sub confirm {
 	
 	token ident						=> q/letter*/;
 	token word						=> q/letter+/;
+	#token word						=> q/letter\w*/;
 	token number					=> q/digit+/;
 	#token letter					=> q/(?!nletter+|digit+)?\w/;
-	token letter					=> q/[^\W\d]\w/;
+	#token letter					=> q/[^\W\d]\w/;
 	#token letter					=> q/[_a-zA-Z]/;
+	token letter					=> q/\w/;
 	token digit						=> q/\d/;
 	token nletter					=> q/\W/;
 	token all						=> q/.*/;
@@ -164,8 +169,10 @@ sub confirm {
 	
 	
 	token nnline					=> q/[^\r\n]/;
-	token nline						=> q/[\r\n]/;
+	#token nline						=> q/[\r\n]/;
+	token nline						=> q/\r|\n|\r\n/;
 	token endop						=> q/\;/;
+	#token name						=> q/(?:\b[^\d\W]\w*\b)(?:::(?:\b[^\d\W]\w*\b))*/;
 	token name						=> q/word(?:\:\:word)*/;
 	#token name						=> q/[^\d\s](?:word\:\:)*word/;
 	token name_list					=> q/name(?:\s*\,\s*name)*/;
@@ -209,9 +216,19 @@ sub confirm {
 	token type_all					=> q/class_type|function/;
 	token class_attr				=> q/\s*content\s*/;
 	token namespace_attr			=> q/class_attr/;
-	token code_attr					=> q/(?:\(\W+\))?(?:\:\s*content\s*)?/;
+	
+	#token code_attr					=> q/(?:\(\W*\))?(?:\:\s*content\s*)?/;
+	#token code_attr					=> q/(?:\(\W*\))?(\:[\w\s\(\)\,]+)?/;
+	#token code_attr					=> q/(?:\:\s*content\s*)/;
+	token code_attr					=> q/(?:[^\{\}\n]*)?/;
 	token code_args					=> q/\(content\)/;
-	token agrs_attr					=> q/(?:[^{};](?!object|accessmod))*/;
+	
+	token args_attr					=> q/(?:[^\{\}](?!object|accessmod))*/;
+	#token args_attr					=> q/(?:[^\{\}\;])*/;
+	#token args_attr					=> q/(?:\(\W*\))?(?:\s*\:\s*content)?/;
+	#token args_attr					=> q/(?:\([\\\@\$\%\&\*\;\,]*\))?(?:\:[\w\s\(\)\,]+)?/;
+	#token args_attr					=> q/[^\{\}\n]+[\;]*?/;
+	
 	token list						=> q/\(content\)/;
 	token inherit_list				=> q/inherits/;
 	token implement_list			=> q/implements/;
@@ -226,12 +243,24 @@ sub confirm {
 	token DATA 						=> q/(?:^__DATA__\r?\n.*)/;
 	token END 						=> q/(?:^__END__\r?\n.*)/;
 	
-	token text						=> q/(?:qtext|textqq|textqw)/;
+	token text						=> q/(?:qtext|textqq|textqw|qregex)/;
 	#token textqq					=> q/(?:''|'content[^\\\]')/;
 	#token textqw					=> q/(?:""|"content[^\\\]")/;
 	token textqq					=> q/(?:\'content[^\\\']?\')/;
 	token textqw					=> q/(?:\"content[^\\\"]?\")/;
-	token qtext 					=> q/qtext_paren|qtext_brace|qtext_square|qtext_angle|qtext_slash|qtext_char/;
+	#token qtext 					=> q/qtext_paren|qtext_brace|qtext_square|qtext_angle|qtext_slash|qtext_char/;
+	token qregex					=> q/\=\~\s*(?:s|m)?(?:in_paren|in_brace|in_square|in_angle|in_slash|in_char)/;
+	token qtext						=> q/qvar\s*(?:in_paren|in_brace|in_square|in_angle|in_slash|in_char)/;
+	token qvar						=> q/q[qwr]?/;
+	token qquote					=> q/qvar/;
+	
+	token in_paren					=> q/(?:\(content[^\\\)]\))/;
+	token in_brace					=> q/(?:\{content[^\\\}]\})/;
+	token in_square					=> q/(?:\[content[^\\\]]\])/;
+	token in_angle					=> q/(?:\<content[^\\\>]\>)/;
+	token in_slash					=> q/(?:\/content[^\\\/]\/)/;
+	token in_char					=> q/(?:(?<qchar>[\W\w])content(?!\\\&qchar)&qchar)/;	
+	
 	token qtext_paren				=> q/(?:q[qwr]?\s*\(content[^\\\)]\))/;
 	token qtext_brace				=> q/(?:q[qwr]?\s*\{content[^\\\}]\})/;
 	token qtext_square				=> q/(?:q[qwr]?\s*\[content[^\\\]]\])/;
@@ -280,6 +309,22 @@ sub confirm {
 	rule _prepare_foreach					=> q/<for_each> [<variable>] <name> \(<CONDITION>\) \{<STATEMENT>\}/;
 	rule _prepare_for						=> q/<for_each> \( <variable> <name> <CONDITION>\) \{<STATEMENT>\}/;
 	rule _prepare_while						=> q/<while> \( <variable> <name> <CONDITION>\) \{<STATEMENT>\}/;
+	#rule _prepare_while						=> q/<while> [<variable>] <name> \(<CONDITION>\) \{<STATEMENT>\}/;
+	
+	#rule _function_defs 					=> q/[<accessmod>] <function> [<args_attr>] <endop>/;
+	rule _function_defs 					=> q/[<accessmod>] <function> [<args_attr>] <endop><nline>/;
+	
+	rule _function_list 					=> q/<function> <name>/;
+	rule _anon_function_list				=> q/<name> \= <function>/;
+	rule _function_list_post 				=> q/_function_/;	
+	rule _func2method						=> q/<func_all>\((NOT:\_\_PACKAGE\_\_)/;
+	rule _anon_func2method					=> q/<func_all>(\-\>|\.)\((NOT:\_\_PACKAGE\_\_)/;
+	rule _func2method_post					=> q/__PACKAGE__\, \)/;
+	
+	rule _prepare_function 					=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
+	rule _prepare_function_post				=> q/<_function_>/;
+	
+	
 	rule _prepare_variable_list				=> q/[<accessmod>] <variable> \( <name_list> \) [<endop>]/;
 	
 	rule _var_boost1						=> q/<variable> <name>/;
@@ -288,51 +333,46 @@ sub confirm {
 	rule _var_boost_post2					=> q/\.\$/;
 	
 	rule _prepare_variable_unnamedblock		=> q/<unblk_pref><block_brace>/;
-	rule _prepare_variable 					=> q/[<accessmod>] <variable> <name> [<endop>]/;
+	# rule _prepare_variable 					=> q/[<accessmod>] <variable> <name> [<endop>]/;
 	
-	rule _function_defs 					=> q/[<accessmod>] <function> <name> <string> <endop>/;
+	#rule _function_defs 					=> q/[<accessmod>] <function> <name> <string> <endop>/;
+
+
+	rule _prepare_name_object				=> q/[<accessmod>] <object> [<name>] [<args_attr>] [<block_brace>]/;	
+
 	
-	rule _function_list 					=> q/<function> <name>/;
-	rule _function_list_post 				=> q/_function_/;
-	rule _func2method						=> '<func_all>\((NOT:\_\_PACKAGE\_\_)';
-	
-	rule _prepare_function 					=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
-	rule _prepare_function_post				=> q/<_function_>/;
-	
-	rule _prepare_name_namespace			=> q/<namespace> <name> \{/;
-	rule _prepare_name_object				=> q/[<accessmod>] <object> [<name>] [<agrs_attr>] [<block_brace>]/;
-	
-	rule _prepare_namespace					=> q/[<accessmod>] <_namespace_> <name> \{/;
-	#rule _prepare_class						=> q/[<accessmod>] <_class_> <name> [<agrs_attr>] \{/;
+	# rule _prepare_name_namespace			=> q/<namespace> <name> \{/;
+	# rule _prepare_namespace					=> q/[<accessmod>] <_namespace_> <name> \{/;
+	#rule _prepare_class						=> q/[<accessmod>] <_class_> <name> [<args_attr>] \{/;
 	
 	#rule _function_defs 					=> q/[<_object_type_>] [<accessmod>] <_function_> <name> [<string>] <endop>/;
 	rule _function 							=> q/[<_object_type_>] [<accessmod>] <_function_> <name> [<code_attr>] <block_brace>/;
 	rule _variable							=> q/[<_object_type_>] [<accessmod>] <_var_> <name> [<endop>]/;
 	rule _constant							=> q/[<_object_type_>] [<accessmod>] <_const_> <name> = <content> <endop>/;
 	
-	rule _variable_boost					=> q/<word> (_NOT:sigils)<name>/;
+	# rule _variable_boost					=> q/<word> (_NOT:sigils)<name>/;
 	
-	rule _func2method_post					=> q/__PACKAGE__\, \)/;
+
 	
-	rule _abstract							=> q/[<_object_type_>] [<accessmod>] <_abstract_> <name> [<content>] <block_brace>/;
-	rule _interface							=> q/[<_object_type_>] [<accessmod>] <_interface_> <name> [<content>] <block_brace>/;
+	# rule _abstract							=> q/[<_object_type_>] [<accessmod>] <_abstract_> <name> [<content>] <block_brace>/;
+	# rule _interface							=> q/[<_object_type_>] [<accessmod>] <_interface_> <name> [<content>] <block_brace>/;
 	rule _namespace							=> q/[<_object_type_>] [<accessmod>] <_namespace_> <name> \{/;
 	rule _object							=> q/[<_object_type_>] [<accessmod>] <_object_> <name> [<content>] \{/;
 	#rule _class								=> q/[<_object_type_>] [<accessmod>] prepared_class <name> [<content>] \{/;
-	rule _class								=> q/[<_object_type_>] [<accessmod>] <_class_> <name> [<content>] \{/;
+	# rule _class								=> q/[<_object_type_>] [<accessmod>] <_class_> <name> [<content>] \{/;
 	
 	rule _op_dot							=> q/op_dot/;
 	
-	rule _including							=> q/<including>/;
-	
 	rule _optimise4 						=> q/\s+\;/;
 	rule _optimise5 						=> q/\s\s+/;
-	rule _optimise6 						=> q/\_UNNAMEDBLOCK\_/;
+	rule _optimise6 						=> q/\_UNNAMEDBLOCK\_/;	
+	
+	rule _including							=> q/<including>/;
 	
 	rule _commentC							=> q/<comment_C>/;
 	############################# post rules ########################################
-	rule _parser_list_iter					=> q/LI: \( <name_list> \) \{ <content> \}/;
-	rule _parser_if							=> q/IF: \( [<CONDITION>] \) \{<THEN>\}[ ELSE: \{<ELSE>\} ]/;
+	# rule _parser_list_iter					=> q/LI: \( <name_list> \) \{ <content> \}/;
+	# rule _parser_if							=> q/IF: \( [<CONDITION>] \) \{<THEN>\}[ ELSE: \{<ELSE>\} ]/;
 	
 	
 	############################# actions ########################################
@@ -357,8 +397,10 @@ sub confirm {
 	action _function_defs 					=> \&_syntax_function_defs;
 	
 	action _function_list 					=> \&_syntax_function_list;
+	action _anon_function_list 				=> \&_syntax_anon_function_list;
 	action _function_list_post 				=> \&_syntax_function_list_post;
 	action _func2method						=> \&_syntax_func2method;
+	action _anon_func2method				=> \&_syntax_anon_func2method;
 	action _func2method_post				=> \&_syntax_func2method_post;	
 	
 	action _prepare_function 				=> \&_syntax_prepare_function;
@@ -366,10 +408,10 @@ sub confirm {
 	
 	action _prepare_variable_list 			=> \&_syntax_prepare_variable_list;
 	
-	action _var_boost1						=> \&_syntax_var_boost1;
-	action _var_boost2						=> \&_syntax_var_boost2;
-	action _var_boost_post1					=> \&_syntax_var_boost_post1;
-	action _var_boost_post2					=> \&_syntax_var_boost_post2;
+	#action _var_boost1						=> \&_syntax_var_boost1;
+	#action _var_boost2						=> \&_syntax_var_boost2;
+	#action _var_boost_post1					=> \&_syntax_var_boost_post1;
+	#action _var_boost_post2					=> \&_syntax_var_boost_post2;
 	
 	action _prepare_variable_unnamedblock	=> \&_syntax_prepare_variable_unnamedblock;
 	
@@ -384,7 +426,7 @@ sub confirm {
 	action _variable 						=> \&_syntax_variable;
 	action _constant 						=> \&_syntax_constant;
 	
-
+	
 	
 		#action _variable_boost					=> \&_syntax_variable_boost;
 	
@@ -399,7 +441,7 @@ sub confirm {
 	
 	
 	action _optimise4		 				=> \&_syntax_optimise4;
-		#action _optimise5		 				=> \&_syntax_optimise5;
+		action _optimise5		 				=> \&_syntax_optimise5;
 	action _optimise6		 				=> \&_syntax_optimise6;
 	action _including						=> \&_syntax_including;
 	
@@ -522,24 +564,45 @@ sub _syntax_prepare_foreach {
 sub _syntax_prepare_for { "{ <kw_local> <variable> <name>; <for_each>...(...<name>...<CONDITION>...)...{<STATEMENT>}}" }
 
 sub _syntax_prepare_while { "{ <kw_local> <variable> <name>; <while>...(...<name>...<CONDITION>...)...{<STATEMENT>}}" }
+#sub _syntax_prepare_while {
+#	my $while = '<while>...(...<CONDITION>...)...{ <name> = $_;<STATEMENT>}';
+#	$while = '{ <kw_local> <variable> <name>; '.$while.'}' if &variable;
+#	return $while;
+#}
 
 #-------------------------------------------------------------------------------------< function_defs | prepare function | function
-sub _syntax_function_defs { "sub <name><string><endop>" }
+#sub _syntax_function_defs { "sub <name><args_attr><endop>" }
+sub _syntax_function_defs { "sub <name><args_attr><endop><nline>" }
 
 sub _syntax_function_list {
 
-	var('class_func') 		.= '|' . &name;
-	var('class_func')		=~ s/^\|//;
+	var('class_func') 				.= '|' . &name;
+	var('class_func')				=~ s/^\|//;
 
-	token 'func_all'		=> var('class_func')||1;
-	rule '_func2method'		=> '<func_all>\((NOT:\_\_PACKAGE\_\_)';
+	token func_all					=> var('class_func')||1;
+	rule _func2method				=> q/<func_all>\((NOT:\_\_PACKAGE\_\_)/;
 	
 	return "_<kw_function>_ <name>";
+}
+
+sub _syntax_anon_function_list {
+
+	var('class_anon_func') 			.= '|' . &name;
+	var('class_anon_func')			=~ s/^\|//;
+	
+	#print ">>>>> ".var('class_anon_func')."\n";
+
+	token anon_func_all				=> var('class_anon_func')||1;
+	rule _anon_func2method			=> q/<anon_func_all>(\-\>|\.)\((NOT:\_\_PACKAGE\_\_)/;
+	
+	return "<name> = _<kw_function>_";
 }
 
 sub _syntax_function_list_post { '<kw_function>' }
 
 sub _syntax_func2method { '<func_all>(__PACKAGE__, ' }
+sub _syntax_anon_func2method { '<anon_func_all>.(__PACKAGE__, ' }
+
 sub _syntax_func2method_post { '__PACKAGE__)' }
 
 sub _syntax_prepare_function { 
@@ -553,6 +616,8 @@ sub _syntax_prepare_function {
 	my $arguments		= '';
 	my $self_args		= '<kw_self>';
 	
+	
+	
 	$args				=~ s/\s//gsx;
 	$block 				=~ s/\{(.*)\}/$1/gsx;
 
@@ -560,6 +625,7 @@ sub _syntax_prepare_function {
 	if(!$name){
 		var('anon_fn_count')++;
 		$name = var('anon_code_pref').sprintf("%05d", var('anon_fn_count'));
+		#$self_args		= '';
 	}
 	
 	if ($args !~ m/\((\w+.*?)\)/sx) {
@@ -567,11 +633,13 @@ sub _syntax_prepare_function {
 		$args = '';
 	}
 	
+	#print ">>>> $name - $args - $attr\n";
+	
 	$args				=~ s/\((.*?)\)/$1/gsx;
-	$self_args			.= ','.$args if $args;
+	$self_args			.= ',' . $args if $args;
 	$arguments			= "<kw_local> <kw_variable> ($self_args) = \@_;";
 
-	return "${accmod}... _<function>_ ...${name}...${attr}...{ ${arguments}${block}}";
+	return "${accmod}... _<function>_ ...${name}... ${attr}...{ ${arguments}${block}}";
 }
 
 sub _syntax_function { 
@@ -585,7 +653,7 @@ sub _syntax_function {
 	my $fn_name			= $name;
 	my $anon_code		= '';
 	
-	
+	#print ">>>> $name - $attr\n";
 	
 	#$accmod				= '_'.uc($accmod).'_CODE_;';
 	$accmod				= var($accmod.'_code');
@@ -596,8 +664,10 @@ sub _syntax_function {
 	$block 				=~ s/\{(.*)\}/$1/gsx;
 	
 	if($name =~ /ACODE\d+/){
-		$anon_code = '\&'.$name.'::code; ' ;
-		$accmod = '';
+		#$anon_code = '\&'.$name.'::code; ' ;
+		#$anon_code = '\&'.$name.'::'.$fn_name.'; ' ;
+		$anon_code = '\&'.$fn_name.'; ' ;
+		#$accmod = '';
 	}
 	
 	$accmod				= eval $accmod if $accmod ne '';
@@ -609,7 +679,7 @@ sub _syntax_function {
 	
 	#return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub this { '$parent_name' }...sub...code...${attr}...{${accmod}${block}}}";
 	#return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub <kw_self> { '$parent_name' }...sub...code...${attr}...{ ${accmod} ${block}}}";
-	return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function;...sub...code...${attr}...{ ${accmod} ${block}}}";
+	return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function;...sub...$fn_name...${attr}...{ ${accmod} ${block}}}";
 	#return "${anon_code}{ package <name>; my \$__caller__ = '<name>'; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub this { '$parent_name' }...sub...code...${attr}...{${accmod}${block}}}";
 }
 
@@ -965,22 +1035,22 @@ sub _syntax_prepare_class {
 	my $accmod			= &accessmod;
 	my $object			= &_class_type_;
 	my $name			= &name;
-	my $agrs_attr		= &agrs_attr;
+	my $args_attr		= &args_attr;
 	my $extends			= '';
 	my $kw_extends		= keyword 'inherits';
 	my $tk_name_list	= token 'name_list';
 	my ($parent_name)	= $name =~ m/(\w+(?:::\w+)*)::\w+/gsx; $parent_name ||= '';
 	my $comma			= '';
 	
-	$comma		= ',' if $agrs_attr =~ s/\_$kw_extends\_\s*($tk_name_list)/$1/gsx;
+	$comma		= ',' if $args_attr =~ s/\_$kw_extends\_\s*($tk_name_list)/$1/gsx;
 	
 	$extends			= 'rise::object::class';
 	$extends			.= ", $parent_name" if $parent_name;
 	$extends			.= $comma;
 
-	$agrs_attr			= "_<kw_inherits>_ $extends $agrs_attr" if $extends;
+	$args_attr			= "_<kw_inherits>_ $extends $args_attr" if $extends;
 
-	return "${accmod}...prepared_class...<name>...${agrs_attr}...{";
+	return "${accmod}...prepared_class...<name>...${args_attr}...{";
 }
 
 sub _syntax_object {
@@ -1075,7 +1145,7 @@ sub _syntax_class {
 	#	$list_implements		= "'$list_implements'" if $list_implements;
 	#	$list_implements		||= '';
 		
-	#$list_implements			= list_extends($agrs_attr);
+	#$list_implements			= list_extends($args_attr);
 		
 		#$implements				= " use rise::core::implements  $list_implements;" if $list_implements ne '';
 		#$implements				.= ' __PACKAGE__->interface_confirm if %IMPORT_INTERFACELIST;' if $list_implements ne ''; # && &_class_type_ eq ('_class_'||'_base_');
@@ -1124,7 +1194,7 @@ sub _syntax_class_OFF {
 	my $accmod			= &accessmod || var 'accessmod';;
 	#my $object			= &_class_type_;
 	my $name			= &name;
-	my $agrs_attr		= &content;
+	my $args_attr		= &content;
 	my $list_extends	= '';
 	my $list_implements	= '';
 	my $parent_class	= '';
@@ -1142,7 +1212,7 @@ sub _syntax_class_OFF {
 	
 	#$parent_class		= "'rise::object::class'" if &_class_type_ eq '_base_';
 	
-	($list_extends)			= $agrs_attr =~ m/\_extends\_\s*($tk_name_list)/gsx;
+	($list_extends)			= $args_attr =~ m/\_extends\_\s*($tk_name_list)/gsx;
 		$list_extends			=~ s/\s*\,\s*/','/gsx if $list_extends;
 		$list_extends			= "'$list_extends'" if $list_extends;
 		$list_extends			||= '';
@@ -1150,7 +1220,7 @@ sub _syntax_class_OFF {
 		#$list_extends			= $parent_class . $comma . $list_extends;
 		$extends				= " use rise::core::extends $list_extends;";
 		
-	($list_implements)		= $agrs_attr =~ m/\_implements\_\s*($tk_name_list)/gsx;
+	($list_implements)		= $args_attr =~ m/\_implements\_\s*($tk_name_list)/gsx;
 		$list_implements		=~ s/\s*\,\s*/','/gsx if $list_implements;
 		$list_implements		= "'$list_implements'" if $list_implements;
 		$list_implements		||= '';
@@ -1236,7 +1306,7 @@ sub _syntax_prepare_name_object {
 	my $accmod			= &accessmod || var 'accessmod';
 	my $object			= &object;
 	my $name			= &name;
-	my $agrs_attr		= &agrs_attr;
+	my $args_attr		= &args_attr;
 	my $block			= &block_brace;
 	my $base			= '';
 	my $kw_class		= keyword 'class';
@@ -1249,8 +1319,11 @@ sub _syntax_prepare_name_object {
 	#$name				= var('namespace').'::'.$name if var('namespace');
 
 	$block 				= _syntax_prepare_name_object_helper($name, $block);
+	#$block 				= parse($block, &grammar);
+	
+	#print ">>>> $name - $args_attr\n";
 
-	return "_object_${object_type}_ ${accmod}... _<object>_ ...<name>...<agrs_attr>...${block}";
+	return "_object_${object_type}_ ${accmod}... _<object>_ ...<name>...<args_attr>...${block}";
 }
 
 sub _syntax_prepare_name_object_helper {
@@ -1262,7 +1335,7 @@ sub _syntax_prepare_name_object_helper {
 	my $tk_accessmod	= token 'accessmod';
 	my $tk_object		= token 'object';
 	my $tk_name			= token 'name';
-	my $tk_agrs_attr	= token 'agrs_attr';
+	my $tk_args_attr	= token 'args_attr';
 	my $tk_content		= token 'content';
 	my $tk_block		= token 'block_brace';
 
@@ -1270,7 +1343,7 @@ sub _syntax_prepare_name_object_helper {
 			\b(?<accessmod>$tk_accessmod)?
 				(?<sps1>\s*)(?<object>$tk_object)
 				(?<sps2>\s*)(?<name>$tk_name)?
-				(?<sps3>\s*)(?<agrs_attr>$tk_agrs_attr)?
+				(?<sps3>\s*)(?<args_attr>$tk_args_attr)?
 				(?<sps4>\s*)(?<block_brace>$tk_block)?
 		}{
 			$accessmod = $+{accessmod}||var('accessmod');
@@ -1279,26 +1352,26 @@ sub _syntax_prepare_name_object_helper {
 				$accessmod.
 				$+{sps1}.' _'.$+{object}.'_ '.
 				$+{sps2}.$name.'::'.$+{name}.
-				$+{sps3}.($+{agrs_attr}||'').
+				$+{sps3}.($+{args_attr}||'').
 				$+{sps4}._syntax_prepare_name_object_helper($name.'::'.$+{name}, $+{block_brace}||'')
 		}gsxe;
 	
 	#$block 				=~ s{
-	#		\b(?<accessmod>$tk_accessmod)?\s*(?<object>$tk_object)\s*(?<name>$tk_name)?\s*(?<agrs_attr>$tk_agrs_attr)?\s*(?<block_brace>$tk_block)?
+	#		\b(?<accessmod>$tk_accessmod)?\s*(?<object>$tk_object)\s*(?<name>$tk_name)?\s*(?<args_attr>$tk_args_attr)?\s*(?<block_brace>$tk_block)?
 	#	}{
 	#		$accessmod = $+{accessmod}||var('accessmod');
 	#		$objname=$+{name};if(!$objname){var('anon_fn_count')++;$objname=var('anon_code_pref').sprintf("%05d", var('anon_fn_count'));}
 	#		var('members')->{$name} .= $accessmod.'-'.$+{object}.'-'.$objname . ' ' if $+{name};
-	#		$accessmod.' _'.$+{object}.'_ '.$name.'::'.$objname.' '.($+{agrs_attr}||'').' '._syntax_prepare_object_name_helper($name.'::'.$objname, $+{block_brace}||'')
+	#		$accessmod.' _'.$+{object}.'_ '.$name.'::'.$objname.' '.($+{args_attr}||'').' '._syntax_prepare_object_name_helper($name.'::'.$objname, $+{block_brace}||'')
 	#	}gsxe;
 	
 	#$block 				=~ s{
-	#	\b(?<accessmod>$tk_accessmod)?\s*(?<object>$tk_object)\s*(?<name>$tk_name)?\s*(?<agrs_attr>$tk_agrs_attr)?\s*(?<block_brace>$tk_block)?
+	#	\b(?<accessmod>$tk_accessmod)?\s*(?<object>$tk_object)\s*(?<name>$tk_name)?\s*(?<args_attr>$tk_args_attr)?\s*(?<block_brace>$tk_block)?
 	#}{
 	#	$accessmod = $+{accessmod}||var('accessmod');
 	#	$objname=$+{name};if($objname eq '_ANON_CODE_'){var('anon_fn_count')++;$objname.=sprintf("%05d", var('anon_fn_count'));}
 	#	var('members')->{$name} .= $accessmod.'-'.$+{object}.'-'.$objname . ' ' if $+{name};
-	#	$accessmod.' _'.$+{object}.'_ '.$name.'::'.$objname.' '.($+{agrs_attr}||'').' '._syntax_prepare_object_name_helper($name.'::'.$objname, $+{block_brace}||'')
+	#	$accessmod.' _'.$+{object}.'_ '.$name.'::'.$objname.' '.($+{args_attr}||'').' '._syntax_prepare_object_name_helper($name.'::'.$objname, $+{block_brace}||'')
 	#}gsxe;
 	
 	return $block;

@@ -114,13 +114,20 @@ sub off_token {
 sub rule {
 	(my $self, @_) 			= __class_ref(@_);
 	my ($action, $rule) 	= @_;
+	#my $rule_list			= rule_list();
 	my $res;
+	
+	
 	
 	if ($rule) {
 		$rule 				= __precompile_rule($rule) if $rule !~ m/^\(\?\^\w*\:/;
-		$res = __rule($self, $action, $rule);
+																		
+		$rule 				= __compile_RBNF($action, $rule, &rule_list, &keyword_list);																
+																		
+		$res				= __rule($self, $action, $rule);
 		
-		&grammar->{RULE}		= compile_RBNF(&grammar->{RULE});
+		#&grammar->{RULE}	= compile_RBNF(&grammar->{RULE});
+		
 		
 	} elsif (exists &grammar->{RULE}{$action}) {
 		$res = &grammar->{RULE}{$action};
@@ -161,8 +168,8 @@ sub parse {
 	
 	my $rule				= '';
 	my $rule_name			= '';
+	my $rule_list			= rule_list();
 	my $rmode				= '';
-
 	my $regex_mod			= '';
 	
 	#my $info				= '';
@@ -170,7 +177,7 @@ sub parse {
 	
 	#&grammar->{TOKEN}		= compile_RBNF(&grammar->{TOKEN});
 	#&grammar->{RULE}		= compile_RBNF(&grammar->{RULE}, &grammar->{TOKEN});
-	#&grammar->{RULE}		= compile_RBNF(&grammar->{RULE});
+	&grammar->{RULE}		= compile_RBNF(&grammar->{RULE});
 	
 	eval {
 		map {
@@ -180,9 +187,16 @@ sub parse {
 			my $last_sourse = '';
 			my $res_sourse	= '';
 			
+			#&grammar->{RULE}	= compile_RBNF(&grammar->{RULE});
+			
 			$rule 			= &grammar->{RULE}{$rule_name} || '';
+			
+			#$rule 			= __compile_RBNF($rule, $rule_list, $rule_name);
+			
+			
 			($regex_g)		= $rule =~ s/^(G\:)//gsx;
 			$rule			= '\b'.$rule if $rule !~ m/^\(\?\<\w+\>[^\\b]\W+/;
+			#$rule			= qr/$rule/o;
 														  
 			
 
@@ -272,25 +286,31 @@ sub rule_array	{ keys(%{&grammar->{RULE}}) }
 sub rule_list	{ __arr2list( &rule_array ) }
 sub token_array	{ keys(%{&grammar->{TOKEN}}) }
 sub token_list	{ __arr2list( &token_array ) }
+sub keyword_array	{ keys(%{&grammar->{KEYWORD}}) }
+sub keyword_list	{ __arr2list( &keyword_array ) }
 sub ra			{ &grammar->{RULE_LAST_VAR}{RA}[$_] }
 
 sub compile_RBNF {
-	(my $self, @_) 			= __class_ref(@_);
+	(my $self, @_) 						= __class_ref(@_);
 	
 	my ($rule_hash, $token_hash)		= @_;
 	my $rule							= '';
 	my $rule_comp						= {};	
-	my @rule_arr						= keys %$rule_hash;
-	my $rule_list						= __arr2list( @rule_arr );
-	&grammar->{KW_LIST}					= __arr2list(values %{&grammar->{KEYWORD}});
+	#my @rule_arr						= keys %$rule_hash;
+	#my $rule_list						= __arr2list( @rule_arr );
 	
-	$rule_list							.= '|' . __arr2list( keys %$token_hash ) if $token_hash;
+	#my @rule_arr						= rule_array();
+	my $rule_list						= rule_list();
+	my $keyword_list					= keyword_list();
+	#&grammar->{KW_LIST}					= __arr2list(values %{&grammar->{KEYWORD}});
+	
+	#$rule_list							.= '|' . __arr2list( keys %$token_hash ) if $token_hash;
 	
 	map {
 		$rule 							= ${$rule_hash}{$_};
-		$rule 							= __compile_RBNF($rule, $rule_list, $_); # if $token_hash;
+		$rule 							= __compile_RBNF($_, $rule, $rule_list, $keyword_list); # if $token_hash;
 		$rule_comp->{$_} 				= $rule;
-	} @rule_arr;
+	} &rule_array;
 
 	return $rule_comp;
 }
@@ -376,11 +396,12 @@ sub __action {
 
 
 sub __compile_RBNF {
-	my ($rule, $rule_list, $rule_name)			= @_;
-	my $kw_list						= &grammar->{KW_LIST};
+	my ($rule_name, $rule, $rule_list, $keyword_list)			= @_;
+	#my $kw_list						= &grammar->{KW_LIST};
+	#my $keyword_list						= keyword_list();
 	
-	$rule							=~ s/^(?<!\_)($kw_list)$/\\b$1\\b/gsx;
-	$rule							=~ s/(?<!\(\?\<)($rule_list)(?!\>)/__compile_RBNF(rule($1), $rule_list, $1)/gsxe if $rule ne ($1||'');
+	$rule							=~ s/^(?<!\_)($keyword_list)$/\\b$1\\b/gsx;
+	$rule							=~ s/(?<!\(\?\<)($rule_list)(?!\>)/__compile_RBNF($1, rule($1), $rule_list, $keyword_list)/gsxe if $rule ne ($1||'');
 
 	return $rule;
 }

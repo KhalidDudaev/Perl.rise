@@ -131,13 +131,19 @@ sub interface_confirm {
 sub private_class {
 	my ($self)			= @_;
 	my $starter			= (caller(4))[3] || 'RUN';
-	my $callercode		= (caller(2))[3] || ''; $callercode		=~ s/.*::(\w+)/$1/g;
-	my $callercode_eval	= (caller(3))[3] || ''; $callercode_eval	=~ s/.*::(\w+)/$1/g;
+	my $callercode		= (caller(2))[3] || 'PRIV 2'; #$callercode			=~ s/.*::(\w+)/$1/g;
+	my $callercode_eval	= (caller(3))[3] || 'PRIV 3'; #$callercode_eval	=~ s/.*::(\w+)/$1/g;
 	
-	
-	#print "################################# $callercode_eval #################################\n";
+	#my $caller0			= (caller(0))[3] || 'PRIV 0'; #$callercode_eval	=~ s/.*::(\w+)/$1/g;
+	#my $caller1			= (caller(1))[3] || 'PRIV 1'; #$callercode_eval	=~ s/.*::(\w+)/$1/g;
+	#my $caller2			= (caller(2))[3] || 'PRIV 2'; #$callercode_eval	=~ s/.*::(\w+)/$1/g;
+	#my $caller3			= (caller(3))[3] || 'PRIV 3'; #$callercode_eval	=~ s/.*::(\w+)/$1/g;
+	#my $caller4			= (caller(4))[3] || 'PRIV 4'; #$callercode_eval	=~ s/.*::(\w+)/$1/g;
 	
 	my $access			= ($callercode eq 'import' || $callercode_eval eq 'import') ? 'class_priv_inherit' : 'class_priv';
+	
+	#print ">>> $access - $starter - $callercode - $callercode_eval \n";
+	#print ">>> $caller0 - $caller1 - $caller2 - $caller3 - $caller4 \n";
 	
 	$starter eq 'RUN' or $self->__error($access);
 }
@@ -146,6 +152,8 @@ sub protected_class {
 	my ($self)			= @_;
 	my $callercode		= (caller(2))[3]; $callercode		=~ s/.*::(\w+)/$1/;
 	my $callercode_eval	= (caller(3))[3]; $callercode_eval	=~ s/.*::(\w+)/$1/;
+	
+	#print ">>>>>>>>>>>>> $callercode\n";
 	
 	($callercode eq 'import' || $callercode_eval eq 'import') or $self->__error('class_prot');
 }
