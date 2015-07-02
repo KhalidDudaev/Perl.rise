@@ -161,7 +161,7 @@ sub action {
 }
 
 sub parse {
-	(my $self, my $source, &grammar, my $rule_name_selected, my $confs,  @_)	= __class_ref(@_);
+	(my $self, my $source, &grammar, @_)	= __class_ref(@_);
 	
 	#my $source				= $_[0];
 	#&grammar				= $_[1] if $_[1];
@@ -173,9 +173,7 @@ sub parse {
 	my $regex_mod			= '';
 	
 	#my $info				= '';
-	my $passed 				= 0;
-	
-	my @order				= ($rule_name_selected)||&order;
+	my $passed 				= 0;	
 	
 	#&grammar->{TOKEN}		= compile_RBNF(&grammar->{TOKEN});
 	#&grammar->{RULE}		= compile_RBNF(&grammar->{RULE}, &grammar->{TOKEN});
@@ -240,7 +238,7 @@ sub parse {
 			$info_rule->{$rule_name} += $passed;
 			$passed = 0;
 		
-		} @order;
+		} &order;
 	};
 	
 	die __error('"the action \"'.$rule_name.'\" not correct $file at line $line from $file\n'.$@.'"') if $@;
@@ -253,7 +251,7 @@ sub parse {
 		my $indent		= 4 - length $info_rule->{$rule_name};
 
 		$info_all .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $info_rule->{$rule_name} . " ] : PASSED\n" if $info_rule->{$rule_name};	
-	} @order;
+	} &order;
 	
 	return ($source, $info_all) if wantarray;
 	return $source;

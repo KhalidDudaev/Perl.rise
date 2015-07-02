@@ -345,16 +345,6 @@ sub confirm {
 	# rule _prepare_namespace					=> q/[<accessmod>] <_namespace_> <name> \{/;
 	#rule _prepare_class						=> q/[<accessmod>] <_class_> <name> [<args_attr>] \{/;
 	
-	rule _namespace							=> q/<namespace> <name> <block_brace>/;
-	rule _class								=> q/[<accessmod>] <class> <name> [<content>] <block_brace>/;
-	rule _abstract							=> q/[<accessmod>] <abstract> <name> [<content>] <block_brace>/;
-	rule _interface							=> q/[<accessmod>] <interface> <name> [<content>] <block_brace>/;
-	
-	#rule _object							=> q/[<_object_type_>] [<accessmod>] <_object_> <name> [<content>] \{/;
-	#rule _class								=> q/[<_object_type_>] [<accessmod>] prepared_class <name> [<content>] \{/;
-		
-	
-	
 	#rule _function_defs 					=> q/[<_object_type_>] [<accessmod>] <_function_> <name> [<string>] <endop>/;
 	rule _function 							=> q/[<_object_type_>] [<accessmod>] <_function_> <name> [<code_attr>] <block_brace>/;
 	rule _variable							=> q/[<_object_type_>] [<accessmod>] <_var_> <name> [<endop>]/;
@@ -364,7 +354,12 @@ sub confirm {
 	
 
 	
-
+	# rule _abstract							=> q/[<_object_type_>] [<accessmod>] <_abstract_> <name> [<content>] <block_brace>/;
+	# rule _interface							=> q/[<_object_type_>] [<accessmod>] <_interface_> <name> [<content>] <block_brace>/;
+	rule _namespace							=> q/[<_object_type_>] [<accessmod>] <_namespace_> <name> \{/;
+	rule _object							=> q/[<_object_type_>] [<accessmod>] <_object_> <name> [<content>] \{/;
+	#rule _class								=> q/[<_object_type_>] [<accessmod>] prepared_class <name> [<content>] \{/;
+	# rule _class								=> q/[<_object_type_>] [<accessmod>] <_class_> <name> [<content>] \{/;
 	
 	rule _op_dot							=> q/op_dot/;
 	
@@ -422,41 +417,41 @@ sub confirm {
 	action _prepare_variable_unnamedblock	=> \&_syntax_prepare_variable_unnamedblock;
 	
 	
-	#action _prepare_name_object				=> \&_syntax_prepare_name_object;
-	#
-	#	#action _prepare_namespace 				=> \&_syntax_prepare_namespace;
-	#	#action _prepare_class 					=> \&_syntax_prepare_class;
-	#
-	#	#action _function_defs 					=> \&_syntax_function_defs;
-	#	
-	#	
+	action _prepare_name_object				=> \&_syntax_prepare_name_object;
+	
+		#action _prepare_namespace 				=> \&_syntax_prepare_namespace;
+		#action _prepare_class 					=> \&_syntax_prepare_class;
+	
+		#action _function_defs 					=> \&_syntax_function_defs;
+		
+		
 	action _namespace 						=> \&_syntax_namespace;
-	#action _object 							=> \&_syntax_object;
-	#	
-	#	
-	#action _function 						=> \&_syntax_function;
-	#action _variable 						=> \&_syntax_variable;
-	#action _constant 						=> \&_syntax_constant;
-	#
-	#
-	#
-	#	#action _variable_boost					=> \&_syntax_variable_boost;
-	#
-	#
-	#	#action _class 							=> \&_syntax_class;
-	#	#action _abstract 						=> \&_syntax_abstract;
-	#	#action _interface 						=> \&_syntax_interface;
-	#
-	#action _op_dot							=> \&_syntax_op_dot;
-	#
-	#
-	#
-	#action _optimise4		 				=> \&_syntax_optimise4;
-	#action _optimise5		 				=> \&_syntax_optimise5;
-	#action _optimise6		 				=> \&_syntax_optimise6;
-	#action _including						=> \&_syntax_including;
-	#
-	#action _commentC 						=> \&_syntax_commentC;
+	action _object 							=> \&_syntax_object;
+		
+		
+	action _function 						=> \&_syntax_function;
+	action _variable 						=> \&_syntax_variable;
+	action _constant 						=> \&_syntax_constant;
+	
+	
+	
+		#action _variable_boost					=> \&_syntax_variable_boost;
+	
+	
+		#action _class 							=> \&_syntax_class;
+		#action _abstract 						=> \&_syntax_abstract;
+		#action _interface 						=> \&_syntax_interface;
+	
+	action _op_dot							=> \&_syntax_op_dot;
+	
+	
+	
+	action _optimise4		 				=> \&_syntax_optimise4;
+	action _optimise5		 				=> \&_syntax_optimise5;
+	action _optimise6		 				=> \&_syntax_optimise6;
+	action _including						=> \&_syntax_including;
+	
+	action _commentC 						=> \&_syntax_commentC;
 
 }
 
