@@ -161,7 +161,14 @@ sub action {
 }
 
 sub parse {
-	(my $self, my $source, &grammar, my $rule_name_selected, my $confs,  @_)	= __class_ref(@_);
+	my $self;
+	my $source;
+	my $rule_name_selected;
+	my $confs;
+	
+	($self, $source, &grammar, $rule_name_selected, $confs,  @_)	= __class_ref(@_);
+	
+	#print ">>>>>>>>>>>>>>>>>>> $rule_name_selected - ".dump($confs)."\n" if $rule_name_selected;
 	
 	#my $source				= $_[0];
 	#&grammar				= $_[1] if $_[1];
@@ -175,11 +182,12 @@ sub parse {
 	#my $info				= '';
 	my $passed 				= 0;
 	
-	my @order				= ($rule_name_selected)||&order;
+	#my @order				= ($rule_name_selected)||&order;
+	my @order				= ($rule_name_selected)||('_namespace');
 	
 	#&grammar->{TOKEN}		= compile_RBNF(&grammar->{TOKEN});
 	#&grammar->{RULE}		= compile_RBNF(&grammar->{RULE}, &grammar->{TOKEN});
-	&grammar->{RULE}		= compile_RBNF(&grammar->{RULE});
+	#&grammar->{RULE}		= compile_RBNF(&grammar->{RULE});
 	
 	eval {
 		map {
@@ -228,7 +236,8 @@ sub parse {
 			#} while ($source =~ m/$rule/sx && $source ne $last_sourse);
 			
 			#do { $source =~ s/$rule/__parse($rule_name, $source, \$last_sourse, \$passed)/gmsxe; } while ($source =~ m/$rule/sx && $source ne $last_sourse);
-			1 while $source ne $last_sourse && $source =~ s/$rule/__parse($rule_name, $source, \$last_sourse, \$passed)/gmsxe;
+			#1 while $source ne $last_sourse && $source =~ s/$rule/__parse($rule_name, $source, $confs, \$last_sourse, \$passed)/msxe;
+			$source =~ s/$rule/__parse($rule_name, $source, $confs, \$last_sourse, \$passed)/gmsxe if $source ne $last_sourse;
 			#$source = __parse_helper($rule_name, $rule, $source, \$last_sourse, \$passed);
 			
 			
@@ -237,8 +246,8 @@ sub parse {
 			#
 			#$info .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $passed . " ] : PASSED\n" if $passed;
 			
-			$info_rule->{$rule_name} += $passed;
-			$passed = 0;
+			$info_rule->{$rule_name}	+= $passed;
+			$passed						= 0;
 		
 		} @order;
 	};
@@ -270,11 +279,13 @@ sub __parse_helper {
 }
 
 sub __parse {
-	my ($rule_name, $source, $last_sourse, $passed) = @_;
+	my ($rule_name, $source, $confs, $last_sourse, $passed) = @_;
 	my $res			= '';
 	
+	#print ">>>>>>>>>>>>>>>>>>> $rule_name - ".dump($confs)."\n" if $rule_name;
+	
 	$$passed++;
-	$res			= (exists &grammar->{ACTION}{$rule_name} ? __action($rule_name) : __rule(__PACKAGE__, $rule_name));
+	$res			= (exists &grammar->{ACTION}{$rule_name} ? __action($rule_name, $confs) : __rule(__PACKAGE__, $rule_name));
 	$$last_sourse	= $source;
 	
 	return $res;
@@ -376,13 +387,17 @@ sub off__token {
 
 sub __action {
 	my $action 		= shift;
+	my $confs		= shift;
+	
 	my $res;
 	my $sps;
 	my $rule_list	= rule_list();
 	
+	#print ">>>>>>>>>>>>>>>>>>> $action - ".dump($confs)."\n" if $action;
+	
 	__save_rule_last_var();
 	
-	$res = &{&grammar->{ACTION}{$action}}; # or __error('"the action \"'.$action.'\" not correct $file at line $line from $file\n"');
+	$res = &grammar->{ACTION}{$action}($action, $confs); # or __error('"the action \"'.$action.'\" not correct $file at line $line from $file\n"');
 
 	
 	$res =~ s/\.\.\./$sps++; &grammar->{RULE_LAST_VAR}{SPS}[$sps] || ''/gsxe;
@@ -401,6 +416,8 @@ sub __compile_RBNF {
 	my ($rule_name, $rule, $rule_list, $keyword_list)			= @_;
 	#my $kw_list						= &grammar->{KW_LIST};
 	#my $keyword_list						= keyword_list();
+	
+	$rule ||= '';
 	
 	$rule							=~ s/^(?<!\_)($keyword_list)$/\\b$1\\b/gsx;
 	$rule							=~ s/(?<!\(\?\<)($rule_list)(?!\>)/__compile_RBNF($1, rule($1), $rule_list, $keyword_list)/gsxe if $rule ne ($1||'');

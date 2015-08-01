@@ -5,7 +5,7 @@ use warnings;
 use v5.008;
 use utf8;
 
-#use Data::Dump 'dump';
+use Data::Dump 'dump';
 
 use lib '../lib/rise/';
 
@@ -345,10 +345,13 @@ sub confirm {
 	# rule _prepare_namespace					=> q/[<accessmod>] <_namespace_> <name> \{/;
 	#rule _prepare_class						=> q/[<accessmod>] <_class_> <name> [<args_attr>] \{/;
 	
+	#rule _namespace							=> q/[<_object_type_>] [<accessmod>] <_namespace_> <name> <block_brace>/;
+	#rule _namespace							=> q/[<_object_type_>] [<accessmod>] <_namespace_> <name> \{/;
+	
 	rule _namespace							=> q/<namespace> <name> <block_brace>/;
 	rule _class								=> q/[<accessmod>] <class> <name> [<content>] <block_brace>/;
-	rule _abstract							=> q/[<accessmod>] <abstract> <name> [<content>] <block_brace>/;
-	rule _interface							=> q/[<accessmod>] <interface> <name> [<content>] <block_brace>/;
+	#rule _abstract							=> q/[<accessmod>] <abstract> <name> [<content>] <block_brace>/;
+	#rule _interface							=> q/[<accessmod>] <interface> <name> [<content>] <block_brace>/;
 	
 	#rule _object							=> q/[<_object_type_>] [<accessmod>] <_object_> <name> [<content>] \{/;
 	#rule _class								=> q/[<_object_type_>] [<accessmod>] prepared_class <name> [<content>] \{/;
@@ -423,40 +426,42 @@ sub confirm {
 	
 	
 	#action _prepare_name_object				=> \&_syntax_prepare_name_object;
-	#
-	#	#action _prepare_namespace 				=> \&_syntax_prepare_namespace;
-	#	#action _prepare_class 					=> \&_syntax_prepare_class;
-	#
-	#	#action _function_defs 					=> \&_syntax_function_defs;
-	#	
-	#	
+	
+		#action _prepare_namespace 				=> \&_syntax_prepare_namespace;
+		#action _prepare_class 					=> \&_syntax_prepare_class;
+	
+		#action _function_defs 					=> \&_syntax_function_defs;
+		
+		
 	action _namespace 						=> \&_syntax_namespace;
 	#action _object 							=> \&_syntax_object;
-	#	
-	#	
-	#action _function 						=> \&_syntax_function;
-	#action _variable 						=> \&_syntax_variable;
-	#action _constant 						=> \&_syntax_constant;
-	#
-	#
-	#
-	#	#action _variable_boost					=> \&_syntax_variable_boost;
-	#
-	#
-	#	#action _class 							=> \&_syntax_class;
-	#	#action _abstract 						=> \&_syntax_abstract;
-	#	#action _interface 						=> \&_syntax_interface;
-	#
-	#action _op_dot							=> \&_syntax_op_dot;
-	#
-	#
-	#
-	#action _optimise4		 				=> \&_syntax_optimise4;
-	#action _optimise5		 				=> \&_syntax_optimise5;
-	#action _optimise6		 				=> \&_syntax_optimise6;
-	#action _including						=> \&_syntax_including;
-	#
-	#action _commentC 						=> \&_syntax_commentC;
+	
+		action _class 							=> \&_syntax_class;
+		#action _abstract 						=> \&_syntax_abstract;
+		#action _interface 						=> \&_syntax_interface;	
+		
+		
+	action _function 						=> \&_syntax_function;
+	action _variable 						=> \&_syntax_variable;
+	action _constant 						=> \&_syntax_constant;
+	
+	
+	
+		#action _variable_boost					=> \&_syntax_variable_boost;
+	
+	
+
+	
+	action _op_dot							=> \&_syntax_op_dot;
+	
+	
+	
+	action _optimise4		 				=> \&_syntax_optimise4;
+	action _optimise5		 				=> \&_syntax_optimise5;
+	action _optimise6		 				=> \&_syntax_optimise6;
+	action _including						=> \&_syntax_including;
+	
+	action _commentC 						=> \&_syntax_commentC;
 
 }
 
@@ -858,7 +863,254 @@ sub _syntax_prepare_namespace {
 }
 
 sub _syntax_namespace {
-	return "{ package <name>; use strict; use warnings;"
+	my $name			= &name;
+	my $block 			= &block_brace;
+	$block 				=~ s/\{(.*)\}/$1/gsx;
+	
+	#print ">>>>>> parent_class - ". &name ." | name - ".&name."\n";
+	
+	$block 				= parse($block, &grammar, '_class', { parent => $name });
+	
+	
+	return "{ package $name;... use strict; use warnings;... ... ...$block}"
+	#return "{ package <name>; use strict; use warnings;"
+}
+
+#-------------------------------------------------------------------------------------< class
+
+sub _syntax_prepare_class {
+	my $ns				= var('namespace');
+	my $accmod			= &accessmod;
+	my $object			= &_class_type_;
+	my $name			= &name;
+	my $args_attr		= &args_attr;
+	my $extends			= '';
+	my $kw_extends		= keyword 'inherits';
+	my $tk_name_list	= token 'name_list';
+	my ($parent_name)	= $name =~ m/(\w+(?:::\w+)*)::\w+/gsx; $parent_name ||= '';
+	my $comma			= '';
+	
+	$comma		= ',' if $args_attr =~ s/\_$kw_extends\_\s*($tk_name_list)/$1/gsx;
+	
+	$extends			= 'rise::object::class';
+	$extends			.= ", $parent_name" if $parent_name;
+	$extends			.= $comma;
+
+	$args_attr			= "_<kw_inherits>_ $extends $args_attr" if $extends;
+
+	return "${accmod}...prepared_class...<name>...${args_attr}...{";
+}
+
+sub _syntax_class {
+	
+	my ($rule_name, $confs)			= @_;
+	
+	my $accmod			= &accessmod || var 'accessmod';
+	#my $object			= &_class_type_;
+	my $name			= &name;
+	my $sname			= &name;
+	my $args_attr		= &content;
+	my $list_extends	= '';
+	my $list_implements	= '';
+	my $base_class		= "'rise::object::class'";
+	#my $class_ext		= '';
+	#my $class_iface		= '';
+	my $extends			= '';
+	my $implements		= '';
+	my $tk_name			= token 'name';
+	my $tk_name_list	= token 'name_list';
+	#my ($parent_class)	= $name =~ m/(\w+(?:::\w+)*)::\w+/gsx;
+
+	my $parent_class	= $confs->{parent};
+	my $comma			= '';
+	my $parent_name		= $confs->{parent} || 'main';
+	
+	my $block 			= &block_brace;
+	
+	my $res;
+	
+	$name				= $parent_name . '::' . $name;
+	
+	$block 				=~ s/\{(.*)\}/$1/gsx;
+	$block 				= parse($block, &grammar, '_class', { parent => $name });
+	
+	$sname				=~ s/\w+(?:::\w+)*::(\w+)/$1/gsx;
+	
+	$parent_class		= ",'$parent_class'" if $parent_class;
+	$parent_class 		||= '';
+	#$base_class		.= ", '$parent_class'" if $parent_class;
+	
+	print ">>>>>> accmod - $accmod | parent_class - $parent_name | name - $name\n";
+	
+	#$accmod				= ' _'.uc($accmod).'_CLASS_;';
+	$accmod				= var($accmod.'_class');
+	$accmod				= eval $accmod if $accmod ne '';
+	#$accmod				= $accmod . '("' . $name . '", "' . $parent_name .'");' if $accmod ne '';
+	
+	#$base_class		= "'rise::object::class'" if &_class_type_ eq '_base_';
+	
+	#($list_implements)		= $args_attr =~ m/\_implements\_\s*($tk_name_list)/gsx;
+	#	$list_implements		=~ s/\s*\,\s*/','/gsx if $list_implements;
+	#	$list_implements		= "'$list_implements'" if $list_implements;
+	#	$list_implements		||= '';
+		
+	#$list_implements			= list_extends($args_attr);
+		
+		#$implements				= " use rise::core::implements  $list_implements;" if $list_implements ne '';
+		#$implements				.= ' __PACKAGE__->interface_confirm if %IMPORT_INTERFACELIST;' if $list_implements ne ''; # && &_class_type_ eq ('_class_'||'_base_');
+		#$implements				.= ' __PACKAGE__->interface_confirm;' if $list_implements ne ''; # && &_class_type_ eq ('_class_'||'_base_');
+		#$implements				.= ' __PACKAGE__->interface_confirm("'.(var('members')->{$name}||'').'");' if $list_implements ne ''; # && &_class_type_ eq ('_class_'||'_base_');
+		
+		#
+		#$implement_list			= $interface_list;
+		#$implement_list			=~ s/\,/','/gsx;
+		#$implements				= "; use rise::core::implements '" . $implement_list . "'" if $interface_list ne '';
+		#$implements				.= '; __PACKAGE__->interface_confirm if %IMPORT_INTERFACELIST' if $interface_list ne '' && $tp eq 'class';
+
+	#($list_extends)			= $args_attr =~ m/\_extends\_\s*($tk_name_list)/gsx;
+	#	$list_extends			=~ s/\s*\,\s*/','/gsx if $list_extends;
+	#	$list_extends			= "'$list_extends'" if $list_extends;
+	#	$list_extends			||= '';
+		
+	$list_extends				= list_extends($args_attr);
+		
+		#$comma					= ',' if $list_extends;
+		$extends				= "use rise::core::extends $base_class$parent_class$list_extends;";
+	
+	#if (&_class_type_ eq '_base_' || $extends_list ne '') {
+	#	$extends			= " use rise::core::extends $parent_class $extends_list;";
+	#}
+
+	#$extends			.= "$parent_class$extends_list";
+	#$extends			.= '; ' if $extends;
+	
+	#print "########## $object EXT $extends - IMPL $implements ########\n";
+	
+	
+	
+	#$extends				= "use rise::core::extends '" . $parent_list . "'$class_ext";
+	#$$implements			= "use rise::core::implements  '"
+	
+	#return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' }...";
+	#return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
+	#return "{ package <name>; ".var('env')."->{caller}{parent} = '${parent_name}'; ".var('env')."->{caller}{name} = __PACKAGE__; ".var('env')."->{caller}{type} = 'class'; ...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
+	$res =  "{ package ${name}; use strict; use warnings; ...${extends}...${accmod}...__PACKAGE__->interface_confirm; sub super { \$${name}::ISA[1] } sub <kw_self> { '${name}' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...$block}";
+	#return "{ package <name>; my \$__caller__ = '<name>';...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
+	
+	
+	
+	return $res;
+}
+
+sub _syntax_class_OFF {
+	my $accmod			= &accessmod || var 'accessmod';;
+	#my $object			= &_class_type_;
+	my $name			= &name;
+	my $args_attr		= &content;
+	my $list_extends	= '';
+	my $list_implements	= '';
+	my $parent_class	= '';
+	#my $class_ext		= '';
+	#my $class_iface		= '';
+	my $extends			= '';
+	my $implements		= '';
+	my $tk_name			= token 'name';
+	my $tk_name_list	= token 'name_list';
+	
+	my $comma			= '';
+	
+	#$accmod				= ' _'.uc($accmod).'_CLASS_;';
+	$accmod				= var($accmod.'_class');
+	
+	#$parent_class		= "'rise::object::class'" if &_class_type_ eq '_base_';
+	
+	($list_extends)			= $args_attr =~ m/\_extends\_\s*($tk_name_list)/gsx;
+		$list_extends			=~ s/\s*\,\s*/','/gsx if $list_extends;
+		$list_extends			= "'$list_extends'" if $list_extends;
+		$list_extends			||= '';
+		#$comma					= ',' if $list_extends;
+		#$list_extends			= $parent_class . $comma . $list_extends;
+		$extends				= " use rise::core::extends $list_extends;";
+		
+	($list_implements)		= $args_attr =~ m/\_implements\_\s*($tk_name_list)/gsx;
+		$list_implements		=~ s/\s*\,\s*/','/gsx if $list_implements;
+		$list_implements		= "'$list_implements'" if $list_implements;
+		$list_implements		||= '';
+		
+		$implements				= " use rise::core::implements  $list_implements;" if $list_implements ne '';
+		$implements				.= ' __PACKAGE__->interface_confirm if %IMPORT_INTERFACELIST;' if $list_implements ne ''; # && &_class_type_ eq ('_class_'||'_base_');
+
+		
+		#
+		#$implement_list			= $interface_list;
+		#$implement_list			=~ s/\,/','/gsx;
+		#$implements				= "; use rise::core::implements '" . $implement_list . "'" if $interface_list ne '';
+		#$implements				.= '; __PACKAGE__->interface_confirm if %IMPORT_INTERFACELIST' if $interface_list ne '' && $tp eq 'class';
+
+	
+	#if (&_class_type_ eq '_base_' || $extends_list ne '') {
+	#	$extends			= " use rise::core::extends $parent_class $extends_list;";
+	#}
+
+	#$extends			.= "$parent_class$extends_list";
+	#$extends			.= '; ' if $extends;
+	
+	#print "########## $object EXT $extends - IMPL $implements ########\n";
+	
+	
+	
+	#$extends				= "use rise::core::extends '" . $parent_list . "'$class_ext";
+	#$$implements			= "use rise::core::implements  '"
+	
+	return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub <kw_self> { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
+	
+}
+
+
+
+
+sub _syntax_prepare_class_helper {
+	my ($name, $block) = @_;
+	
+
+	
+	my $tk_accessmod	= token 'accessmod';
+	my $tk_class		= token 'class';
+	my $tk_name			= token 'name';
+	my $tk_name_list	= token 'name_list';
+	my $tk_extends		= token 'inherits';
+	my $tk_content		= token 'content';
+	my $tk_block		= token 'block_brace';
+	my $extends			= keyword('inherits').' '.$name;
+	
+	#var('anon_fn_count')++;
+	
+
+	
+	#my ($chk_anon_code)	= $block =~ m/$tk_class\s*($tk_name)?\s*$tk_content?\s*$tk_block/;
+	#
+	#if (!$chk_anon_code) {
+	#	var('anon_fn_count')++;
+	#	$name			= 'anon_code_'.var('anon_fn_count');
+	#}		
+	
+	$block				=~ s/\{(.*)\}/$1/gsx;
+	
+	$block				= "{###DIALECTCLASSHEAD###$block}";
+	
+	$block				=~ s/\b($tk_class)\s*($tk_name)\s*($tk_extends)?(\s*$tk_name_list)?/$1 $2 $extends/gsx;
+	#$block				=~ s/($tk_class)\s*($tk_name)\s*($tk_extends)?(\s*$tk_name_list)?/$1 $2 <kw_inherits> $name/gsx;
+	$block 				=~ s/\b($tk_accessmod)?\s*($tk_class)\s*($tk_name)\s*($tk_content)\s*($tk_block)/($1||var('accessmod')).' _'.$2.'_ '.$name.'::'.$3.' '.$4.' '._syntax_prepare_class_helper($name.'::'.$3, $5)/gsxe;
+	#$block 				=~ s/\b(?:$tk_accessmod)?\s*($tk_class)\s*($tk_name)\s*($tk_content)\s*($tk_block)/'_'.$1.'_ '.$name.'::'.$2.' '.$3.' '._syntax_prepare_class_helper($name.'::'.$2, $4)/gsxe;
+	
+	#if ($block !~ s/($tk_class)\s*($tk_name)\s*($tk_content)\s*($tk_block)/$1.' '.$name.'::'.$2.' '.$3.' '._prepare_class_helper($name.'::'.$2, $4)/gsxe){
+	#	$block			=~ s/\{(.*)\}/$1/gsx;
+	#	$block			=~ s/($tk_block)/_prepare_class_helper($name, $1)/gsxe;
+	#}
+	
+	
+	
+	return $block;
 }
 
 #-------------------------------------------------------------------------------------< interface
@@ -1041,30 +1293,7 @@ sub _syntax_abstract {
 	return "{ package <name>; use strict; use warnings;...$extends...$accmod... __PACKAGE__->interface_join; $block}";
 }
 
-#-------------------------------------------------------------------------------------< class
-
-sub _syntax_prepare_class {
-	my $ns				= var('namespace');
-	my $accmod			= &accessmod;
-	my $object			= &_class_type_;
-	my $name			= &name;
-	my $args_attr		= &args_attr;
-	my $extends			= '';
-	my $kw_extends		= keyword 'inherits';
-	my $tk_name_list	= token 'name_list';
-	my ($parent_name)	= $name =~ m/(\w+(?:::\w+)*)::\w+/gsx; $parent_name ||= '';
-	my $comma			= '';
-	
-	$comma		= ',' if $args_attr =~ s/\_$kw_extends\_\s*($tk_name_list)/$1/gsx;
-	
-	$extends			= 'rise::object::class';
-	$extends			.= ", $parent_name" if $parent_name;
-	$extends			.= $comma;
-
-	$args_attr			= "_<kw_inherits>_ $extends $args_attr" if $extends;
-
-	return "${accmod}...prepared_class...<name>...${args_attr}...{";
-}
+#-------------------------------------------------------------------------------------< object
 
 sub _syntax_object {
 	my $accmod			= &accessmod || var 'accessmod';
@@ -1119,201 +1348,6 @@ sub __object_header {
 	return $header->{$obj_type};
 }
 
-sub _syntax_class {
-	my $accmod			= &accessmod || var 'accessmod';
-	#my $object			= &_class_type_;
-	my $name			= &name;
-	my $sname			= $name;
-	my $args_attr		= &content;
-	my $list_extends	= '';
-	my $list_implements	= '';
-	my $base_class		= "'rise::object::class'";
-	#my $class_ext		= '';
-	#my $class_iface		= '';
-	my $extends			= '';
-	my $implements		= '';
-	my $tk_name			= token 'name';
-	my $tk_name_list	= token 'name_list';
-	my ($parent_class)	= $name =~ m/(\w+(?:::\w+)*)::\w+/gsx;
-	my $comma			= '';
-	my $parent_name		= $parent_class || 'main';
-	
-	$sname				=~ s/\w+(?:::\w+)*::(\w+)/$1/gsx;
-	
-	$parent_class		= ",'$parent_class'" if $parent_class;
-	$parent_class 		||= '';
-	#$base_class		.= ", '$parent_class'" if $parent_class;
-	
-	print ">>>>>> accmod - $accmod | base_class - $base_class | name - $name\n";
-	
-	#$accmod				= ' _'.uc($accmod).'_CLASS_;';
-	$accmod				= var($accmod.'_class');
-	$accmod				= eval $accmod if $accmod ne '';
-	#$accmod				= $accmod . '("' . $name . '", "' . $parent_name .'");' if $accmod ne '';
-	
-	#$base_class		= "'rise::object::class'" if &_class_type_ eq '_base_';
-	
-	#($list_implements)		= $args_attr =~ m/\_implements\_\s*($tk_name_list)/gsx;
-	#	$list_implements		=~ s/\s*\,\s*/','/gsx if $list_implements;
-	#	$list_implements		= "'$list_implements'" if $list_implements;
-	#	$list_implements		||= '';
-		
-	#$list_implements			= list_extends($args_attr);
-		
-		#$implements				= " use rise::core::implements  $list_implements;" if $list_implements ne '';
-		#$implements				.= ' __PACKAGE__->interface_confirm if %IMPORT_INTERFACELIST;' if $list_implements ne ''; # && &_class_type_ eq ('_class_'||'_base_');
-		#$implements				.= ' __PACKAGE__->interface_confirm;' if $list_implements ne ''; # && &_class_type_ eq ('_class_'||'_base_');
-		#$implements				.= ' __PACKAGE__->interface_confirm("'.(var('members')->{$name}||'').'");' if $list_implements ne ''; # && &_class_type_ eq ('_class_'||'_base_');
-		
-		#
-		#$implement_list			= $interface_list;
-		#$implement_list			=~ s/\,/','/gsx;
-		#$implements				= "; use rise::core::implements '" . $implement_list . "'" if $interface_list ne '';
-		#$implements				.= '; __PACKAGE__->interface_confirm if %IMPORT_INTERFACELIST' if $interface_list ne '' && $tp eq 'class';
-
-	#($list_extends)			= $args_attr =~ m/\_extends\_\s*($tk_name_list)/gsx;
-	#	$list_extends			=~ s/\s*\,\s*/','/gsx if $list_extends;
-	#	$list_extends			= "'$list_extends'" if $list_extends;
-	#	$list_extends			||= '';
-		
-	$list_extends				= list_extends($args_attr);
-		
-		#$comma					= ',' if $list_extends;
-		$extends				= "use rise::core::extends $base_class$parent_class$list_extends;";
-	
-	#if (&_class_type_ eq '_base_' || $extends_list ne '') {
-	#	$extends			= " use rise::core::extends $parent_class $extends_list;";
-	#}
-
-	#$extends			.= "$parent_class$extends_list";
-	#$extends			.= '; ' if $extends;
-	
-	#print "########## $object EXT $extends - IMPL $implements ########\n";
-	
-	
-	
-	#$extends				= "use rise::core::extends '" . $parent_list . "'$class_ext";
-	#$$implements			= "use rise::core::implements  '"
-	
-	#return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' }...";
-	#return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
-	#return "{ package <name>; ".var('env')."->{caller}{parent} = '${parent_name}'; ".var('env')."->{caller}{name} = __PACKAGE__; ".var('env')."->{caller}{type} = 'class'; ...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
-	return "{ package <name>; use strict; use warnings;...${extends}...${accmod}...__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } sub <kw_self> { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
-	#return "{ package <name>; my \$__caller__ = '<name>';...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
-	
-}
-
-sub _syntax_class_OFF {
-	my $accmod			= &accessmod || var 'accessmod';;
-	#my $object			= &_class_type_;
-	my $name			= &name;
-	my $args_attr		= &content;
-	my $list_extends	= '';
-	my $list_implements	= '';
-	my $parent_class	= '';
-	#my $class_ext		= '';
-	#my $class_iface		= '';
-	my $extends			= '';
-	my $implements		= '';
-	my $tk_name			= token 'name';
-	my $tk_name_list	= token 'name_list';
-	
-	my $comma			= '';
-	
-	#$accmod				= ' _'.uc($accmod).'_CLASS_;';
-	$accmod				= var($accmod.'_class');
-	
-	#$parent_class		= "'rise::object::class'" if &_class_type_ eq '_base_';
-	
-	($list_extends)			= $args_attr =~ m/\_extends\_\s*($tk_name_list)/gsx;
-		$list_extends			=~ s/\s*\,\s*/','/gsx if $list_extends;
-		$list_extends			= "'$list_extends'" if $list_extends;
-		$list_extends			||= '';
-		#$comma					= ',' if $list_extends;
-		#$list_extends			= $parent_class . $comma . $list_extends;
-		$extends				= " use rise::core::extends $list_extends;";
-		
-	($list_implements)		= $args_attr =~ m/\_implements\_\s*($tk_name_list)/gsx;
-		$list_implements		=~ s/\s*\,\s*/','/gsx if $list_implements;
-		$list_implements		= "'$list_implements'" if $list_implements;
-		$list_implements		||= '';
-		
-		$implements				= " use rise::core::implements  $list_implements;" if $list_implements ne '';
-		$implements				.= ' __PACKAGE__->interface_confirm if %IMPORT_INTERFACELIST;' if $list_implements ne ''; # && &_class_type_ eq ('_class_'||'_base_');
-
-		
-		#
-		#$implement_list			= $interface_list;
-		#$implement_list			=~ s/\,/','/gsx;
-		#$implements				= "; use rise::core::implements '" . $implement_list . "'" if $interface_list ne '';
-		#$implements				.= '; __PACKAGE__->interface_confirm if %IMPORT_INTERFACELIST' if $interface_list ne '' && $tp eq 'class';
-
-	
-	#if (&_class_type_ eq '_base_' || $extends_list ne '') {
-	#	$extends			= " use rise::core::extends $parent_class $extends_list;";
-	#}
-
-	#$extends			.= "$parent_class$extends_list";
-	#$extends			.= '; ' if $extends;
-	
-	#print "########## $object EXT $extends - IMPL $implements ########\n";
-	
-	
-	
-	#$extends				= "use rise::core::extends '" . $parent_list . "'$class_ext";
-	#$$implements			= "use rise::core::implements  '"
-	
-	return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub <kw_self> { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
-	
-}
-
-
-
-
-sub _syntax_prepare_class_helper {
-	my ($name, $block) = @_;
-	
-
-	
-	my $tk_accessmod	= token 'accessmod';
-	my $tk_class		= token 'class';
-	my $tk_name			= token 'name';
-	my $tk_name_list	= token 'name_list';
-	my $tk_extends		= token 'inherits';
-	my $tk_content		= token 'content';
-	my $tk_block		= token 'block_brace';
-	my $extends			= keyword('inherits').' '.$name;
-	
-	#var('anon_fn_count')++;
-	
-
-	
-	#my ($chk_anon_code)	= $block =~ m/$tk_class\s*($tk_name)?\s*$tk_content?\s*$tk_block/;
-	#
-	#if (!$chk_anon_code) {
-	#	var('anon_fn_count')++;
-	#	$name			= 'anon_code_'.var('anon_fn_count');
-	#}		
-	
-	$block				=~ s/\{(.*)\}/$1/gsx;
-	
-	$block				= "{###DIALECTCLASSHEAD###$block}";
-	
-	$block				=~ s/\b($tk_class)\s*($tk_name)\s*($tk_extends)?(\s*$tk_name_list)?/$1 $2 $extends/gsx;
-	#$block				=~ s/($tk_class)\s*($tk_name)\s*($tk_extends)?(\s*$tk_name_list)?/$1 $2 <kw_inherits> $name/gsx;
-	$block 				=~ s/\b($tk_accessmod)?\s*($tk_class)\s*($tk_name)\s*($tk_content)\s*($tk_block)/($1||var('accessmod')).' _'.$2.'_ '.$name.'::'.$3.' '.$4.' '._syntax_prepare_class_helper($name.'::'.$3, $5)/gsxe;
-	#$block 				=~ s/\b(?:$tk_accessmod)?\s*($tk_class)\s*($tk_name)\s*($tk_content)\s*($tk_block)/'_'.$1.'_ '.$name.'::'.$2.' '.$3.' '._syntax_prepare_class_helper($name.'::'.$2, $4)/gsxe;
-	
-	#if ($block !~ s/($tk_class)\s*($tk_name)\s*($tk_content)\s*($tk_block)/$1.' '.$name.'::'.$2.' '.$3.' '._prepare_class_helper($name.'::'.$2, $4)/gsxe){
-	#	$block			=~ s/\{(.*)\}/$1/gsx;
-	#	$block			=~ s/($tk_block)/_prepare_class_helper($name, $1)/gsxe;
-	#}
-	
-	
-	
-	return $block;
-}
-#-------------------------------------------------------------------------------------< object
 sub _syntax_prepare_name_object {
 	
 	my $accmod			= &accessmod || var 'accessmod';
