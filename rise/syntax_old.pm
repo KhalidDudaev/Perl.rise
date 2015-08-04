@@ -220,7 +220,8 @@ sub confirm {
 	#token code_attr					=> q/(?:\(\W*\))?(?:\:\s*content\s*)?/;
 	#token code_attr					=> q/(?:\(\W*\))?(\:[\w\s\(\)\,]+)?/;
 	#token code_attr					=> q/(?:\:\s*content\s*)/;
-	token code_attr					=> q/(?:[^\{\}\n]*)?/;
+	token code_attr					=> q/(?:\:content)+/;
+	#token code_attr					=> q/(?:[^\{\}\n]*)?/;
 	token code_args					=> q/\(content\)/;
 	
 	token args_attr					=> q/(?:[^\{\}](?!object|accessmod))*/;

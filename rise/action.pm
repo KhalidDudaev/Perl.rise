@@ -12,6 +12,8 @@ no strict 'subs';
 
 use lib '../lib/rise/';
 
+#use rise::grammar qw/:simple/;
+
 our $VERSION = '0.000';
 our $conf							= {};
 
