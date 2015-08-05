@@ -80,7 +80,8 @@ sub confirm {
 	
 	$PARSER->{variable}			= [
 		'_prepare_variable_list',
-		'_unnamedblock',
+		#'_unnamedblock',
+		#'_optimise6',
 		'_variable',
 		'_constant'
 	];
@@ -117,6 +118,16 @@ sub confirm {
 		_interface
 	/];
 	
+	$PARSER->{_}			= [
+		'_excluding',
+		@{$PARSER->{namespace}},
+		'_op_dot',
+		'_optimise4',
+		'_optimise5',
+		#'_optimise6',
+		'_including',
+		'_commentC'
+	];
 
 	
 	#$PARSER->{function}				= [qw/
@@ -500,7 +511,7 @@ sub confirm {
 	#action _var_boost_post1					=> \&_syntax_var_boost_post1;
 	#action _var_boost_post2					=> \&_syntax_var_boost_post2;
 	
-	action _unnamedblock					=> \&_syntax_prepare_variable_unnamedblock;
+	action _unnamedblock					=> \&_syntax_unnamedblock;
 	
 	
 	#action _prepare_name_object				=> \&_syntax_prepare_name_object;
@@ -542,16 +553,7 @@ sub confirm {
 	action _commentC 						=> \&_syntax_commentC;
 	
 	
-	order = [qw/
-		_excluding/,
-		@{$PARSER->{namespace}},
-		qw/_op_dot
-		_optimise4
-		_optimise5
-		_optimise6
-		_including
-		_commentC
-	/];
+	order = $PARSER->{_};
 	
 	#print dump(order);
 	#print rule('_function');
@@ -797,6 +799,7 @@ sub _syntax_function {
 	my $parent_class	= $confs->{parent};
 	my $parent_name		= $confs->{parent} || 'main';
 	my $fn_name			= &name;
+	my ($s1,$s2,$s3,$s4) = (&sps1,&sps2,&sps3,&sps4);
 	my $anon_code		= '';
 	my $arguments		= '';
 	my $self_args		= '<kw_self>';
@@ -834,7 +837,7 @@ sub _syntax_function {
 	#$block 				= __code($block, { parent => $name });
 	#print "############# $name - $attr\n";
 	
-	return "${anon_code}{ package ${name}; use strict; use warnings; use rise::core::extends 'rise::object::function', '${parent_name}'; use rise::core::function; sub ...${fn_name}...${attr}...{ ${accmod} ${arguments}...${block}}}";
+	return "${anon_code}{ package ${name}; use strict; use warnings; use rise::core::extends 'rise::object::function', '${parent_name}'; use rise::core::function; sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}";
 }
 
 sub _syntax_prepare_function_args {
@@ -865,8 +868,9 @@ sub _syntax_prepare_function_post {
 	return $function;
 }
 #-------------------------------------------------------------------------------------< variable
-sub _syntax_prepare_variable_unnamedblock {
+sub _syntax_unnamedblock {
 	my $block			= &block_brace;
+	my $unblk_pref		= &unblk_pref;
 	
 	my $tk_accmod		= token 'accessmod';
 	my $tk_var			= token 'variable';
@@ -876,7 +880,7 @@ sub _syntax_prepare_variable_unnamedblock {
 	
 	$block 				=~ s/\b(?:$tk_accmod)?\s*($tk_var|$tk_const)/local $1/gsx;
 	
-	return "<unblk_pref>_UNNAMEDBLOCK_$block";
+	return "${unblk_pref}_UNNAMEDBLOCK_${block}";
 	
 }
 
@@ -1010,6 +1014,8 @@ sub _syntax_namespace {
 	my $parent_name		= $confs->{parent};
 	my $block 			= &block_brace;
 	
+	my ($s1,$s2,$s3,$s4) = (&sps1,&sps2,&sps3,&sps4);
+	
 	$name				= $parent_name . '::' . $name if $parent_name;
 	
 	$block 				=~ s/\{(.*)\}/$1/gsx;
@@ -1024,7 +1030,7 @@ sub _syntax_namespace {
 	#$block				= parse($block, grammar, ['_interface'], { parent => $name });
 	
 	
-	return "{ package $name;... use strict; use warnings;... ... ...$block}"
+	return "{ package $name;$s1 use strict; use warnings;$s2 $s3 $s4$block}"
 	#return "{ package <name>; use strict; use warnings;"
 }
 
@@ -1071,6 +1077,8 @@ sub _syntax_class {
 	my $parent_class	= $confs->{parent};
 	my $parent_name		= $confs->{parent} || 'main';
 	
+	my ($s1,$s2,$s3,$s4) = (&sps1,&sps2,&sps3,&sps4);
+	
 	my $tk_name			= token 'name';
 	my $tk_name_list	= token 'name_list';
 	
@@ -1111,7 +1119,7 @@ sub _syntax_class {
 	$extends			= "use rise::core::extends ${base_class}${parent_class}${list_extends};";
 	
 	#return "{ package <name>; use strict; use warnings;...${extends}...${accmod}...__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
-	return "{ package ${name}; use strict; use warnings;...${extends}...${accmod}..." . __object_header('class', $name || '') . "...${block} }";
+	return "{ package ${name}; use strict; use warnings;${s1}${extends}${s2}${accmod}${s3}" . __object_header('class', $name || '') . "${s4}${block} }";
 	
 }
 

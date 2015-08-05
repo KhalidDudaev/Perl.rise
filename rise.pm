@@ -163,7 +163,7 @@ sub __assembly {
 	if ($code_dialect) {
 		&__syntax->{RULE}		= $grammar->compile_RBNF(&__syntax->{RULE});
 		($code_perl, $info)		= __parse($code_dialect, &__syntax);
-		$code_perl .= "1;";
+		$code_perl .= "\n1;";
 		__file('write', $fname_perl, $code_perl);
 	}
 	#print "$info";
