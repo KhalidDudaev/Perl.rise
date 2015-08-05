@@ -160,7 +160,7 @@ sub action {
 
 	if ($code) {
 		grammar->{ACTION}{$action} = $code;
-		#push @{grammar->{ORDER}}, $action;
+		push @{grammar->{ORDER}}, $action;
 	}
 	
 	if (exists grammar->{ACTION}{$action} && !$code) { 

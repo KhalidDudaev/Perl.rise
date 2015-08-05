@@ -78,19 +78,20 @@ sub confirm {
 	var('protected_code')			= q/'__PACKAGE__->protected_code("' . $parent_name . '", "' . $sname .'");'/;
 	var('public_code')				= '';
 	
-	
-	$PARSER->{function}				= [qw/
-		_function_defs
-		_function
-		_function2method			
-	/];
-	
-	$PARSER->{variable}			= [qw/
-		_prepare_variable_list
-		_prepare_variable_unnamedblock
-		_variable
-		_constant
-	/];
+	$PARSER->{variable}			= [
+		'_prepare_variable_list',
+		#'_prepare_variable_unnamedblock',
+		'_variable',
+		'_constant'
+	];
+		
+	$PARSER->{function}				= [
+		'_function_defs',
+		#'_prepare_function',
+		#'_prepare_function_post',
+		'_function',
+		'_function2method'			
+	];
 	
 	$PARSER->{code}					= [qw/
 		_foreach
@@ -100,17 +101,23 @@ sub confirm {
 		@{$PARSER->{variable}}
 	];
 	
+	$PARSER->{class}				= [qw/
+		_class
+		_inject
+		_using/,
+		@{$PARSER->{code}}
+	];
+	
 	$PARSER->{namespace}			= [qw/
 		_namespace
+		_inject
+		_using
 		_class
 		_abstract
 		_interface
 	/];
 	
-	$PARSER->{class}				= [
-		'_class',
-		@{$PARSER->{code}}
-	];
+
 	
 	#$PARSER->{function}				= [qw/
 	#	_function	
@@ -217,6 +224,8 @@ sub confirm {
 	token ident						=> q/letter*/;
 	token word						=> q/letter+/;
 	#token word						=> q/letter\w*/;
+	#token word						=> q/ident/;
+	
 	token number					=> q/digit+/;
 	#token letter					=> q/(?!nletter+|digit+)?\w/;
 	#token letter					=> q/[^\W\d]\w/;
@@ -280,9 +289,13 @@ sub confirm {
 	
 	#token code_attr					=> q/(?:\(\W*\))?(?:\:\s*content\s*)?/;
 	#token code_attr					=> q/(?:\(\W*\))?(?:\:[\w\s\(\)\,]+)?/;
+	#token code_attr					=> q/(?:\:\s*content\s*)/;	
 	#token code_attr					=> q/(?:\:\s*content)/;
+	#token code_attr					=> q/(?:\:content)+/;
+	token code_attr					=> q/(?:\:\s*word\s*)*/;	
 	#token code_attr					=> q/(?:[^\{\}\n]*)?/;
-	token code_attr					=> q/(?:\s*\:\s*word\s*)*/;
+	#token code_attr					=> q/[^\{\}\n]*/;
+	
 	token code_args					=> q/\(content\)/;
 	
 	token args_attr					=> q/(?:[^\{\}](?!object|accessmod))*/;
@@ -541,6 +554,7 @@ sub confirm {
 	/];
 	
 	#print dump(order);
+	print rule('_function');
 
 }
 
@@ -585,15 +599,15 @@ sub parse_parser_if {
 	return $res;
 }
 
-sub list_extends {
+sub __list_extends {
 	my $args_attr				= shift;
 	my $tk_name_list			= token 'name_list';
 	my $list_extends;
 	my $list_implements;
 	my $comma					= '';
 	
-	($list_extends)				= $args_attr =~ m/\_extends\_\s*($tk_name_list)/gsx;
-	($list_implements)			= $args_attr =~ m/\_implements\_\s*($tk_name_list)/gsx;
+	($list_extends)				= $args_attr =~ m/extends\s*($tk_name_list)/gsx;
+	($list_implements)			= $args_attr =~ m/implements\s*($tk_name_list)/gsx;
 	
 	$comma						= ',' if $list_extends;
 	
@@ -732,7 +746,9 @@ sub _syntax_anon_func2method { '<anon_func_all>.(__PACKAGE__, ' }
 
 sub _syntax_func2method_post { '__PACKAGE__)' }
 
-sub _syntax_prepare_function { 
+sub _syntax_prepare_function {
+	my ($rule_name, $confs)			= @_;
+	
 	my $accmod			= &accessmod || var('accessmod');
 	my $function		= &function;
 	my $name			= &name;
@@ -801,7 +817,7 @@ sub _syntax_function {
 		$self_args		= '';
 	}
 	
-	if ($args !~ m/\((\w+.*?)\)/sx) {
+	if ($args !~ m/\(\s*(\w+.*?)\)/sx) {
 		$attr = $args . $attr;
 		$args = '';
 	}
@@ -902,10 +918,13 @@ sub _syntax_prepare_variable {
 }
 
 sub _syntax_variable {
+	my ($rule_name, $confs)			= @_;
+	
 	my $accmod			= &accessmod || var 'accessmod';
 	my $name			= &name;
-	my $sname			= $name;
-	my $parent_name		= $name;
+	my $sname			= &name;
+	my $parent_class	= $confs->{parent};
+	my $parent_name		= $confs->{parent} || 'main';
 	my $boost_vars		= '';
 	my $or				= '';
 	my $local_var		= '';
@@ -913,7 +932,7 @@ sub _syntax_variable {
 	
 	$name				=~ s/\w+(?:::\w+)*::(\w+)/$1/gsx;
 	$sname				= $name;
-	$parent_name		=~ s/(\w+(?:::\w+)*)::\w+/$1/gsx;
+	#$parent_name		=~ s/(\w+(?:::\w+)*)::\w+/$1/gsx;
 	#$accmod			= '_'.uc($accmod).'_VAR_; ' ;
 	$accmod				= var($accmod.'_var');
 	
@@ -949,10 +968,13 @@ sub _syntax_variable_boost {
 }
 #-------------------------------------------------------------------------------------< constant
 sub _syntax_constant {
+	my ($rule_name, $confs)			= @_;
+	
 	my $accmod			= &accessmod || var 'accessmod';
 	my $name			= &name;
 	my $sname			= $name;
-	my $parent_name		= $name;
+	my $parent_class	= $confs->{parent};
+	my $parent_name		= $confs->{parent} || 'main';
 	my $local_var		= '';
 	
 	if (&accessmod eq 'local') {
@@ -1084,7 +1106,7 @@ sub _syntax_class {
 	$accmod				= var($accmod.'_class');
 	$accmod				= eval $accmod if $accmod;
 
-	$list_extends		= list_extends($args_attr);
+	$list_extends		= __list_extends($args_attr);
 
 	$extends			= "use rise::core::extends ${base_class}${parent_class}${list_extends};";
 	

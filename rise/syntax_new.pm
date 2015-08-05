@@ -78,18 +78,17 @@ sub confirm {
 	var('protected_code')			= q/'__PACKAGE__->protected_code("' . $parent_name . '", "' . $sname .'");'/;
 	var('public_code')				= '';
 	
-	
-	$PARSER->{function}				= [qw/
-		_function_defs
-		_function
-		_function2method			
-	/];
-	
 	$PARSER->{variable}			= [qw/
 		_prepare_variable_list
 		_prepare_variable_unnamedblock
 		_variable
 		_constant
+	/];
+		
+	$PARSER->{function}				= [qw/
+		_function_defs
+		_function
+		_function2method			
 	/];
 	
 	$PARSER->{code}					= [qw/
@@ -100,6 +99,11 @@ sub confirm {
 		@{$PARSER->{variable}}
 	];
 	
+	$PARSER->{class}				= [
+		'_class',
+		@{$PARSER->{code}}
+	];
+	
 	$PARSER->{namespace}			= [qw/
 		_namespace
 		_class
@@ -107,10 +111,7 @@ sub confirm {
 		_interface
 	/];
 	
-	$PARSER->{class}				= [
-		'_class',
-		@{$PARSER->{code}}
-	];
+
 	
 	#$PARSER->{function}				= [qw/
 	#	_function	
@@ -282,7 +283,8 @@ sub confirm {
 	#token code_attr					=> q/(?:\(\W*\))?(?:\:[\w\s\(\)\,]+)?/;
 	#token code_attr					=> q/(?:\:\s*content)/;
 	#token code_attr					=> q/(?:[^\{\}\n]*)?/;
-	token code_attr					=> q/(?:\s*\:\s*word\s*)*/;
+	#token code_attr					=> q/(?:\s*\:\s*word\s*)*/;
+	token code_attr					=> q/(?:\:content)+/;
 	token code_args					=> q/\(content\)/;
 	
 	token args_attr					=> q/(?:[^\{\}](?!object|accessmod))*/;
