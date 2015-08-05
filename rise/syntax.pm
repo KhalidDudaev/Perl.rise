@@ -80,7 +80,7 @@ sub confirm {
 	
 	$PARSER->{variable}			= [
 		'_prepare_variable_list',
-		#'_prepare_variable_unnamedblock',
+		'_unnamedblock',
 		'_variable',
 		'_constant'
 	];
@@ -143,7 +143,7 @@ sub confirm {
 	
 
 	
-	print dump($PARSER);
+	#print dump($PARSER);
 	
 	#var('private_var')				= q/((ref $_[0] || $_[0]) || __PACKAGE__) eq __PACKAGE__ || __PACKAGE__->__error('var_priv');/;
 	#var('private_var')				= var('env')."->{caller}{name} eq __PACKAGE__ || __PACKAGE__->__error('var_priv');";
@@ -408,7 +408,7 @@ sub confirm {
 	rule _var_boost_post1					=> q/_var_ \$/;
 	rule _var_boost_post2					=> q/\.\$/;
 	
-	rule _prepare_variable_unnamedblock		=> q/<unblk_pref><block_brace>/;
+	rule _unnamedblock						=> q/<unblk_pref><block_brace>/;
 	# rule _prepare_variable 					=> q/[<accessmod>] <variable> <name> [<endop>]/;
 	
 	#rule _function_defs 					=> q/[<accessmod>] <function> <name> <string> <endop>/;
@@ -500,7 +500,7 @@ sub confirm {
 	#action _var_boost_post1					=> \&_syntax_var_boost_post1;
 	#action _var_boost_post2					=> \&_syntax_var_boost_post2;
 	
-	action _prepare_variable_unnamedblock	=> \&_syntax_prepare_variable_unnamedblock;
+	action _unnamedblock					=> \&_syntax_prepare_variable_unnamedblock;
 	
 	
 	#action _prepare_name_object				=> \&_syntax_prepare_name_object;
@@ -554,7 +554,7 @@ sub confirm {
 	/];
 	
 	#print dump(order);
-	print rule('_function');
+	#print rule('_function');
 
 }
 
