@@ -639,7 +639,7 @@ sub _syntax_prepare_function {
 		#$self_args		= '';
 	}
 	
-	if ($args !~ m/\((\w+.*?)\)/sx) {
+	if ($args !~ m/\(\s*(\w+.*?)\)/sx) {
 		$attr = $args . $attr;
 		$args = '';
 	}
@@ -1085,6 +1085,8 @@ sub _syntax_object {
 	
 	var('class_func')		= '';
 	var('class_var')		= '';
+	token func_all			=> 1;
+	rule _func2method		=> q/<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
 	
 	return '' if !$name;
 	

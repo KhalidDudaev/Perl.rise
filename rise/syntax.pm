@@ -78,15 +78,14 @@ sub confirm {
 	var('protected_code')			= q/'__PACKAGE__->protected_code("' . $parent_name . '", "' . $sname .'");'/;
 	var('public_code')				= '';
 	
-	$PARSER->{variable}			= [
+	var ('parser_variable')			= [
 		'_prepare_variable_list',
-		#'_unnamedblock',
-		#'_optimise6',
 		'_variable',
-		'_constant'
+		'_constant',
+		#'_boost_var',
 	];
 		
-	$PARSER->{function}				= [
+	var ('parser_function')				= [
 		'_function_defs',
 		#'_prepare_function',
 		#'_prepare_function_post',
@@ -94,62 +93,64 @@ sub confirm {
 		'_function2method'			
 	];
 	
-	$PARSER->{code}					= [qw/
-		_foreach
-		_for
-		_while/,
-		@{$PARSER->{function}},
-		@{$PARSER->{variable}}
+	var ('parser_code')					= [
+		'_foreach',
+		'_for',
+		'_while',
+		@{var 'parser_function'},
+		@{var 'parser_variable'}
 	];
 	
-	$PARSER->{class}				= [qw/
-		_class
-		_inject
-		_using/,
-		@{$PARSER->{code}}
+	var ('parser_class')				= [
+		'_class',
+		'_inject',
+		'_using',
+		@{var 'parser_code'}
 	];
 	
-	$PARSER->{namespace}			= [qw/
-		_namespace
-		_inject
-		_using
-		_class
-		_abstract
-		_interface
-	/];
+	var ('parser_namespace')			= [
+		'_namespace',
+		'_inject',
+		'_using',
+		'_class',
+		'_abstract',
+		'_interface',
+	];
 	
-	$PARSER->{_}			= [
+	var ('parser__')			= [
 		'_excluding',
-		@{$PARSER->{namespace}},
+		'_nonamedblock',
+		@{var 'parser_namespace'},
 		'_op_dot',
 		'_optimise4',
 		'_optimise5',
-		#'_optimise6',
+		'_optimise6',
 		'_including',
 		'_commentC'
 	];
 
+	print dump(var 'parser__');
 	
-	#$PARSER->{function}				= [qw/
+	#var 'parser_function'				= [qw/
 	#	_function	
 	#/];	
 	#
-	#$PARSER->{code}					= [
+	#var 'parser_code'					= [
 	#	'_function_defs',
-	#	@{$PARSER->{function}},
+	#	@{var 'parser_function'},
 	#	'_function2method'
 	#];
 	#
-	#$PARSER->{namespace}			= [qw/
+	#var 'parser_namespace'			= [qw/
 	#	_namespace
 	#	_class
 	#	_abstract
 	#	_interface
 	#/];
 	#
-	#$PARSER->{class}				= [
+	#var 'parser_class'				= [
 	#	'_class',
-	#	@{$PARSER->{code}}
+	#	@{var 'parser_code'}
 	#];
 	
 
@@ -419,7 +420,7 @@ sub confirm {
 	rule _var_boost_post1					=> q/_var_ \$/;
 	rule _var_boost_post2					=> q/\.\$/;
 	
-	rule _unnamedblock						=> q/<unblk_pref><block_brace>/;
+	rule _nonamedblock						=> q/<unblk_pref><block_brace>/;
 	# rule _prepare_variable 					=> q/[<accessmod>] <variable> <name> [<endop>]/;
 	
 	#rule _function_defs 					=> q/[<accessmod>] <function> <name> <string> <endop>/;
@@ -447,9 +448,9 @@ sub confirm {
 	
 	#rule _function_defs 					=> q/[<_object_type_>] [<accessmod>] <_function_> <name> [<string>] <endop>/;
 	rule _function 							=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
-	rule _variable							=> q/[<accessmod>] <var>\s+<name> [<endop>]/;
+	rule _variable							=> q/[<accessmod>] <variable> <name> [<endop>]/;
 	rule _constant							=> q/[<accessmod>] <const> <name> = <content> <endop>/;
-	
+	rule _boost_var							=> q/<all>/;
 	# rule _variable_boost					=> q/<word> (_NOT:sigils)<name>/;
 	
 
@@ -511,7 +512,7 @@ sub confirm {
 	#action _var_boost_post1					=> \&_syntax_var_boost_post1;
 	#action _var_boost_post2					=> \&_syntax_var_boost_post2;
 	
-	action _unnamedblock					=> \&_syntax_unnamedblock;
+	action _nonamedblock					=> \&_syntax_nonamedblock;
 	
 	
 	#action _prepare_name_object				=> \&_syntax_prepare_name_object;
@@ -534,6 +535,8 @@ sub confirm {
 	action _variable 						=> \&_syntax_variable;
 	action _constant 						=> \&_syntax_constant;
 	
+	action _boost_var						=> \&_syntax_boost_var;
+	
 	
 	
 		#action _variable_boost					=> \&_syntax_variable_boost;
@@ -553,10 +556,10 @@ sub confirm {
 	action _commentC 						=> \&_syntax_commentC;
 	
 	
-	order = $PARSER->{_};
+	order = var 'parser__';
 	
 	#print dump(order);
-	#print rule('_function');
+	#print rule '_variable';
 
 }
 
@@ -738,8 +741,12 @@ sub _syntax_anon_function_list {
 sub _syntax_function_list_post { '<kw_function>' }
 
 sub _syntax_function2method {
+	my ($rule_name, $confs)			= @_;
 	my $args			= '__PACKAGE__';
 	my $fname			= &func_all;
+	
+	#print "-------> func_list - $fname\n";
+	
 	$args				.= ',' . &content if &content;
 	return "${fname}(${args})";
 }
@@ -804,10 +811,13 @@ sub _syntax_function {
 	my $arguments		= '';
 	my $self_args		= '<kw_self>';
 	
+	var('members')->{$parent_class} .= ' '.$accmod.'-function-'.$name if $name;
+	var('members')->{$parent_class} =~ s/^\s+// if $name;
+	
 	if ($name){
 		var('class_func') 				.= '|' . $name;
 		var('class_func')				=~ s/^\|//;
-		token func_all					=> var('class_func')||'';
+		token func_all					=> var('class_func')||1;
 		rule _function2method			=> q/<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
 	}
 	
@@ -825,6 +835,8 @@ sub _syntax_function {
 		$args = '';
 	}
 	
+	#return 0;
+	
 	$accmod				= var($accmod.'_code');
 	$accmod				= eval $accmod if $accmod ne '';	
 	$name				= $parent_name . '::' . $name;
@@ -833,7 +845,7 @@ sub _syntax_function {
 	$self_args			.= ',' . $args if $args; $self_args =~ s/^\,//;
 	$arguments			= "<kw_local> <kw_variable> ($self_args) = \@_;" if $self_args;
 	$block 				=~ s/\{(.*)\}/$1/gsx;
-	$block 				= parse($block, &grammar, [@{$PARSER->{code}}], { parent => $name });
+	$block 				= parse($block, &grammar, [@{var 'parser_code'}], { parent => $name });
 	#$block 				= __code($block, { parent => $name });
 	#print "############# $name - $attr\n";
 	
@@ -868,7 +880,7 @@ sub _syntax_prepare_function_post {
 	return $function;
 }
 #-------------------------------------------------------------------------------------< variable
-sub _syntax_unnamedblock {
+sub _syntax_nonamedblock {
 	my $block			= &block_brace;
 	my $unblk_pref		= &unblk_pref;
 	
@@ -896,16 +908,37 @@ sub _syntax_prepare_variable_list {
 	#return "LI: ( <name_list> ) { <accessmod> <variable> _LI_; } IF: ( !'<endop>' ) {(<name_list>) <endop>}";
 }
 
+sub _syntax_boost_var {
+	my ($rule_name, $confs)			= @_;
+	my $block			= &all;
+	my $parent_class	= $confs->{parent};
+	my $parent_name		= $confs->{parent} || 'main';
+	my $tk_accmod		= token 'accessmod';
+	my $var_list		= var('members')->{$parent_class};
+	
+	if ($var_list) {
+		$var_list			=~ s/\b(?:$tk_accmod)\-(?!variable)\w+\-(\w+)//gsx;
+		$var_list			=~ s/\b(?:$tk_accmod)\-variable\-(\w+)/\\b$1\\b/gsx;
+		$var_list			=~ s/\\b\s\\b/\\b|\\b/gsx;
+		$var_list			=~ s/\s+//gsx;
+		#print ">>>>>>>>>>> $var_list \n";
+		
+		$block 				=~ s/[^\$]($var_list)/\$$1/gsx;
+	}
+	
+	return $block;
+}
+
 sub _syntax_var_boost1 {
 	
-	my $class_var			= '';
+	my $class_var		= '';
 	
-	$class_var				= var('class_var');
-	var('class_var') 		.= '|' . &name if &name !~ /$class_var/;
-	var('class_var')		=~ s/^\|//;
+	$class_var			= var('class_var');
+	var('class_var') 	.= '|' . &name if &name !~ /$class_var/;
+	var('class_var')	=~ s/^\|//;
 	
-	token 'var_all'			=> var('class_var')||1;
-	rule '_var_boost2'		=> '(_NOT:\$)<var_all>';
+	token 'var_all'		=> var('class_var')||1;
+	rule '_var_boost2'	=> '(_NOT:\$)<var_all>';
 	
 	return "_<kw_variable>_ <name>";
 }
@@ -930,9 +963,12 @@ sub _syntax_variable {
 	my $parent_class	= $confs->{parent};
 	my $parent_name		= $confs->{parent} || 'main';
 	my $boost_vars		= '';
-	my $or				= '';
+	#my $or				= '';
 	my $local_var		= '';
 	my $end_op			= '';
+	
+	var('members')->{$parent_class} .= ' '.$accmod.'-variable-'.$name if $accmod ne 'local';
+	var('members')->{$parent_class} =~ s/^\s+//;
 	
 	$name				=~ s/\w+(?:::\w+)*::(\w+)/$1/gsx;
 	$sname				= $name;
@@ -948,8 +984,8 @@ sub _syntax_variable {
 	$end_op				= " \$$name<endop> " if !&endop;
 	
 	$boost_vars			= var('class_var') || '';
-	$or					= '|' if $boost_vars;
-	var('class_var')	.= $or . $name if $name !~ /$boost_vars/;
+	var('class_var')	.= '|' . $name if $name !~ /$boost_vars/;
+	var('class_var')	=~ s/^\|//;
 	
 	$accmod				= eval $accmod if $accmod ne '';
 	#$accmod				= $accmod . '("' . $name . '", "' . $parent_name .'");' if $accmod ne '';
@@ -980,6 +1016,9 @@ sub _syntax_constant {
 	my $parent_class	= $confs->{parent};
 	my $parent_name		= $confs->{parent} || 'main';
 	my $local_var		= '';
+	
+	var('members')->{$parent_class} .= ' '.$accmod.'-constant-'.$name if $accmod ne 'local';
+	var('members')->{$parent_class} =~ s/^\s+//;
 	
 	if (&accessmod eq 'local') {
 		$accmod			= '';
@@ -1022,7 +1061,7 @@ sub _syntax_namespace {
 	
 	#print ">>>>>> parent_class - ". &name ." | name - ".&name."\n";
 	
-	$block 				= parse($block, grammar, [@{$PARSER->{namespace}}], { parent => $name });
+	$block 				= parse($block, grammar, [@{var 'parser_namespace'}], { parent => $name });
 	
 	#$block 				= parse($block, grammar, ['_namespace'], { parent => $name });
 	#$block 				= parse($block, grammar, ['_class'], { parent => $name });
@@ -1092,9 +1131,18 @@ sub _syntax_class {
 	
 	my $comma			= '';
 	
+	if ($parent_class) {
+		var('members')->{$parent_class} .= ' '.$accmod.'-class-'.$name;
+		var('members')->{$parent_class} =~ s/^\s+//;
+	}
 	
+	################# reset function list from new class #####################
 	var('class_func')		= '';
 	var('class_var')		= '';
+	token func_all			=> 1;
+	rule _function2method	=> q/<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
+	##########################################################################
+	
 	
 	return '' if !$name;
 
@@ -1103,13 +1151,14 @@ sub _syntax_class {
 	
 	$block 				=~ s/\{(.*)\}/$1/gsx;
 			 
-	$block 				= parse($block, &grammar, [@{$PARSER->{class}}], { parent => $name });
+	
 	#$block 				= __code($block, { parent => $name });
 	
 	$parent_class		= ",'$parent_class'" if $parent_class;
 	$parent_class 		||= '';
 
 	#print ">>>>>> accmod - $accmod | parent_class - $parent_name | name - $name\n";
+	#print ">>>>>> class_name - $name | func_list - ".var('class_func')."\n";
 	
 	$accmod				= var($accmod.'_class');
 	$accmod				= eval $accmod if $accmod;
@@ -1118,8 +1167,10 @@ sub _syntax_class {
 
 	$extends			= "use rise::core::extends ${base_class}${parent_class}${list_extends};";
 	
+	$block 				= parse($block, &grammar, [@{var 'parser_class'}], { parent => $name });
+	
 	#return "{ package <name>; use strict; use warnings;...${extends}...${accmod}...__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
-	return "{ package ${name}; use strict; use warnings;${s1}${extends}${s2}${accmod}${s3}" . __object_header('class', $name || '') . "${s4}${block} }";
+	return "{ package ${name}; use strict; use warnings;${s1}${extends}${s2}${accmod}${s3}" . __object_header('class', $name || '') . "${s4}${block}}";
 	
 }
 

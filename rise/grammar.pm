@@ -64,7 +64,7 @@ sub rule_array	{ keys(%{grammar->{RULE}}) }
 sub rule_list	{ __arr2list( &rule_array ) }
 sub token_array	{ keys(%{grammar->{TOKEN}}) }
 sub token_list	{ __arr2list( &token_array ) }
-sub keyword_array	{ keys(%{grammar->{KEYWORD}}) }
+sub keyword_array	{ values(%{grammar->{KEYWORD}}) }
 sub keyword_list	{ __arr2list( &keyword_array ) }
 sub ra			{ grammar->{RULE_LAST_VAR}{RA}[$_] }
 
@@ -206,7 +206,7 @@ sub parse {
 	#grammar->{RULE}		= compile_RBNF(grammar->{RULE}, grammar->{TOKEN});
 	#grammar->{RULE}		= compile_RBNF(grammar->{RULE});
 	
-	eval {
+	#eval {
 		map {
 			$rule_name 		= $_;
 			#push @rule_order, $rule_name;
@@ -248,9 +248,9 @@ sub parse {
 			#print "$rule_name - $info_rule->{$rule_name} \n";
 		
 		} @order;
-	};
+	#};
 	
-	die __error('"the action \"'.$rule_name.'\" not correct $file at line $line from $file\n"') if $@;
+	#die __error('"the action \"'.$rule_name.'\" not correct $file at line $line from $file\n"') if $@;
 	
 	
 	$info_all = '';
@@ -285,7 +285,10 @@ sub __parse {
 	#print ">>>>>>>>>>>>>>>>>>> $rule_name - ".dump($confs)."\n" if $rule_name;
 	
 	$$passed++;
-	$res			= (exists grammar->{ACTION}{$rule_name} ? __action($rule_name, $confs) : __rule(__PACKAGE__, $rule_name));
+	#eval {
+		$res			= (exists grammar->{ACTION}{$rule_name} ? __action($rule_name, $confs) : __rule(__PACKAGE__, $rule_name));
+	#};
+	#die __error('"the action \"'.$rule_name.'\" not correct\n"') if $@;
 	$$last_sourse	= $source;
 
 	return $res;
@@ -385,7 +388,11 @@ sub __action {
 	
 	__save_rule_last_var();
 	
-	$res = grammar->{ACTION}{$action}($action, $confs); # or __error('"the action \"'.$action.'\" not correct $file at line $line from $file\n"');
+	#eval {
+		$res = grammar->{ACTION}{$action}($action, $confs); # or die __error('"the action \"'.$action.'\" not correct\n"');
+		$res or die __error('"the action \"'.$action.'\" not correct\n"') if $res ne '';
+	#};
+	#die __error('"the action \"'.$action.'\" not correct\n $@ \n"') if $@;
 
 	
 	$res =~ s/\.\.\./$sps++; grammar->{RULE_LAST_VAR}{SPS}[$sps] || ''/gsxe;
