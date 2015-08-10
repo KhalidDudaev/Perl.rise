@@ -90,7 +90,8 @@ sub confirm {
 		#'_prepare_function',
 		#'_prepare_function_post',
 		'_function',
-		'_function2method'			
+		
+		
 	];
 	
 	var ('parser_code')					= [
@@ -98,14 +99,17 @@ sub confirm {
 		'_for',
 		'_while',
 		@{var 'parser_function'},
-		@{var 'parser_variable'}
+		@{var 'parser_variable'},
+		'_function2method',
+		
 	];
 	
 	var ('parser_class')				= [
 		'_class',
 		'_inject',
 		'_using',
-		@{var 'parser_code'}
+		@{var 'parser_code'},
+		
 	];
 	
 	var ('parser_namespace')			= [
@@ -115,6 +119,7 @@ sub confirm {
 		'_class',
 		'_abstract',
 		'_interface',
+		
 	];
 	
 	var ('parser__')			= [
@@ -125,11 +130,13 @@ sub confirm {
 		'_optimise4',
 		'_optimise5',
 		'_optimise6',
+		'_function2method_post1',
+		'_function2method_post2',
 		'_including',
 		'_commentC'
 	];
 
-	print dump(var 'parser__');
+	#print dump(var 'parser__');
 	
 	#var 'parser_function'				= [qw/
 	#	_function	
@@ -405,7 +412,11 @@ sub confirm {
 	rule _function_list 					=> q/<function> <name>/;
 	rule _anon_function_list				=> q/<name> \= <function>/;
 	rule _function_list_post 				=> q/_function_/;	
-	rule _function2method					=> q/<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
+	#rule _function2method					=> q/(_NOT:\.)<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
+	#rule _function2method					=> q/(NOT:__METHOD__)<name>\((NOT:__PACKAGE__)[<content>]\)/;
+	rule _function2method					=> q/(NOT:__METHOD__)<name>\((NOT:__PACKAGE__)/;
+	rule _function2method_post1				=> q/(__METHOD__)+/;
+	rule _function2method_post2				=> q/__PACKAGE__\,\)/;
 	rule _anon_func2method					=> q/<func_all>(\-\>|\.)\((NOT:\_\_PACKAGE\_\_)/;
 	rule _func2method_post					=> q/__PACKAGE__\, \)/;
 	
@@ -499,6 +510,8 @@ sub confirm {
 	action _anon_function_list 				=> \&_syntax_anon_function_list;
 	action _function_list_post 				=> \&_syntax_function_list_post;
 	action _function2method					=> \&_syntax_function2method;
+	action _function2method_post1			=> \&_syntax_function2method_post1;
+	action _function2method_post2			=> \&_syntax_function2method_post2;
 	action _anon_func2method				=> \&_syntax_anon_func2method;
 	action _func2method_post				=> \&_syntax_func2method_post;	
 	
@@ -559,7 +572,7 @@ sub confirm {
 	order = var 'parser__';
 	
 	#print dump(order);
-	#print rule '_variable';
+	#print rule '_function2method';
 
 }
 
@@ -710,7 +723,11 @@ sub _syntax_prepare_while { "{ <kw_local> <variable> <name>; <while>...(...<name
 
 #-------------------------------------------------------------------------------------< function_defs | prepare function | function
 #sub _syntax_function_defs { "sub <name><args_attr><endop>" }
-sub _syntax_function_defs { "sub <name><args_attr><endop><nline>" }
+sub _syntax_function_defs {
+	#my ($s1,$s2,$s3,$s4) = (&sps1,&sps2,&sps3,&sps4);
+	#"${s1}sub${s2}<name>${s3}<args_attr>${s4}<endop><nline>";
+	"...sub <name><args_attr><endop>... ... ...<nline>";
+}
 
 sub _syntax_function_list {
 
@@ -740,16 +757,75 @@ sub _syntax_anon_function_list {
 
 sub _syntax_function_list_post { '<kw_function>' }
 
-sub _syntax_function2method {
+sub _syntax_function2method_OFF {
 	my ($rule_name, $confs)			= @_;
-	my $args			= '__PACKAGE__';
+	my $parent_class	= $confs->{parent};
+	my $parent_name		= $confs->{parent} || 'main';
+	my $args			= &content; #$args ||= '';
+	my $self			= '';
 	my $fname			= &func_all;
+	my $tk_accmod		= token 'accessmod';
+	my $fn_list			= var('members')->{$parent_class};
+	
+	if ($fn_list) {
+		$fn_list			=~ s/\b(?:$tk_accmod)\-(?!function)\w+\-(\w+)//gsx;
+		$fn_list			=~ s/\b(?:$tk_accmod)\-function\-(\w+)/\\b$1\\b/gsx;
+		#$fn_list			=~ s/^\s+(.*?)\s+$/$1/sx;
+		$fn_list			=~ s/\\b\s+\\b/\\b|\\b/gsx;
+		#$fn_list			=~ s/\#//gsx;
+		$fn_list			=~ s/\s+//gsx;
+	}
+	
+	
+	
+	if ($fname =~ m/$fn_list/sx) {
+		$self			= '__PACKAGE__';
+		$self			.= ',' if $args;
+		print ">>>>>>>>>>> class - $parent_class | fname - $fname | fnlist - *$fn_list* \n";
+	}
 	
 	#print "-------> func_list - $fname\n";
 	
-	$args				.= ',' . &content if &content;
-	return "${fname}(${args})";
+	#$args				.= ',' . &content if &content;
+	return "${fname}(${self}${args})";
 }
+
+sub _syntax_function2method {
+	my ($rule_name, $confs)			= @_;
+	my $parent_class	= $confs->{parent};
+	my $parent_name		= $confs->{parent} || 'main';
+	my $name			= &name;
+	#my $args			= &content; #$args ||= '';
+	my $self			= '';
+	my $tk_accmod		= token 'accessmod';
+	my $fn_list			= var('members')->{$parent_class}||'';
+	my $method			= '__METHOD__';
+	
+	if ($fn_list) {
+		$fn_list			=~ s/\b(?:$tk_accmod)\-(?!function)\w+\-\w+(?:::\w+)*//gsx;
+		$fn_list			=~ s/\b(?:$tk_accmod)\-function\-(\w+(?:::\w+)*)/\\b$1\\b/gsx;
+		#$fn_list			=~ s/^\s+(.*?)\s+$/$1/sx;
+		$fn_list			=~ s/\\b\s+\\b/\\b|\\b/gsx;
+		#$fn_list			=~ s/\#//gsx;
+		$fn_list			=~ s/\s+//gsx;
+	}
+	
+	
+	
+	if ($name =~ m/$fn_list/sx) {
+		$self			= '__PACKAGE__,';
+		#$self			.= ',' if $args;
+		$method			= '';
+		#print ">>>>>>>>>>> class - $parent_class | fname - $name | fnlist - *$fn_list* \n";
+	}
+	
+	#$args 				= parse($args, &grammar, ['_function2method'], { parent => $name });
+
+	return "${method}${name}(${self}";
+}
+
+sub  _syntax_function2method_post1 {''}
+sub  _syntax_function2method_post2 {'__PACKAGE__)'}
 
 sub _syntax_anon_func2method { '<anon_func_all>.(__PACKAGE__, ' }
 
@@ -810,16 +886,31 @@ sub _syntax_function {
 	my $anon_code		= '';
 	my $arguments		= '';
 	my $self_args		= '<kw_self>';
+	my $tk_accmod		= token 'accessmod';
+	my $fn_list;
 	
 	var('members')->{$parent_class} .= ' '.$accmod.'-function-'.$name if $name;
 	var('members')->{$parent_class} =~ s/^\s+// if $name;
 	
-	if ($name){
-		var('class_func') 				.= '|' . $name;
-		var('class_func')				=~ s/^\|//;
-		token func_all					=> var('class_func')||1;
-		rule _function2method			=> q/<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
-	}
+	#$fn_list			= var('members')->{$parent_class} if $name;
+	
+	#if ($fn_list) {
+	#	$fn_list			=~ s/\b(?:$tk_accmod)\-(?!function)\w+\-(\w+)//gsx;
+	#	$fn_list			=~ s/\b(?:$tk_accmod)\-function\-(\w+)/\\b$1\\b/gsx;
+	#	#$fn_list			=~ s/^\s+(.*?)\s+$/$1/sx;
+	#	$fn_list			=~ s/\\b\s+\\b/\\b|\\b/gsx;
+	#	#$fn_list			=~ s/\#//gsx;
+	#	$fn_list			=~ s/\s+//gsx;
+	#}	
+	
+	#if ($name){
+		#var('class_func') 				.= '|' . $name;
+		#var('class_func')				=~ s/^\|//;
+		#token func_all					=> $fn_list;
+		#rule _function2method					=> q/(_NOT:sub\s)(_NOT:\-\>)(_NOT:\.)<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
+	#}
+	
+	
 	
 	if (!$name){
 		var('anon_fn_count')++;
@@ -835,7 +926,7 @@ sub _syntax_function {
 		$args = '';
 	}
 	
-	
+	#return 0;
 	
 	$accmod				= var($accmod.'_code');
 	$accmod				= eval $accmod if $accmod ne '';	
@@ -923,7 +1014,7 @@ sub _syntax_boost_var {
 		$var_list			=~ s/\s+//gsx;
 		#print ">>>>>>>>>>> $var_list \n";
 		
-		$block 				=~ s/[^$]($var_list)/__BOOSTED__\$$1/gsx;
+		$block 				=~ s/[^\$]($var_list)/\$$1/gsx;
 	}
 	
 	return $block;
@@ -1050,11 +1141,14 @@ sub _syntax_prepare_namespace {
 sub _syntax_namespace {
 	my ($rule_name, $confs)			= @_;
 	my $name			= &name;
+	#my $parent_class	= $confs->{parent};
 	my $parent_name		= $confs->{parent};
 	my $block 			= &block_brace;
 	
 	my ($s1,$s2,$s3,$s4) = (&sps1,&sps2,&sps3,&sps4);
 	
+	return '' if !$name;
+
 	$name				= $parent_name . '::' . $name if $parent_name;
 	
 	$block 				=~ s/\{(.*)\}/$1/gsx;
@@ -1114,7 +1208,7 @@ sub _syntax_class {
 	
 	my $base_class		= "'rise::object::class'";
 	my $parent_class	= $confs->{parent};
-	my $parent_name		= $confs->{parent} || 'main';
+	my $parent_name		= $confs->{parent};
 	
 	my ($s1,$s2,$s3,$s4) = (&sps1,&sps2,&sps3,&sps4);
 	
@@ -1131,20 +1225,22 @@ sub _syntax_class {
 	
 	my $comma			= '';
 	
-	var('members')->{$parent_class} .= ' '.$accmod.'-class-'.$name if $parent_class;
-	var('members')->{$parent_class} =~ s/^\s+//;
+	if ($parent_class) {
+		var('members')->{$parent_class} .= ' '.$accmod.'-class-'.$name;
+		var('members')->{$parent_class} =~ s/^\s+//;
+	}
 	
 	################# reset function list from new class #####################
-	var('class_func')		= '';
-	var('class_var')		= '';
-	token func_all			=> 1;
-	rule _function2method	=> q/<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
+	#var('class_func')		= '';
+	#var('class_var')		= '';
+	#token func_all			=> 1;
+	#rule _function2method	=> q/<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
 	##########################################################################
 	
 	
 	return '' if !$name;
 
-	$name				= $parent_name . '::' . $name;
+	$name				= $parent_name . '::' . $name if $parent_name;
 	$sname				=~ s/\w+(?:::\w+)*::(\w+)/$1/gsx;
 	
 	$block 				=~ s/\{(.*)\}/$1/gsx;
@@ -1168,7 +1264,7 @@ sub _syntax_class {
 	$block 				= parse($block, &grammar, [@{var 'parser_class'}], { parent => $name });
 	
 	#return "{ package <name>; use strict; use warnings;...${extends}...${accmod}...__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
-	return "{ package ${name}; use strict; use warnings;${s1}${extends}${s2}${accmod}${s3}" . __object_header('class', $name || '') . "${s4}${block} }";
+	return "{ package ${name}; use strict; use warnings;${s1}${extends}${s2}${accmod}${s3}" . __object_header('class', $name || '') . "${s4}${block}}";
 	
 }
 

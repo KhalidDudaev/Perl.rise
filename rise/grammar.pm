@@ -49,11 +49,27 @@ our $syntax_class;
 
 my ($child, $file, $line, $func);
 
+#sub new {
+#    my ($param, $class, $self)	= ($PACK_ENV, ref $_[0] || $_[0], $_[1] || {});    	# получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
+#	%$self						= (%$param, %$self);							# применяем умолчания, если имеются входные данные то сохраняем их в умолчаниях
+#    $self                   	= bless($self, $class);                         # обьявляем класс и его свойства
+#	
+#	
+#	
+#	return $self;
+#}
+
 sub new {
-    my ($param, $class, $self)	= ($PACK_ENV, ref $_[0] || $_[0], $_[1] || {});    	# получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
-	%$self						= (%$param, %$self);							# применяем умолчания, если имеются входные данные то сохраняем их в умолчаниях
-    $self                   	= bless($self, $class);                         # обьявляем класс и его свойства
-	return $self;
+    my ($class, $ARGS)			= (ref $_[0] || $_[0], $_[1] || {});    	# получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
+	%$PACK_ENV						= (%$PACK_ENV, %$ARGS);							# применяем умолчания, если имеются входные данные то сохраняем их в умолчаниях
+    #__init();
+	
+
+	my $self = bless($PACK_ENV, $class);
+	
+	#print ">>>>>>>>>> ".dump($self)."\n";
+	
+	return $self;                         					# обьявляем класс и его свойства
 }
 
 sub grammar :lvalue	{ $GRAMMAR }
@@ -164,7 +180,7 @@ sub action {
 	}
 	
 	if (exists grammar->{ACTION}{$action} && !$code) { 
-		$res = __action($action);
+		$res = __action($self, $action);
 	}
 	
 	if (!exists(grammar->{ACTION}{$action})){
@@ -175,14 +191,21 @@ sub action {
 }
 
 sub parse {
+	#my $tself = shift;
 	my $self;
 	my $source;
 	my $rule_name_selected = [];
 	my $confs;
 	
-	($self, $source, grammar, $rule_name_selected, $confs,  @_)	= __class_ref(@_);
+	my $fself;
+	
+	($self, $source, grammar, $rule_name_selected, $confs,  @_)	= @_; #__class_ref(@_);
 	
 	#print ">>>>>>>>>>>>>>>>>>> ".dump($rule_name_selected)." - ".dump($confs)."\n";
+	
+	#print "-----> ".dump($self)."\n";
+	
+	#$self = __PACKAGE__;
 	
 	#my $source				= $_[0];
 	#grammar				= $_[1] if $_[1];
@@ -226,7 +249,7 @@ sub parse {
 			$rule			= '\b'.$rule if $rule !~ m/^\(\?\<\w+\>[^\\b]\W+/;
 			#$rule			= qr/$rule/o;
 			#1 while $source ne $last_sourse && $source =~ s/$rule/__parse($rule_name, $source, $confs, \$last_sourse, \$passed)/msxe;
-			$source =~ s/$rule/__parse($rule_name, $source, $confs, \$last_sourse, \$passed)/gmsxe if $source ne $last_sourse;
+			$source =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse, \$passed)/gmsxe if $source ne $last_sourse;
 			#$source = __parse_helper($rule_name, $rule, $source, \$last_sourse, \$passed);
 			
 			
@@ -279,14 +302,14 @@ sub __parse_helper {
 }
 
 sub __parse {
-	my ($rule_name, $source, $confs, $last_sourse, $passed) = @_;
+	my ($self, $rule_name, $source, $confs, $last_sourse, $passed) = @_;
 	my $res			= '';
 	
 	#print ">>>>>>>>>>>>>>>>>>> $rule_name - ".dump($confs)."\n" if $rule_name;
 	
 	$$passed++;
 	#eval {
-		$res			= (exists grammar->{ACTION}{$rule_name} ? __action($rule_name, $confs) : __rule(__PACKAGE__, $rule_name));
+		$res			= (exists grammar->{ACTION}{$rule_name} ? __action($self, $rule_name, $confs) : __rule(__PACKAGE__, $rule_name));
 	#};
 	#die __error('"the action \"'.$rule_name.'\" not correct\n"') if $@;
 	$$last_sourse	= $source;
@@ -295,7 +318,7 @@ sub __parse {
 }
 
 sub compile_RBNF {
-	(my $self, @_) 						= __class_ref(@_);
+	(my $self, @_) 						= @_; #__class_ref(@_);
 	
 	my ($rule_hash, $token_hash)		= @_;
 	my $rule							= '';
@@ -377,6 +400,7 @@ sub off__token {
 }
 
 sub __action {
+	my $self		= shift;
 	my $action 		= shift;
 	my $confs		= shift;
 	
@@ -389,7 +413,7 @@ sub __action {
 	__save_rule_last_var();
 	
 	#eval {
-		$res = grammar->{ACTION}{$action}($action, $confs); # or die __error('"the action \"'.$action.'\" not correct\n"');
+		$res = grammar->{ACTION}{$action}($self, $action, $confs); # or die __error('"the action \"'.$action.'\" not correct\n"');
 		$res or die __error('"the action \"'.$action.'\" not correct\n"') if $res ne '';
 	#};
 	#die __error('"the action \"'.$action.'\" not correct\n $@ \n"') if $@;
@@ -477,9 +501,22 @@ sub __error {
 	die $err;
 }
 
+#sub __class_ref {
+#	my $this					= shift if (ref $_[0] eq __PACKAGE__);
+#	$this						||= $PACK_ENV;
+#	%$this						= (%$this, %$PACK_ENV);
+#	return $this, @_;
+#}
+
 sub __class_ref {
 	my $self;
-	(ref $_[0] eq __PACKAGE__) ? $self = shift : $self = caller(1);
+	
+	if (ref $_[0] eq __PACKAGE__){
+		$self = shift;
+	} else {
+		$self = caller(1);
+	}
+	
 	return $self, @_;
 }
 

@@ -5,7 +5,7 @@ use utf8;
 #use ExtUtils::Installed;
 use Time::HiRes qw(time);
 
-#use Data::Dump 'dump';
+use Data::Dump 'dump';
 
 our $VERSION = '0.001';
 
@@ -74,14 +74,18 @@ sub __init {
 
 	#$parser						= new dialect::Parser ({ info => $conf->{info} });
 	$file						= new rise::file;
-	$grammar					= new rise::grammar;
+	$grammar					= new rise::grammar $conf;
 	$syntax						= new rise::syntax $conf;
+	
+	#print ">>>>>>>>>>>>>> - ".dump($grammar)."\n";
 	
 	$syntax->confirm;
 	
 	#$inst    					= new ExtUtils::Installed;
 	#$parser						= $syntax->parser;
 	#$modules 					= join ( " ", $inst->modules);
+		
+	
 }
 
 sub __confs_load {
@@ -172,7 +176,7 @@ sub __assembly {
 
 #sub __obj__		{ $parser }
 sub __parse		{ $grammar->parse(@_) }
-sub __syntax	{ $syntax->syntax }
+sub __syntax	{ $syntax->syntax(@_) }
 sub __file		{ eval{$file->file(@_)} }
 
 sub __message { print @_ if $conf->{info} }
