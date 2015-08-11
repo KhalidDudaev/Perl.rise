@@ -308,6 +308,8 @@ sub __parse {
 	#print ">>>>>>>>>>>>>>>>>>> $rule_name - ".dump($confs)."\n" if $rule_name;
 	
 	$$passed++;
+	
+	die __error('"the action \"'.$rule_name.'\" not exists\n"') if !exists grammar->{ACTION}{$rule_name};
 	#eval {
 		$res			= (exists grammar->{ACTION}{$rule_name} ? __action($self, $rule_name, $confs) : __rule(__PACKAGE__, $rule_name));
 	#};
