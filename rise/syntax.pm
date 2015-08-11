@@ -90,9 +90,10 @@ sub confirm {
 	var('public_code')				= '';
 	
 	var ('parser_variable')			= [
-		'_prepare_variable_list',
+		'_variable_list',
 		'_variable',
 		'_constant',
+		
 	];
 		
 	var ('parser_function')			= [
@@ -106,7 +107,9 @@ sub confirm {
 		'_while',
 		@{var 'parser_function'},
 		@{var 'parser_variable'},
-		'_function2method',
+		'_function_method',
+		'_variable_boost',
+		#'_variable_boost_post',
 	];
 	
 	var ('parser_class')			= [
@@ -114,6 +117,7 @@ sub confirm {
 		'_inject',
 		'_using',
 		@{var 'parser_code'},
+		
 	];
 	
 	var ('parser_interface')		= [
@@ -134,7 +138,6 @@ sub confirm {
 		'_class',
 		'_abstract',
 		'_interface',
-		
 	];
 	
 	var ('parser__')				= [
@@ -145,10 +148,12 @@ sub confirm {
 		'_optimise4',
 		'_optimise5',
 		'_optimise6',
-		'_function2method_post1',
-		'_function2method_post2',
+		'_function_method_post1',
+		'_function_method_post2',
+		#'_function_boost_post1',
+		#'_function_boost_post2',
 		'_including',
-		'_commentC'
+		'_commentC',
 	];
 
 	#print dump(var 'parser__');
@@ -160,7 +165,7 @@ sub confirm {
 	#var 'parser_code'					= [
 	#	'_function_defs',
 	#	@{var 'parser_function'},
-	#	'_function2method'
+	#	'_function_method'
 	#];
 	#
 	#var 'parser_namespace'			= [qw/
@@ -255,7 +260,8 @@ sub confirm {
 	
 	token string					=> q/(?^s:.(?^:all))/;
 	
-	token ident						=> q/letter*/;
+	token ident						=> q/[^\d\W]\w*/;
+	#token ident						=> q/letter*/;
 	token word						=> q/letter+/;
 	#token word						=> q/letter\w*/;
 	#token word						=> q/ident/;
@@ -270,14 +276,15 @@ sub confirm {
 	token all						=> q/.*/;
 	#token all						=> q/string*/;
 	token sps						=> q/\s*/;
-	
+	token spss						=> q/\s+/;
 	
 	token nnline					=> q/[^\r\n]/;
 	#token nline						=> q/[\r\n]/;
 	token nline						=> q/\r|\n|\r\n/;
 	token op_end					=> q/\;/;
+	token name						=> q/\b(?:ident(?:::ident)*)\b/;
 	#token name						=> q/(?:\b[^\d\W]\w*\b)(?:::(?:\b[^\d\W]\w*\b))*/;
-	token name						=> q/word(?:\:\:word)*/;
+	#token name						=> q/word(?:\:\:word)*/;
 	#token name						=> q/[^\d\s](?:word\:\:)*word/;
 	token name_list					=> q/name(?:\s*\,\s*name)*/;
 	token namestrong				=> q/[^\d\W][\w:]+[^\W]/;
@@ -400,197 +407,103 @@ sub confirm {
 	token sigils					=> q/[\@\$\%\&\*]/;
 	
 	################################################## rules ####################################################
-	
 	rule _									=> q/<all>/;
 	
 	rule _excluding							=> q/<excluding>/;
-	
+	rule _nonamedblock						=> q/<unblk_pref><block_brace>/;
+	rule _namespace							=> q/<namespace> <name> <block_brace>/;
+
 	rule _inject							=> q/<inject> <content> <op_end>/;
 	rule _using								=> q/<using> <name>[<content>]<op_end>/;
 	rule _inherits							=> q/<inherits> <name>/;
-	rule _implements						=> q/<implements> <name_list>/;
+	rule _implements						=> q/<implements> <name_list>/;	
 	
-	#rule _inherits_implements				=> q/<class> <name> (<inherits>|<implements>) <name_ext> [<implements> <name_impl>]/;
-	rule _prepare_interface					=> q/<interface> <name> [<content>] <block_brace>/;
-	rule _prepare_interface_post			=> q/<_interface_>/;
-	
-	rule _prepare_abstract					=> q/<abstract> <name> [<content>] <block_brace>/;
-	rule _prepare_abstract_post				=> q/<_abstract_>/;
-	
-	rule _foreach							=> q/<for_each> [<variable>] <name> \(<CONDITION>\) \{<STATEMENT>\}/;
-	rule _for								=> q/<for_each> \( <variable> <name> <CONDITION>\) \{<STATEMENT>\}/;
-	rule _while								=> q/<while> \( <variable> <name> <CONDITION>\) \{<STATEMENT>\}/;
-	#rule _prepare_while						=> q/<while> [<variable>] <name> \(<CONDITION>\) \{<STATEMENT>\}/;
-	
-	#rule _function_defs 					=> q/[<accessmod>] <function> [<args_attr>] <op_end>/;
-	rule _function_defs 					=> q/[<accessmod>] <function> [<args_attr>] <op_end><nline>/;
-	
-	rule _function_list 					=> q/<function> <name>/;
-	rule _anon_function_list				=> q/<name> \= <function>/;
-	rule _function_list_post 				=> q/_function_/;	
-	#rule _function2method					=> q/(_NOT:\.)<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
-	#rule _function2method					=> q/(NOT:__METHOD__)<name>\((NOT:__PACKAGE__)[<content>]\)/;
-	rule _function2method					=> q/(NOT:__METHOD__)<name>\((NOT:__PACKAGE__)/;
-	rule _function2method_post1				=> q/(__METHOD__)+/;
-	rule _function2method_post2				=> q/__PACKAGE__\,\)/;
-	rule _anon_func2method					=> q/<func_all>(\-\>|\.)\((NOT:\_\_PACKAGE\_\_)/;
-	rule _func2method_post					=> q/__PACKAGE__\, \)/;
-	
-	rule _prepare_function 					=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
-	rule _prepare_function_post				=> q/<_function_>/;
-	
-	
-	rule _prepare_variable_list				=> q/[<accessmod>] <variable> \( <name_list> \) [<op_end>]/;
-	
-	rule _var_boost1						=> q/<variable> <name>/;
-	rule _var_boost2						=> q/(_NOT:\$)<var_all>/;
-	rule _var_boost_post1					=> q/_var_ \$/;
-	rule _var_boost_post2					=> q/\.\$/;
-	
-	rule _nonamedblock						=> q/<unblk_pref><block_brace>/;
-	# rule _prepare_variable 					=> q/[<accessmod>] <variable> <name> [<op_end>]/;
-	
-	#rule _function_defs 					=> q/[<accessmod>] <function> <name> <string> <op_end>/;
-
-
-	rule _prepare_name_object				=> q/[<accessmod>] <object> [<name>] [<args_attr>] [<block_brace>]/;	
-
-	
-	# rule _prepare_name_namespace			=> q/<namespace> <name> \{/;
-	# rule _prepare_namespace					=> q/[<accessmod>] <_namespace_> <name> \{/;
-	#rule _prepare_class						=> q/[<accessmod>] <_class_> <name> [<args_attr>] \{/;
-	
-	#rule _namespace							=> q/[<_object_type_>] [<accessmod>] <_namespace_> <name> <block_brace>/;
-	#rule _namespace							=> q/[<_object_type_>] [<accessmod>] <_namespace_> <name> \{/;
-	
-	rule _namespace							=> q/<namespace> <name> <block_brace>/;
+	#rule _object							=> q/[<_object_type_>] [<accessmod>] <_object_> <name> [<content>] \{/;	
 	rule _class								=> q/[<accessmod>] <class> <name> [<content>] <block_brace>/;
 	rule _abstract							=> q/[<accessmod>] <abstract> <name> [<content>] <block_brace>/;
 	rule _interface							=> q/[<accessmod>] <interface> <name> [<content>] <block_brace>/;
 	rule _interface_set						=> q/[<accessmod>] <object_members> <name> <op_end>/;
 	
-	#rule _object							=> q/[<_object_type_>] [<accessmod>] <_object_> <name> [<content>] \{/;
-	#rule _class								=> q/[<_object_type_>] [<accessmod>] prepared_class <name> [<content>] \{/;
-		
-	
-	
-	#rule _function_defs 					=> q/[<_object_type_>] [<accessmod>] <_function_> <name> [<string>] <op_end>/;
+	rule _foreach							=> q/<for_each> [<variable>] <name> \(<CONDITION>\) \{<STATEMENT>\}/;
+	rule _for								=> q/<for_each> \( <variable> <name> <CONDITION>\) \{<STATEMENT>\}/;
+	rule _while								=> q/<while> \( <variable> <name> <CONDITION>\) \{<STATEMENT>\}/;
+
 	rule _function 							=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
+	rule _function_defs 					=> q/[<accessmod>] <function> [<args_attr>] <op_end><nline>/;
+	rule _function_method					=> q/(NOT:__METHOD__)<name>\((NOT:__PACKAGE__)/;
+	rule _function_method_post1				=> q/(__METHOD__)+/;
+	rule _function_method_post2				=> q/__PACKAGE__\,\)/;
+	
+	rule _variable_list						=> q/[<accessmod>] <variable> \( <name_list> \) [<op_end>]/;
 	rule _variable							=> q/[<accessmod>] <variable> <name> [<op_end>]/;
 	rule _constant							=> q/[<accessmod>] <const> <name> = <content> <op_end>/;
-	rule _boost_var							=> q/<all>/;
+	#rule _variable_boost					=> q/((_NOT:sigils)(_NOT:sub)<spss>)<name>/;
+	#rule _variable_boost					=> q/(_NOT:__VARBOOSTED__)(_NOT:sigils)<name>/;
+	#rule _variable_boost					=> q/(_NOT:sigils|\.)(_NOT:sub\s)(NOT:__VARBOOSTED__)<name>/;
+	rule _variable_boost					=> q/(_NOT:sigils|\.)(_NOT:sub\s)<name>/;
+	rule _variable_boost_post				=> q/__VARBOOSTED__/;
 	# rule _variable_boost					=> q/<word> (_NOT:sigils)<name>/;
-	
+	rule _var_boost1						=> q/<variable> <name>/;
+	rule _var_boost2						=> q/(_NOT:\$)<var_all>/;
+	rule _var_boost_post1					=> q/_var_ \$/;
+	rule _var_boost_post2					=> q/\.\$/;	
 
-	
-
-	
 	rule _op_dot							=> q/op_dot/;
-	
 	rule _optimise4 						=> q/\s+\;/;
 	#rule _optimise5 						=> q/\s\s+(_NOT:\n|\t)/;
 	rule _optimise5 						=> q/\s\s+/;
 	rule _optimise6 						=> q/_UNNAMEDBLOCK_/;	
-	
 	rule _including							=> q/<including>/;
-	
 	rule _commentC							=> q/<comment_C>/;
+	
 	############################# post rules ########################################
 	# rule _parser_list_iter					=> q/LI: \( <name_list> \) \{ <content> \}/;
 	# rule _parser_if							=> q/IF: \( [<CONDITION>] \) \{<THEN>\}[ ELSE: \{<ELSE>\} ]/;
 	
-	
 	############################# actions ########################################
-	
 	action _								=> \&_;
 	
 	action _excluding 						=> \&_syntax_excluding;
-	#action _excluding 						=> \&{$a->_syntax_excluding};
-	
+	action _nonamedblock					=> \&_syntax_nonamedblock;
+
+	action _namespace 						=> \&_syntax_namespace;
+	#action _object 							=> \&_syntax_object;
+	action _class 							=> \&_syntax_class;
+	action _abstract 						=> \&_syntax_abstract;
+	action _interface 						=> \&_syntax_interface;
+	action _interface_set					=> \&_syntax_interface_set;	
 	action _inject 							=> \&_syntax_inject;
 	action _using 							=> \&_syntax_using;
 	action _inherits			 			=> \&_syntax_inherits;
 	action _implements 						=> \&_syntax_implements;
-	
-	#action _prepare_interface 				=> \&_syntax_prepare_interface;
-	#action _prepare_interface_post			=> \&_syntax_prepare_interface_post;
-	#action _prepare_abstract 				=> \&_syntax_prepare_abstract;
-	#action _prepare_abstract_post			=> \&_syntax_prepare_abstract_post;
-	
+
 	action _foreach 						=> \&_syntax_foreach;
 	action _for 							=> \&_syntax_for;
 	action _while 							=> \&_syntax_while;
-	
+
 	action _function_defs 					=> \&_syntax_function_defs;
-	
-	#action _function_list 					=> \&_syntax_function_list;
-	#action _anon_function_list 				=> \&_syntax_anon_function_list;
-	#action _function_list_post 				=> \&_syntax_function_list_post;
-	action _function2method					=> \&_syntax_function2method;
-	action _function2method_post1			=> \&_syntax_function2method_post1;
-	action _function2method_post2			=> \&_syntax_function2method_post2;
-	#action _anon_func2method				=> \&_syntax_anon_func2method;
-	#action _func2method_post				=> \&_syntax_func2method_post;	
-	
-	#action _prepare_function 				=> \&_syntax_prepare_function;
-	#action _prepare_function_post 			=> \&_syntax_prepare_function_post;
-	
-	action _prepare_variable_list 			=> \&_syntax_prepare_variable_list;
-	
-	#action _var_boost1						=> \&_syntax_var_boost1;
-	#action _var_boost2						=> \&_syntax_var_boost2;
-	#action _var_boost_post1					=> \&_syntax_var_boost_post1;
-	#action _var_boost_post2					=> \&_syntax_var_boost_post2;
-	
-	action _nonamedblock					=> \&_syntax_nonamedblock;
-	
-	
-	#action _prepare_name_object				=> \&_syntax_prepare_name_object;
-	
-		#action _prepare_namespace 				=> \&_syntax_prepare_namespace;
-		#action _prepare_class 					=> \&_syntax_prepare_class;
-	
-		#action _function_defs 					=> \&_syntax_function_defs;
-		
-		
-	action _namespace 						=> \&_syntax_namespace;
-	#action _object 							=> \&_syntax_object;
-	
-		action _class 							=> \&_syntax_class;
-		action _abstract 						=> \&_syntax_abstract;
-		action _interface 						=> \&_syntax_interface;
-		action _interface_set					=> \&_syntax_interface_set;	
-		
-		
 	action _function 						=> \&_syntax_function;
+	action _function_method					=> \&_syntax_function_method;
+	action _function_method_post1			=> \&_syntax_function_method_post1;
+	action _function_method_post2			=> \&_syntax_function_method_post2;		
+
+	action _variable_list 					=> \&_syntax_variable_list;
 	action _variable 						=> \&_syntax_variable;
 	action _constant 						=> \&_syntax_constant;
-	
-	action _boost_var						=> \&_syntax_boost_var;
-	
-	
-	
-		#action _variable_boost					=> \&_syntax_variable_boost;
-	
-	
+	action _variable_boost					=> \&_syntax_variable_boost;
+	action _variable_boost_post				=> \&_syntax_variable_boost_post;
 
-	
 	action _op_dot							=> \&_syntax_op_dot;
-	
-	
-	
 	action _optimise4		 				=> \&_syntax_optimise4;
 	action _optimise5		 				=> \&_syntax_optimise5;
 	action _optimise6		 				=> \&_syntax_optimise6;
 	action _including						=> \&_syntax_including;
-	
 	action _commentC 						=> \&_syntax_commentC;
-	
 	
 	order = var 'parser__';
 	
 	#print dump(order);
-	#print rule '_function2method';
+	#print rule '_function_method';
 
 }
 
@@ -655,10 +568,10 @@ sub parse_parser_if {
 #	$code 				= parse($self, $code, &grammar, [qw/
 #		_function_defs
 #		_function
-#		_function2method
+#		_function_method
 #	/], $confs);
 #	#$code 				= parse($self, $code, &grammar, ['_function'], $confs);
-#	#$code 				= parse($self, $code, &grammar, ['_function2method'], $confs);
+#	#$code 				= parse($self, $code, &grammar, ['_function_method'], $confs);
 #}
 
 #-------------------------------------------------------------------------------------< excluding_ON
@@ -741,7 +654,7 @@ sub _syntax_function_list {
 	#print ">>>>> ".var('class_func')."\n";
 
 	token func_all					=> var('class_func')||'';
-	rule _function2method			=> q/<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
+	rule _function_method			=> q/<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
 	
 	return "_<kw_function>_ <name>";
 }
@@ -761,7 +674,7 @@ sub _syntax_anon_function_list {
 
 sub _syntax_function_list_post { '<kw_function>' }
 
-sub _syntax_function2method_OFF {
+sub _syntax_function_method_OFF {
 	my ($rule_name, $confs)			= @_;
 	my $parent_class	= $confs->{parent};
 	my $parent_name		= $confs->{parent} || 'main';
@@ -794,7 +707,7 @@ sub _syntax_function2method_OFF {
 	return "${fname}(${self}${args})";
 }
 
-sub _syntax_function2method {
+sub _syntax_function_method {
 	my ($self, $rule_name, $confs)			= @_;
 	my $parent_class	= $confs->{parent};
 	#my $parent_name		= $confs->{parent} || 'main';
@@ -823,13 +736,13 @@ sub _syntax_function2method {
 		#print ">>>>>>>>>>> class - $parent_class | fname - $name | fnlist - *$fn_list* \n";
 	}
 	
-	#$args 				= parse($self, $args, &grammar, ['_function2method'], { parent => $name });
+	#$args 				= parse($self, $args, &grammar, ['_function_method'], { parent => $name });
 
 	return "${method}${name}(${this}";
 }
 
-sub  _syntax_function2method_post1 {''}
-sub  _syntax_function2method_post2 {'__PACKAGE__)'}
+sub  _syntax_function_method_post1 {''}
+sub  _syntax_function_method_post2 {'__PACKAGE__)'}
 
 sub _syntax_anon_func2method { '<anon_func_all>.(__PACKAGE__, ' }
 
@@ -890,36 +803,35 @@ sub _syntax_function {
 	my $anon_code		= '';
 	my $arguments		= '';
 	my $self_args		= '<kw_self>';
-	my $tk_accmod		= token 'accessmod';
+	#my $tk_accmod		= token 'accessmod';
 	my $fn_list;
 	
-	var('members')->{$parent_class} .= ' '.$accmod.'-function-'.$name if $name;
-	var('members')->{$parent_class} =~ s/^\s+// if $name;
-	
-	#$fn_list			= var('members')->{$parent_class} if $name;
-	
-	#if ($fn_list) {
-	#	$fn_list			=~ s/\b(?:$tk_accmod)\-(?!function)\w+\-(\w+)//gsx;
-	#	$fn_list			=~ s/\b(?:$tk_accmod)\-function\-(\w+)/\\b$1\\b/gsx;
-	#	#$fn_list			=~ s/^\s+(.*?)\s+$/$1/sx;
-	#	$fn_list			=~ s/\\b\s+\\b/\\b|\\b/gsx;
-	#	#$fn_list			=~ s/\#//gsx;
-	#	$fn_list			=~ s/\s+//gsx;
-	#}	
-	
-	#if ($name){
+	if ($name){
 		#var('class_func') 				.= '|' . $name;
 		#var('class_func')				=~ s/^\|//;
 		#token func_all					=> $fn_list;
-		#rule _function2method					=> q/(_NOT:sub\s)(_NOT:\-\>)(_NOT:\.)<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
-	#}
+		#rule _function_method					=> q/(_NOT:sub\s)(_NOT:\-\>)(_NOT:\.)<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
+		
+		var('members')->{$parent_class} .= ' '.$accmod.'-function-'.$name;
+		var('members')->{$parent_class} =~ s/^\s+//;
+		
+		#$fn_list			= var('members')->{$parent_class};
+		#if ($fn_list) {
+		#	$fn_list			=~ s/\b(?:$tk_accmod)\-(?!function)\w+\-(\w+)//gsx;
+		#	$fn_list			=~ s/\b(?:$tk_accmod)\-function\-(\w+)/\\b$1\\b/gsx;
+		#	#$fn_list			=~ s/^\s+(.*?)\s+$/$1/sx;
+		#	$fn_list			=~ s/\\b\s+\\b/\\b|\\b/gsx;
+		#	#$fn_list			=~ s/\#//gsx;
+		#	$fn_list			=~ s/\s+//gsx;
+		#}			
+		
+	}
 	
-	
+
 	
 	if (!$name){
 		var('anon_fn_count')++;
 		$name			= var('anon_code_pref').sprintf("%05d", var('anon_fn_count'));
-		$sname			= $name;
 		$fn_name		= $name;
 		$anon_code		= '\&'.$fn_name.'; ' ;
 		$self_args		= '';
@@ -991,7 +903,7 @@ sub _syntax_nonamedblock {
 	
 }
 
-sub _syntax_prepare_variable_list {
+sub _syntax_variable_list {
 	my ($self, $rule_name, $confs)			= @_;
 	
 	my $var_def				= &name_list;
@@ -1055,22 +967,15 @@ sub _syntax_variable {
 	
 	my $accmod			= &accessmod || var 'accessmod';
 	my $name			= &name;
-	my $sname			= &name;
 	my $parent_class	= $confs->{parent};
 	#my $parent_name		= $confs->{parent} || 'main';
 	my $boost_vars		= '';
-	#my $or				= '';
 	my $local_var		= '';
 	my $op_end			= '';
-	#my $tk_op_end		= token 'op_end';
 	
-	var('members')->{$parent_class} .= ' '.$accmod.'-var-'.$name if $accmod ne 'local';
+	var('members')->{$parent_class} .= ' '.$accmod.'-var-'.$name; # if $accmod ne 'local';
 	var('members')->{$parent_class} =~ s/^\s+//;
-	
-	#$name				=~ s/\w+(?:::\w+)*::(\w+)/$1/gsx;
-	#$sname				= $name;
-	#$parent_name		=~ s/(\w+(?:::\w+)*)::\w+/$1/gsx;
-	#$accmod			= '_'.uc($accmod).'_VAR_; ' ;
+
 	$accmod				= var($accmod.'_var');
 	
 	if (&accessmod eq 'local') {
@@ -1078,14 +983,10 @@ sub _syntax_variable {
 		$local_var		= "local *$name; ";
 	}
 	
-	$op_end				= " \$$name".&op_end." " if !&op_end;
-	
-	$boost_vars			= var('class_var') || '';
-	var('class_var')	.= '|' . $name if $name !~ /$boost_vars/;
-	var('class_var')	=~ s/^\|//;
-	
 	$accmod				= eval $accmod if $accmod ne '';
 	#$accmod				= $accmod . '("' . $name . '", "' . $parent_name .'");' if $accmod ne '';
+	
+	$op_end				= " \$$name".&op_end." " if !&op_end;
 
 	#return q/my $<name>; { no warnings; sub <name> ():lvalue { $<name> } } IF: ( !'<op_end>' ) {<name><op_end>}/;
 	#return "my \$$name; $local_var { no warnings; sub $name ():lvalue { \$$name } } $op_end";
@@ -1093,7 +994,7 @@ sub _syntax_variable {
 	return "my \$$name; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name };$op_end";
 }
 
-sub _syntax_variable_boost {
+sub _syntax_variable_boost_OFF {
 	my $word			= &word;
 	my $sigils			= &sigils;
 	my $name			= &name;
@@ -1103,6 +1004,47 @@ sub _syntax_variable_boost {
 	$name 			=~ s/\b($regexp)\b/\$$1/gsx if $regexp;
 	return "$word $name";
 }
+
+sub _syntax_variable_boost {
+	my ($self, $rule_name, $confs)			= @_;
+	my $parent_class	= $confs->{parent};
+	#my $parent_name		= $confs->{parent} || 'main';
+	#my $sps				= &spss;
+	my $name			= &name;
+	#my $args			= &content; #$args ||= '';
+	my $this			= '';
+	my $tk_accmod		= token 'accessmod';
+	my $var_list		= var('members')->{$parent_class}||'';
+	my $sigil			= "";
+	my $varboost		= "__VARBOOSTED__";
+	
+	if ($var_list) {
+		$var_list			=~ s/\b(?:$tk_accmod)\-(?!var)\w+\-\w+(?:::\w+)*//gsx;
+		$var_list			=~ s/\b(?:$tk_accmod)\-var\-(\w+(?:::\w+)*)/\\b$1\\b/gsx;
+		#$var_list			=~ s/^\s+(.*?)\s+$/$1/sx;
+		$var_list			=~ s/\\b\s+\\b/\\b|\\b/gsx;
+		#$var_list			=~ s/\#//gsx;
+		$var_list			=~ s/\s+//gsx;
+		
+		#print ">>>>>>>>>>> *$var_list* \n" if $name =~ m/($var_list)/sx;
+		
+	}
+	
+	if ($name =~ m/$var_list/ && $var_list) {
+		$sigil				= "\$";
+		$varboost			= "";
+		#print ">>>>>>>>>>> class - $parent_class | fname - $name | fnlist - *$var_list* \n" if $name =~ m/$var_list/;
+	}
+	
+	#$name =~ s/($var_list)/\$$1/sx;
+
+	#return "${name}";
+	#return "${sps}${sigil}${name}";
+	return "${sigil}${name}";
+	#return "${sigil}${varboost}${name}";
+}
+
+sub _syntax_variable_boost_post {''}
 #-------------------------------------------------------------------------------------< constant
 sub _syntax_constant {
 	my ($self, $rule_name, $confs)			= @_;
@@ -1219,15 +1161,15 @@ sub _syntax_class {
 	my $extends			= '';
 	my $implements		= '';
 	
-	$accmod				= var($accmod.'_class');
-	$accmod				= eval $accmod if $accmod;	
-	
 	if ($parent_class) {
 		var('members')->{$parent_class} .= ' '.$accmod.'-class-'.$name;
 		var('members')->{$parent_class} =~ s/^\s+//;
 		$name				= $parent_class . '::' . $name;
 		$list_extends		= ",'$parent_class'";
 	}
+	
+	$accmod				= var($accmod.'_class');
+	$accmod				= eval $accmod if $accmod;		
 	
 	$list_extends		.= __list_extends($self, $args_attr);
 	$extends			= "use rise::core::extends ${base_class}${list_extends};";	
@@ -1236,7 +1178,7 @@ sub _syntax_class {
 	#var('class_func')		= '';
 	#var('class_var')		= '';
 	#token func_all			=> 1;
-	#rule _function2method	=> q/<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
+	#rule _function_method	=> q/<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
 	##########################################################################
 
 	#print ">>>>>> accmod - $accmod | parent_class - $parent_name | name - $name\n";
@@ -1509,9 +1451,6 @@ sub __object {
 	my $extends			= '';
 	my $implements		= '';
 	
-	$accmod				= var($accmod.'_'.$object);
-	$accmod				= eval $accmod if $accmod;	
-	
 	if ($parent_class) {
 		var('members')->{$parent_class} .= ' '.$accmod.'-'.$object.'-'.$name;
 		var('members')->{$parent_class} =~ s/^\s+//;
@@ -1522,11 +1461,14 @@ sub __object {
 	$list_extends		.= __list_extends($self, $args_attr);
 	$extends			= "use rise::core::extends ${base_class}${list_extends};";	
 	
+	$accmod				= var($accmod.'_'.$object);
+	$accmod				= eval $accmod if $accmod;		
+	
 	################# reset function list from new class #####################
 	#var('class_func')		= '';
 	#var('class_var')		= '';
 	#token func_all			=> 1;
-	#rule _function2method	=> q/<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
+	#rule _function_method	=> q/<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
 	##########################################################################
 
 	#print ">>>>>> accmod - $accmod | parent_class - $parent_name | name - $name\n";
