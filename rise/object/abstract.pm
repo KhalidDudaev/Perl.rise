@@ -132,12 +132,15 @@ sub set_interface {
 #}
 
 sub protected_abstract {
-	my ($self)			= @_;
+	#my ($self)			= @_;
 	my $callercode		= (caller(2))[3]; $callercode		=~ s/.*::(\w+)/$1/;
 	my $callercode_eval	= (caller(3))[3]; $callercode_eval	=~ s/.*::(\w+)/$1/;
 	
-	($callercode eq 'import' || $callercode_eval eq 'import') or $self->__error('abstract_prot');
+	($callercode eq 'import' || $callercode_eval eq 'import') or shift->__error('abstract_prot');
 }
+
+sub private_abstract { shift->__error('abstract_priv') }
+sub public_abstract { shift->__error('abstract_publ') }
 
 sub DESTROY {}
 

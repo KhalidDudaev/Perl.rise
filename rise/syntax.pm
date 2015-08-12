@@ -46,6 +46,7 @@ sub confirm {
 	var('env')						= '$rise::object::object::renv';
 	var('app_stack')				= [];
 	#var('parse_token_sign')			= '-';
+	var('accessmod_class')			= $self->{accmod_class} || 'private';
 	var('accessmod')				= $self->{accmod} || 'private';
 	#var('command_inherit')			= 'use parents';
 	#var('text')						= [];
@@ -69,17 +70,17 @@ sub confirm {
 	var('protected_base')			= '';
 	var('public_base')				= '';
 	
-	var('private_class')			= q/'__PACKAGE__->private_class("' . $parent_class . '", "' . $name .'");'/;
-	var('protected_class')			= q/'__PACKAGE__->protected_class("' . $parent_class . '", "' . $name .'");'/;
+	var('private_class')			= q/'__PACKAGE__->private_class("' . ($parent_class||'main') . '", "' . $name .'");'/;
+	var('protected_class')			= q/'__PACKAGE__->protected_class("' . ($parent_class||'main') . '", "' . $name .'");'/;
 	var('public_class')				= '';
 	
-	var('private_abstract')			= '';
-	var('protected_abstract')		= q/'__PACKAGE__->protected_abstract("' . $parent_class . '", "' . $name .'");'/;
-	var('public_abstract')			= '';
+	var('private_abstract')			= q/'__PACKAGE__->private_abstract("' . ($parent_class||'main') . '", "' . $name .'");'/;
+	var('protected_abstract')		= q/'__PACKAGE__->protected_abstract("' . ($parent_class||'main') . '", "' . $name .'");'/;
+	var('public_abstract')			= q/'__PACKAGE__->public_abstract("' . ($parent_class||'main') . '", "' . $name .'");'/;
 	
-	var('private_interface')		= '';
-	var('protected_interface')		= q/'__PACKAGE__->protected_interface("' . $parent_class . '", "' . $name .'");'/;
-	var('public_interface')			= '';
+	var('private_interface')		= q/'__PACKAGE__->private_interface("' . ($parent_class||'main') . '", "' . $name .'");'/;
+	var('protected_interface')		= q/'__PACKAGE__->protected_interface("' . ($parent_class||'main') . '", "' . $name .'");'/;
+	var('public_interface')			= q/'__PACKAGE__->public_interface("' . ($parent_class||'main') . '", "' . $name .'");'/;
 	
 	var('private_var')				= q/'__PACKAGE__->private_var("' . $parent_class . '", "' . $name .'");'/;
 	var('protected_var')			= q/'__PACKAGE__->protected_var("' . $parent_class . '", "' . $name .'");'/;
@@ -90,6 +91,9 @@ sub confirm {
 	var('public_code')				= '';
 	
 	var ('parser_variable')			= [
+		'_variable_boost',
+		#'_var_boost2',
+		'_var_boost3',			
 		'_variable',
 		'_constant',
 	];
@@ -100,6 +104,15 @@ sub confirm {
 	];
 	
 	var ('parser_code')				= [
+		
+		'_foreach',
+		'_for',
+		'_while',		
+		
+		'_function_defs',		
+		'_variable_list',
+		'_var_boost1',				
+
 		@{var 'parser_function'},
 		@{var 'parser_variable'},
 	];
@@ -108,20 +121,8 @@ sub confirm {
 		'_class',
 		'_inject',
 		'_using',
-		
-		'_foreach',
-		'_for',
-		'_while',		
-		
-		'_function_defs',		
-		'_variable_list',
-		'_var_boost1',		
-
+	
 		@{var 'parser_code'},
-		
-		'_variable_boost',
-		#'_var_boost2',
-		'_var_boost3',
 	];
 	
 	var ('parser_interface')		= [
@@ -157,7 +158,8 @@ sub confirm {
 		'_function_method_post2',
 		#'_function_boost_post1',
 		#'_function_boost_post2',
-		#'_variable_boost_post',		
+		#'_variable_boost_post',
+		
 		'_including',
 		'_commentC',
 	];
@@ -899,10 +901,9 @@ sub _syntax_function {
 	$arguments			= &kw_local." ".&kw_variable." ($self_args) = \@_;" if $self_args;
 	$arguments			= parse($self, $arguments, &grammar, ['_variable_list','_variable'], { parent => $name });
 	$block 				=~ s/\{(.*)\}/$1/gsx;
-		 
 	$block 				= parse($self, $block, &grammar, ['_variable_boost', '_var_boost3'], { parent => $parent_class });
 	$block 				= parse($self, $block, &grammar, [@{var 'parser_code'}], { parent => $name });
-	
+	#$block 				= parse($self, $block, &grammar, ['_var_boost2', '_var_boost3'], { parent => $parent_class });
 	#var('wrap_code')->{$name} = $block;
 	#$block = '%%%WRAP_CODE_' . $name . '%%%';
 	
@@ -1248,12 +1249,17 @@ sub _syntax_prepare_class {
 }
 
 sub _syntax_class {
+	return '' if !&name;
+	my ($self, $rule_name, $confs)			= @_;
+	$confs->{accessmod}						= &accessmod || var 'accessmod';
+	return __object($self, 'class', $rule_name, $confs);
+}
+
+sub _syntax_class_OFF2 {
 	
 	return '' if !&name;
 	
 	my ($self, $rule_name, $confs)			= @_;
-	
-	return __object($self, 'class', $rule_name, $confs);
 	
 	my $accmod			= &accessmod || var 'accessmod';
 	my $name			= &name;
@@ -1421,18 +1427,32 @@ sub __list_extends {
 	my $list_extends			= '';
 	my $list_implements			= '';
 	my $comma					= '';
+	my $tk_extends				= token 'inherits';
+	my $tk_implements			= token 'implements';
+	my $sps						= '';
+	#my $err						= '';
 	
-	#print "###> ".dump($self) . "\n";
+	#print ">>> args_attr - $args_attr\n";
 	
-	($list_extends)				= $args_attr =~ m/extends\s*($tk_name_list)/gsx;
-	($list_implements)			= $args_attr =~ m/implements\s*($tk_name_list)/gsx if $self->{debug};
+	#($list_extends)				= $args_attr =~ m/$tk_extends\s*($tk_name_list)/gsx;
+	#($list_implements)			= $args_attr =~ m/$tk_implements\s*($tk_name_list)/gsx;	
+	
+	$args_attr					=~ s/$tk_extends\s+(?<ext>$tk_name_list)//sx;		$list_extends		= $+{ext} || '';
+	$args_attr					=~ s/$tk_implements\s+(?<imp>$tk_name_list)//sx;	$list_implements	= $+{imp} || '';
+	$args_attr					=~ s/(?<sps>\s*)//; $sps = $+{sps};
+	
+	#print ">>> ext - $list_extends | impl - $list_implements\n";
+	return ";${sps}__PACKAGE__->extends_error" if $args_attr;
 	
 	$comma						= ',' if $list_extends;
+	$list_extends				.= $comma . $sps . $list_implements if $list_implements && $self->{debug};
+	if ($list_extends) {
+		$list_extends				=~ s/(?<scomma>\s*\,\s*)/'$+{scomma}'/gsx;
+		$list_extends				=~ s/\s?\,\s?/,/gsx;
+		$list_extends				= ",'$list_extends'";
+	}
 	
-	$list_extends				.= $comma . $list_implements if ($list_implements);
-		$list_extends			=~ s/\s*\,\s*/','/gsx if $list_extends;
-		$list_extends			= ",'$list_extends'" if $list_extends;
-		$list_extends			||= '';
+	$list_extends				||= '';
 		
 	return $list_extends;
 }
@@ -1491,6 +1511,7 @@ sub _syntax_prepare_interface_post {'<kw_interface>'}
 
 sub _syntax_interface {
 	my ($self, $rule_name, $confs)			= @_;
+	$confs->{accessmod}						= &accessmod || 'protected';
 	return __object($self, 'interface', $rule_name, $confs);
 }
 
@@ -1540,6 +1561,7 @@ sub _syntax_prepare_abstract_post {'<kw_abstract>'}
 
 sub _syntax_abstract {
 	my ($self, $rule_name, $confs)			= @_;
+	$confs->{accessmod}						= &accessmod || 'protected';
 	return __object($self, 'abstract', $rule_name, $confs);
 }
 
@@ -1551,10 +1573,13 @@ sub __object {
 	#return __object('class', $confs);
 	my ($self, $object, $rule_name, $confs)			= @_;
 	
-	my $accmod			= &accessmod || var 'accessmod';
+	#my $accmod			= &accessmod || var 'accessmod';
+	my $accmod			= $confs->{accessmod};
 	my $name			= &name;
 	my $args_attr		= &content;
 	my $block 			= &block_brace;
+	
+	my ($sps1,$sps2,$sps3,$sps4) = (&sps1,&sps2,&sps3,&sps4);
 	
 	my $base_class		= "'rise::object::$object'";
 	my $parent_class	= $confs->{parent} || '';
@@ -1565,6 +1590,8 @@ sub __object {
 	my $implements		= '';
 	my $res				= '';
 	
+	#$accmod				= 'protected' if $object =~ /abstract|interface/;
+	
 	
 	if ($parent_class) {
 		var('members')->{$parent_class} .= ' '.$accmod.'-'.$object.'-'.$name;
@@ -1574,7 +1601,7 @@ sub __object {
 	}
 	
 	$list_extends		.= __list_extends($self, $args_attr);
-	$extends			= "use rise::core::extends ${base_class}${list_extends};";	
+	$extends			= "use rise::core::extends ${base_class}${list_extends}; ";	
 	
 	$accmod				= var($accmod.'_'.$object);
 	$accmod				= eval $accmod if $accmod;		
@@ -1586,10 +1613,12 @@ sub __object {
 	#rule _function_method	=> q/<func_all>\((NOT:__PACKAGE__)[<content>]\)/;
 	##########################################################################
 
-	#print ">>>>>> accmod - $accmod | parent_class - $parent_name | name - $name\n";
+	#print ">>>>>> accmod - $accmod | parent_class - $parent_class | name - $name\n";
 	#print ">>>>>> class_name - $name | func_list - ".var('class_func')."\n";
 
 	$block 				=~ s/\{(.*)\}/$1/gsx;
+			 
+	#$block 				= parse($self, $block, &grammar, ['_variable_boost', '_var_boost3'], { parent => $parent_class });
 	$block 				= parse($self, $block, &grammar, [@{var 'parser_'.$object}], { parent => $name });
 	
 	#var('excluding_class_code')->{$name} = $block;
@@ -1597,7 +1626,7 @@ sub __object {
 	#
 	#return "{ package ${name}; use strict; use warnings;".&sps1.$extends.&sps2.$accmod.&sps3 . __object_header($object, $name || '') . &sps4.$block."}";
 	
-	$res				= "{ package ${name}; use strict; use warnings;".&sps1.$extends.&sps2.$accmod.&sps3 . __object_header($object, $name || '') . &sps4.$block."}";
+	$res				= "{ package ${name};".$sps1."use strict; use warnings;". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '') . $sps4.$block."}";
 	var('wrap_code')->{$name} = $res;
 	$res = '%%%WRAP_CODE_' . $name . '%%%';
 	
@@ -1705,13 +1734,20 @@ sub _syntax_object {
 }
 
 sub __object_header {
+	my $self			= shift;
 	my $obj_type		= shift;
 	my $name			= shift;
 	my $header			= {
-		class		=> "__PACKAGE__->interface_confirm; sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> } sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...",
-		abstract	=> "__PACKAGE__->interface_join;",
-		interface	=> "__PACKAGE__->interface_join;"
+		class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }",
+		abstract	=> "",
+		interface	=> " __PACKAGE__->interface_join;"
 	};
+	
+	if ($self->{debug}) {
+		$header->{class}	.= " __PACKAGE__->interface_confirm; sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
+		$header->{abstract} .= " __PACKAGE__->interface_join;";
+	}
+	
 	return $header->{$obj_type};
 }
 

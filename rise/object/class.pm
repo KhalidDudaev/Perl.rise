@@ -160,6 +160,10 @@ sub protected_class {
 
 sub public_class {}
 
+sub extends_error {
+	shift->__error('class_inherits');
+}
+
 sub DESTROY {}
 
 1;

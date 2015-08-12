@@ -118,12 +118,15 @@ sub interface_compare {
 #}
 
 sub protected_interface {
-	my ($self)			= @_;
+	#my ($self)			= @_;
 	my $callercode		= (caller(2))[3]; $callercode		=~ s/.*::(\w+)/$1/;
 	my $callercode_eval	= (caller(3))[3]; $callercode_eval	=~ s/.*::(\w+)/$1/;
 	
-	($callercode eq 'import' || $callercode_eval eq 'import') or $self->__error('interface_prot');
+	($callercode eq 'import' || $callercode_eval eq 'import') or shift->__error('interface_prot');
 }
+
+sub private_interface { shift->__error('interface_priv') }
+sub public_interface { shift->__error('interface_publ') }
 
 sub DESTROY {}
 

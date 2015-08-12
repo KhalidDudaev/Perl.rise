@@ -11,9 +11,15 @@ my $ERROR		= {
 	class_priv				=> [ [ 1, 2 ], '"ERROR CLASS: Can\'t access class \"$parent\" at $file line $line\n"' ],
 	class_priv_inherit		=> [ [ 1, 3 ], '"ERROR CLASS: Can\'t access class \"$parent\" at $file line $line\n"' ],	
 	class_prot				=> [ [ 1, 2 ], '"ERROR CLASS: Class \"$parent\" only extends at $file line $line\n"' ],
+	class_inherits			=> [ [ 1, 1 ], '"ERROR CLASS: extends or implements syntaxis eror in class \"$parent\" at $file line $line\n"' ],
 	
 	abstract_prot			=> [ [ 1, 2 ], '"ERROR ABSTRACT: Abstract class \"$parent\" only extends at $file line $line\n"' ],
+	abstract_priv			=> [ [ 1, 1 ], '"ERROR ABSTRACT: An abstract class \"$parent\" cannot be private at $file line $line\n"' ],
+	abstract_publ			=> [ [ 1, 1 ], '"ERROR ABSTRACT: An abstract class \"$parent\" cannot be public at $file line $line\n"' ],
+	
 	interface_prot			=> [ [ 1, 2 ], '"ERROR INTERFACE: Interface \"$parent\" only extends at $file line $line\n"' ],
+	interface_priv			=> [ [ 1, 1 ], '"ERROR INTERFACE: An interface \"$parent\" cannot be private at $file line $line\n"' ],
+	interface_publ			=> [ [ 1, 1 ], '"ERROR INTERFACE: An interface \"$parent\" cannot be public at $file line $line\n"' ],
 	
 	code_priv				=> [ [ 1, 2 ], '"ERROR FUNCTION: Can\'t access function \"$name\" from \"$class\" at $file line $line\n"' ],
 	code_prot				=> [ [ 1, 2 ], '"ERROR FUNCTION: Function \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
