@@ -91,6 +91,7 @@ sub confirm {
 	var('public_code')				= '';
 	
 	var ('parser_variable')			= [
+		
 		'_variable_boost',
 		#'_var_boost2',
 		'_var_boost3',			
@@ -150,6 +151,9 @@ sub confirm {
 		'_nonamedblock',
 		@{var 'parser_namespace'},
 		'_unwrap_code',
+		'_op_arrays1',
+		'_op_arrays2',
+		'_op_arrays3',
 		'_op_dot',
 		'_optimise4',
 		'_optimise5',
@@ -265,8 +269,12 @@ sub confirm {
 	token after						=> q/all$/;
 	#token content					=> q/string+/;
 	token content					=> q/all?/;
+	token content1					=> q/all?/;
+	token content2					=> q/all?/;
 	
 	token string					=> q/(?^s:.(?^:all))/;
+	token string1					=> q/(?^s:.(?^:all))/;
+	token string2					=> q/(?^s:.(?^:all))/;
 	
 	token ident						=> q/[^\d\W]\w*/;
 	#token ident						=> q/letter*/;
@@ -417,7 +425,14 @@ sub confirm {
 	token op_dot					=> q/(?<![\s\W])\.(?![\s\d\.])/;
 	#token op_dot					=> q/(?:[^\s])\.(?:[^\s\d\.])/;
 	
+	token self_name					=> q/(?:this\.)*name/;
+	token op_arrays1				=> q/\b(?:pop|push|shift|splice|unshift)\b/;
+	token op_arrays2				=> q/\b(?:grep|map|join)\b/;
+	
 	token sigils					=> q/[\@\$\%\&\*]/;
+	token sigil_S					=> q/\$/;
+	token paren_L					=> q/\(/;
+	token paren_R					=> q/\)/;
 	
 	################################################## rules ####################################################
 	rule _									=> q/<all>/;
@@ -464,6 +479,10 @@ sub confirm {
 	rule _var_boost_post1					=> q/_var_ \$/;
 	rule _var_boost_post2					=> q/\.\$/;	
 
+	rule _op_arrays1						=> q/<op_arrays1> [<paren_L>] [<sigils>]<self_name>/;
+	rule _op_arrays2						=> q/<op_arrays2> <block_brace> [<sigils>]<self_name>/;
+	rule _op_arrays3						=> q/<op_arrays2> <string>\, [<sigils>]<self_name>/;
+	
 	rule _op_dot							=> q/op_dot/;
 	rule _optimise4 						=> q/\s+\;/;
 	#rule _optimise5 						=> q/\s\s+(_NOT:\n|\t)/;
@@ -514,6 +533,9 @@ sub confirm {
 	action _variable_boost_post				=> \&_syntax_variable_boost_post;
 
 	action _unwrap_code						=> \&_syntax_unwrap_code;
+	action _op_arrays1						=> \&_syntax_op_arrays1;
+	action _op_arrays2						=> \&_syntax_op_arrays2;
+	action _op_arrays3						=> \&_syntax_op_arrays3;
 	action _op_dot							=> \&_syntax_op_dot;
 	action _optimise4		 				=> \&_syntax_optimise4;
 	action _optimise5		 				=> \&_syntax_optimise5;
@@ -525,7 +547,7 @@ sub confirm {
 	order = var 'parser__';
 	
 	#print dump(order);
-	#print rule '_function_method';
+	print rule '_op_arrays3';
 
 }
 
@@ -902,6 +924,7 @@ sub _syntax_function {
 	$arguments			= parse($self, $arguments, &grammar, ['_variable_list','_variable'], { parent => $name });
 	$block 				=~ s/\{(.*)\}/$1/gsx;
 	$block 				= parse($self, $block, &grammar, ['_variable_boost', '_var_boost3'], { parent => $parent_class });
+	#$block 				= parse($self, $block, &grammar, [@{var 'parser_variable'}], { parent => $parent_class });
 	$block 				= parse($self, $block, &grammar, [@{var 'parser_code'}], { parent => $name });
 	#$block 				= parse($self, $block, &grammar, ['_var_boost2', '_var_boost3'], { parent => $parent_class });
 	#var('wrap_code')->{$name} = $block;
@@ -1825,6 +1848,104 @@ sub _syntax_prepare_name_object_helper {
 	#}gsxe;
 	
 	return $block;
+}
+
+sub _syntax_op_arrays1 {
+
+	my $var				= '';
+	my $sigils				= &sigils || '&';
+
+	$var 				= "${sigils}<self_name>";
+	$var 				= "\@{${sigils}<self_name>}" if $sigils eq '$';
+	
+	return "<op_arrays1><sps1><paren_L><sps2>${var}";
+}
+
+sub _syntax_op_arrays2 {
+	my ($self, $rule_name, $confs)			= @_;
+	
+	my $parent_class	= $confs->{parent};
+	my $op_arrays2		= &op_arrays2;
+	my $block			= &block_brace;
+	my $sigils			= &sigils || '&';
+	my $self_name		= &self_name;
+	
+	my ($sps1,$sps2,$sps3,$sps4) = (&sps1,&sps2,&sps3,&sps4);
+	
+	my $var				= '';
+	my $res;
+
+	$var 				= "${sigils}${self_name}";
+	$var 				= "\@{${sigils}${self_name}}" if $sigils eq '$';
+	
+	$block 				=~ s/\{(.*)\}/$1/gsx;
+			 
+	$block 				= parse($self, $block, &grammar, ['_op_arrays1','_op_arrays2'], { parent => $parent_class });
+	
+	$res				= $op_arrays2.$sps1.'{'.$block.'}'.$sps2.$var;
+	
+	#var('wrap_code')->{$name} = $res;
+	#$res = '%%%WRAP_CODE_' . $name . '%%%';
+	
+	return $res;
+}
+
+sub _syntax_op_arrays3 {
+
+	my $var				= '';
+	my $sigils				= &sigils || '&';
+	
+
+	$var 				= "${sigils}<self_name>";
+	$var 				= "\@{${sigils}<self_name>}" if $sigils eq '$';
+	$var 				= "\@{${sigils}<self_name>}" if $sigils eq '&';
+	
+	return "<op_arrays2><sps1><string>,<sps2>${var}";
+}
+
+sub _syntax_op_arrays3_OFF {
+	my ($self, $rule_name, $confs)			= @_;
+	
+	my $parent_class	= $confs->{parent};
+	my $string1			= &string1;
+	my $op_arrays2		= &op_arrays2;
+	my $string2			= &string2;
+	#my $op_end			= &op_end;
+	
+	my $tk_sigils		= &tk_sigils;
+	my $tk_self_name	= &tk_self_name;
+	
+	my ($sps1,$sps2,$sps3,$sps4) = (&sps1,&sps2,&sps3,&sps4);
+	
+	my $var				= '';
+	my $res;
+
+	if ($string2 =~ m/^($tk_sigils)?($tk_self_name)(.*?)$/) {
+		
+		my $sigil			= $1 || '&';
+		
+		$var 				= $sigil.$2;
+		$var 				= "\@{".$sigil.$2."}" if $sigil eq '$';
+		$var 				= "\@{".$sigil.$2."}" if $sigil eq '&';
+		
+		$var				.= $3 if $3;
+		
+	}
+	
+	
+
+	
+	#$block 				=~ s/\{(.*)\}/$1/gsx;
+			 
+	#$block 				= parse($self, $block, &grammar, ['_op_arrays1','_op_arrays2'], { parent => $parent_class });
+	
+	#$res				= '['.$op_arrays2.$sps1.$string1.','.$sps2.$var.$sps3.']'.$op_end;
+	$res				= $op_arrays2.$sps1.$string1.','.$sps2.$var;
+	
+	#var('wrap_code')->{$name} = $res;
+	#$res = '%%%WRAP_CODE_' . $name . '%%%';
+	
+	return $res;
 }
 
 sub _syntax_op_dot {'->'}

@@ -150,7 +150,7 @@ sub rule {
 	
 	
 	if ($rule) {
-		$rule 				= __precompile_rule($rule) if $rule !~ m/^\(\?\^\w*\:/;
+		$rule 				= __precompile_rule($self, $rule) if $rule !~ m/^\(\?\^\w*\:/;
 																		
 		$rule 				= __compile_RBNF($action, $rule, &rule_list, &keyword_list);																
 																		
@@ -470,7 +470,7 @@ sub __save_rule_last_var {
 }
 
 sub __precompile_rule {
-	my ($rule) = @_;
+	my ($self, $rule) = @_;
 	my $token_list	= rule_list();
 	my $snum		= 0;
 
@@ -487,7 +487,49 @@ sub __precompile_rule {
 	$rule		=~ s/\(\?\:OR\:(.*?)\)/[$1]/g;
 	$rule		=~ s/\(\?\:NOR\:(.*?)\)/[^$1]/g;
 	
-	$rule		=~ s/\(($token_list)\)/(?<$1>$1)/gsx;
+	#$rule		=~ s/\(($token_list)\)/(?<$1>$1)/gsx;
+	
+	#if ($rule =~ /\(($token_list)(?::(\d+))?\)/){
+	#	
+	#}
+	
+	$rule		=~ s/
+			\(($token_list)\)(?::(\d+))?
+		/
+		my $tk = $1;
+		
+		if ($2) {
+			$tk .= '_'.$2;
+			
+			#token $tk => $1;
+			
+			{no strict; no warnings;
+				*{$self.'::'.$tk}		= sub { grammar->{RULE_LAST_VAR}{$tk} || '' };
+				#*{$self.'::tk_'.$1}	= sub { grammar->{RULE}{$1} };
+			}
+			
+			print "############## >>>>> $tk\n"
+			
+		}
+		
+		my $res = '(?<'.$tk.'>'.$1.')';
+		$res;
+	/gsxe;
+	
+	#$rule		=~ s/
+	#		\(($token_list)(?::(\d+))?\)
+	#	/
+	#		'(?<'.$1.($2 ? '_'.$2 : '').'>'.$1.')'
+	#/gsxe;
+	
+	#{no strict; no warnings;
+	#	*{$self.'::'.$token}		= sub { grammar->{RULE_LAST_VAR}{$token} || '' };
+	#	*{$self.'::tk_'.$token}		= sub { grammar->{RULE}{$token} };
+	#}
+	
+	
+	#$rule		=~ s/\(($token_list)(?::(\d+))?\)/(?<$1($2||)>$1)/gsx;
+	#$rule		=~ s/\(($token_list)(?::(\d+))?\)/'(?<'.$1.($2||'').'>'.$1.')'/gsxe;
 	
 	$rule		=~ s/\s+/$snum++; '(?<sps'.$snum.'>\s*)'/gsxe;
 	#$rule		=~ s/\s+/\\s+/gsx;
