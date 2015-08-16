@@ -9,16 +9,17 @@ use utf8;
 #  '""'	=> sub { @_ },
 #  '0+'	=> sub { @_ };
   
-use parent 'rise::object::object', 'rise::object::error', 'rise::object::function', 'rise::object::variable';
+use parent 'rise::object::object', 'rise::object::error', 'rise::object::function', 'rise::object::variable', 'rise::core::commands';
 
 our $VERSION 	= '0.01';
 
 my $ERROR_MESSAGES		= '';
 
-#my @export_list = qw/
-#this
-#super
-#/;
+my @export_list = qw/
+	rise_arr_to_ref
+/;
+
+#__PACKAGE__->import;
 
 #sub _this_	{ $_[0] }
 #sub _super_	{ no strict 'refs'; ${ $_[0].'::ISA' }[1]; }
@@ -67,27 +68,24 @@ sub new {
 #	return $self;
 #}
 
-#sub import {
-#	$INHERIT = shift;
-#	#print "###################### $INHERIT IMPORTED ####################\n";
-#}
+sub import {
+	my $self	= shift;
+	$self->commands;
+}
 			
 sub self { shift }
 sub obj_type {'CLASS'};
 
-#sub import {
-#	my $caller = caller;
+#sub import { no strict 'refs';
+#	my $self	= shift;
+#	#strict		->import();	
+#	#warnings	->import();
 #	
-#	strict		->import();	
-#	warnings	->import();
-#
-#	no strict 'refs';
+#	#print "############ $self - $caller \n";
 #	
-#	*{$caller . "::this"} = *this;
-#	
-#	#for (@export_list) {
-#	#	*{$caller . "::$_"} = *$_;
-#	#}
+#	for (@export_list) {
+#		*{$self . "::$_"} = *$_;
+#	}
 #}
 
 sub interface_confirm {
