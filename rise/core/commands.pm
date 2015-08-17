@@ -8,7 +8,11 @@ our $VERSION = '0.000';
 my $cenv					= {};
 my @export_list 			= qw/
 	__RISE_A2R
+	__RISE_H2R
 	__RISE_R2A
+	__RISE_R2H
+	__RISE_2R
+	__RISE_R2
 /;
 
 sub new {
@@ -18,7 +22,7 @@ sub new {
     return $self;
 }
 
-sub commands { no strict 'refs';
+sub __RISE_COMMANDS { no strict 'refs';
 	my $self	= shift;
 
 	for (@export_list) {
@@ -41,9 +45,26 @@ sub clone {
 }
 
 sub __RISE_A2R {\@_}
+sub __RISE_H2R {+{@_}}
 sub __RISE_R2A {@{$_[0]}}
 sub __RISE_R2H {%{$_[0]}}
-	
+
+sub __RISE_2R { no strict;
+	return +[@_] if ${__PACKAGE__."::__VARTYPE__"} eq 'ARRAY';
+	return +{@_} if ${__PACKAGE__."::__VARTYPE__"} eq 'HASH';
+}
+
+sub __RISE_R2 { no strict;
+	my $var = shift;
+	${__PACKAGE__."::__VARTYPE__"} = ref $var;
+
+	return $$var if ${__PACKAGE__."::__VARTYPE__"} eq 'SCALAR';
+	return @$var if ${__PACKAGE__."::__VARTYPE__"} eq 'ARRAY';
+	return %$var if ${__PACKAGE__."::__VARTYPE__"} eq 'HASH';
+	return &$var if ${__PACKAGE__."::__VARTYPE__"} eq 'CODE';
+	return *$var if ${__PACKAGE__."::__VARTYPE__"} eq 'GLOB';
+}
+
 sub test {
 	my $self = shift;
 	'its working';

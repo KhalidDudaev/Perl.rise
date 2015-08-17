@@ -151,19 +151,24 @@ sub confirm {
 		'_nonamedblock',
 		@{var 'parser_namespace'},
 		'_unwrap_code',
-		'_op_arrays1',
-		'_op_arrays2',
-		'_op_arrays3',
+		
+		'_op_array1',
+		'_op_array2',
+		'_op_array3',
+		'_op_reverse',
+		'_op_hash',
+		
 		'_op_dot',
-		'_optimise4',
-		'_optimise5',
-		'_optimise6',
+		'_optimize4',
+		
+		'_optimize6',
+		'_optimize7',
 		'_function_method_post1',
 		'_function_method_post2',
 		#'_function_boost_post1',
 		#'_function_boost_post2',
 		#'_variable_boost_post',
-		
+		#'_optimize5',
 		'_including',
 		'_commentC',
 	];
@@ -426,8 +431,13 @@ sub confirm {
 	#token op_dot					=> q/(?:[^\s])\.(?:[^\s\d\.])/;
 	
 	token self_name					=> q/(?:this\.)*name/;
-	token op_arrays1				=> q/\b(?:pop|push|shift|splice|unshift)\b/;
-	token op_arrays2				=> q/\b(?:grep|map|join)\b/;
+	token op_array1					=> q/\b(?:pop|push|shift|splice|unshift|sort)\b/;
+	token op_array2					=> q/\b(?:grep|map|join|sort)\b/;
+	
+	token op_hash					=> q/\b(?:keys|values|each)\b/;
+	token op_reverse				=> q/\b(?:reverse)\b/;
+	
+	token space_try					=> q/(?![\n\r])\s\s/;
 	
 	token sigils					=> q/[\@\$\%\&\*]/;
 	token sigil_S					=> q/\$/;
@@ -479,15 +489,18 @@ sub confirm {
 	rule _var_boost_post1					=> q/_var_ \$/;
 	rule _var_boost_post2					=> q/\.\$/;
 
-	rule _op_arrays1						=> q/<op_arrays1> [<paren_L>] [<sigils>]<self_name>/;
-	rule _op_arrays2						=> q/<op_arrays2> <block_brace> /;
-	rule _op_arrays3						=> q/<op_arrays2> <string>\, /;
+	rule _op_array1							=> q/<op_array1> [<paren_L>] [<sigils>]<self_name>/;
+	rule _op_array2							=> q/<op_array2> <block_brace>/;
+	rule _op_array3							=> q/<op_array2> <string>\,/;
+	rule _op_hash							=> q/<op_hash> [<paren_L>] [<sigils>]<self_name>/;
+	rule _op_reverse						=> q/<op_reverse>/;
 	
 	rule _op_dot							=> q/op_dot/;
-	rule _optimise4 						=> q/\s+\;/;
-	#rule _optimise5 						=> q/\s\s+(_NOT:\n|\t)/;
-	rule _optimise5 						=> q/\s\s+/;
-	rule _optimise6 						=> q/_UNNAMEDBLOCK_/;
+	rule _optimize4 						=> q/\s+\;/;
+	#rule _optimize5 						=> q/\s\s+(_NOT:\n|\t)/;
+	rule _optimize5 						=> q/space_try/;
+	rule _optimize6 						=> q/_UNNAMEDBLOCK_/;
+	rule _optimize7 						=> q/__RISE_R2A __RISE_[A]2R/;
 	rule _including							=> q/<including>/;
 	rule _unwrap_code						=> q/<all>/;
 	rule _commentC							=> q/<comment_C>/;
@@ -533,13 +546,18 @@ sub confirm {
 	action _variable_boost_post				=> \&_syntax_variable_boost_post;
 
 	action _unwrap_code						=> \&_syntax_unwrap_code;
-	action _op_arrays1						=> \&_syntax_op_arrays1;
-	action _op_arrays2						=> \&_syntax_op_arrays2;
-	action _op_arrays3						=> \&_syntax_op_arrays3;
+	
+	action _op_array1						=> \&_syntax_op_array1;
+	action _op_array2						=> \&_syntax_op_array2;
+	action _op_array3						=> \&_syntax_op_array3;
+	action _op_hash							=> \&_syntax_op_hash;
+	action _op_reverse						=> \&_syntax_op_reverse;
+	
 	action _op_dot							=> \&_syntax_op_dot;
-	action _optimise4		 				=> \&_syntax_optimise4;
-	action _optimise5		 				=> \&_syntax_optimise5;
-	action _optimise6		 				=> \&_syntax_optimise6;
+	action _optimize4		 				=> \&_syntax_optimize4;
+	action _optimize5		 				=> \&_syntax_optimize5;
+	action _optimize6		 				=> \&_syntax_optimize6;
+	action _optimize7						=> \&_syntax_optimize7;
 	
 	action _including						=> \&_syntax_including;
 	action _commentC 						=> \&_syntax_commentC;
@@ -547,7 +565,7 @@ sub confirm {
 	order = var 'parser__';
 	
 	#print dump(order);
-	print rule '_op_arrays3';
+	#print rule '_op_array3';
 
 }
 
@@ -940,7 +958,7 @@ sub _syntax_function {
 	#var('wrap_code')->{$name} = $block;
 	#$block = '%%%WRAP_CODE_' . $name . '%%%';
 	
-	$res				= "${anon_code}{ package ${name}; use strict; use warnings; use rise::core::extends 'rise::object::function', '${parent_class}'; use rise::core::function; BEGIN { __PACKAGE__->import } sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}";
+	$res				= "${anon_code}{ package ${name}; use strict; use warnings; use rise::core::extends 'rise::object::function', '${parent_class}'; use rise::core::function; BEGIN { __PACKAGE__->__RISE_COMMANDS } sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}";
 	#$res 				= parse($self, $res, &grammar, [@{var 'parser_code'}], { parent => $parent_class });
 	var('wrap_code')->{$name} = $res;
 	$res = '%%%WRAP_CODE_' . $name . '%%%';
@@ -1790,7 +1808,7 @@ sub __object_header {
 	my $obj_type		= shift;
 	my $name			= shift;
 	my $header			= {
-		class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->import }",
+		class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
 		abstract	=> "",
 		interface	=> " __PACKAGE__->interface_join;"
 	};
@@ -1879,27 +1897,29 @@ sub _syntax_prepare_name_object_helper {
 	return $block;
 }
 
-sub _syntax_op_arrays1 {
+sub _syntax_op_array1 {
 
-	my $var				= '';
+	#my $var				= '';
 	my $sigils			= &sigils || '&';
+	
+	#my ($sps1,$sps2,$sps3,$sps4) = (&sps1,&sps2,&sps3,&sps4);
 
 	#$var 				= "${sigils}<self_name>";
-	$var 				= "\@{${sigils}<self_name>}"; # if $sigils eq '$';
+	#$var 				= "\@{${sigils}<self_name>}"; # if $sigils eq '$';
 	
-	return "<op_arrays1><sps1><paren_L><sps2>${var}";
+	return "<op_array1><sps1><paren_L><sps2>\@{${sigils}<self_name>}";
 }
 
-sub _syntax_op_arrays2 {
-	my ($self, $rule_name, $confs)			= @_;
+sub _syntax_op_array2 {
+	#my ($self, $rule_name, $confs)			= @_;
 	
-	my $parent_class	= $confs->{parent};
-	my $op_arrays2		= &op_arrays2;
-	my $block			= &block_brace;
+	#my $parent_class	= $confs->{parent};
+	#my $op_array2		= &op_array2;
+	#my $block			= &block_brace;
 	#my $sigils			= &sigils; # || '&';
 	#my $self_name		= &self_name;
 	
-	my ($sps1,$sps2,$sps3,$sps4) = (&sps1,&sps2,&sps3,&sps4);
+	#my ($sps1,$sps2,$sps3,$sps4) = (&sps1,&sps2,&sps3,&sps4);
 	
 	#my $var				= '';
 	#my $res;
@@ -1909,19 +1929,19 @@ sub _syntax_op_arrays2 {
 	
 	#$block 				=~ s/\{(.*)\}/$1/gsx;
 			 
-	#$block 				= parse($self, $block, &grammar, ['_op_arrays1','_op_arrays2'], { parent => $parent_class });
+	#$block 				= parse($self, $block, &grammar, ['_op_array1','_op_array2'], { parent => $parent_class });
 	
-	#$res				= '['.$op_arrays2.$sps1.'{'.$block.'}'.$sps2.$var.']';
-	#$res				= "__RISE_A2R ${op_arrays2}${sps1}${block}${sps2}__RISE_R2A ";
+	#$res				= '['.$op_array2.$sps1.'{'.$block.'}'.$sps2.$var.']';
+	#$res				= "__RISE_A2R ${op_array2}${sps1}${block}${sps2}__RISE_R2A ";
 	
 	#var('wrap_code')->{$name} = $res;
 	#$res = '%%%WRAP_CODE_' . $name . '%%%';
 	
 	#return $res;
-	return "__RISE_A2R ${op_arrays2}${sps1}${block}${sps2}__RISE_R2A ";
+	return "__RISE_A2R <op_array2><sps1><block_brace> __RISE_R2A";
 }
 
-sub _syntax_op_arrays3 {
+sub _syntax_op_array3 {
 
 	#my $var				= '';
 	#my $sigils			= &sigils; # || '&';
@@ -1931,16 +1951,33 @@ sub _syntax_op_arrays3 {
 	#$var 				= "\@{${sigils}<self_name>}"; # if $sigils eq '$';
 	#$var 				= "\@{${sigils}<self_name>}" if $sigils eq '&';
 	
-	#return "[<op_arrays2><sps1><string>,<sps2>${var}]";
-	return "__RISE_A2R <op_arrays2><sps1><string>,<sps2>__RISE_R2A ";
+	#return "[<op_array2><sps1><string>,<sps2>${var}]";
+	return "__RISE_A2R <op_array2><sps1><string>, __RISE_R2A";
 }
 
-sub _syntax_op_arrays3_OFF {
+sub _syntax_op_hash {
+
+	#my $var				= &self_name;
+	my $sigils			= &sigils || '&';
+	my $selfname		= &self_name;
+	#my ($sps1,$sps2,$sps3,$sps4) = (&sps1,&sps2,&sps3,&sps4);
+	#print "############### $selfname\n";
+	
+	#$var 				= "${sigils}<self_name>";
+	$selfname 				= "\%{${sigils}<self_name>}" if &self_name !~ /\_\_RISE/; # if $sigils eq '$';
+	
+	return "__RISE_A2R <op_hash><sps1><paren_L><sps2>${selfname}";
+}
+
+sub _syntax_op_reverse {'__RISE_2R <op_reverse> __RISE_R2'}
+
+
+sub _syntax_op_array3_OFF {
 	my ($self, $rule_name, $confs)			= @_;
 	
 	my $parent_class	= $confs->{parent};
 	my $string1			= &string1;
-	my $op_arrays2		= &op_arrays2;
+	my $op_array2		= &op_array2;
 	my $string2			= &string2;
 	#my $op_end			= &op_end;
 	
@@ -1969,10 +2006,10 @@ sub _syntax_op_arrays3_OFF {
 	
 	#$block 				=~ s/\{(.*)\}/$1/gsx;
 			 
-	#$block 				= parse($self, $block, &grammar, ['_op_arrays1','_op_arrays2'], { parent => $parent_class });
+	#$block 				= parse($self, $block, &grammar, ['_op_array1','_op_array2'], { parent => $parent_class });
 	
-	#$res				= '['.$op_arrays2.$sps1.$string1.','.$sps2.$var.$sps3.']'.$op_end;
-	$res				= $op_arrays2.$sps1.$string1.','.$sps2.$var;
+	#$res				= '['.$op_array2.$sps1.$string1.','.$sps2.$var.$sps3.']'.$op_end;
+	$res				= $op_array2.$sps1.$string1.','.$sps2.$var;
 	
 	#var('wrap_code')->{$name} = $res;
 	#$res = '%%%WRAP_CODE_' . $name . '%%%';
@@ -1982,8 +2019,9 @@ sub _syntax_op_arrays3_OFF {
 
 sub _syntax_op_dot {'->'}
 
-sub _syntax_optimise4 { ';' }
-sub _syntax_optimise5 { ' ' }
-sub _syntax_optimise6 { '' }
+sub _syntax_optimize4 { ';' }
+sub _syntax_optimize5 { ' ' }
+sub _syntax_optimize6 { '' }
+sub _syntax_optimize7 { '<sps1>' }
 
 1;

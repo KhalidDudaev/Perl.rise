@@ -9,7 +9,7 @@ use utf8;
 #  '""'	=> sub { @_ },
 #  '0+'	=> sub { @_ };
   
-use parent 'rise::object::object', 'rise::object::error', 'rise::object::function', 'rise::object::variable', 'rise::core::commands';
+use parent 'rise::object::object', 'rise::object::error', 'rise::object::variable', 'rise::core::commands';
 
 our $VERSION 	= '0.01';
 
@@ -70,7 +70,7 @@ sub new {
 
 sub import {
 	my $self	= shift;
-	$self->commands;
+	$self->__RISE_COMMANDS;
 }
 			
 sub self { shift }

@@ -6,7 +6,7 @@ use utf8;
 #use Data::Dump 'dump';
 #local $\ = "\n";
 
-use parent 'rise::object::object', 'rise::object::error', 'rise::object::function', 'rise::object::variable';
+use parent 'rise::object::object', 'rise::object::error', 'rise::object::function', 'rise::object::variable', 'rise::core::commands';
 
 our $VERSION			= '0.01';
 my $VARS				= {};
