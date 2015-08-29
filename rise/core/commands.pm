@@ -7,12 +7,14 @@ our $VERSION = '0.000';
 
 my $cenv					= {};
 my @export_list 			= qw/
+	_
 	__RISE_A2R
 	__RISE_H2R
 	__RISE_R2A
 	__RISE_R2H
 	__RISE_2R
 	__RISE_R2
+	
 /;
 
 sub new {
@@ -23,12 +25,23 @@ sub new {
 }
 
 sub __RISE_COMMANDS { no strict 'refs';
-	my $self	= shift;
+	my $self	= shift || caller(0);
+	
+	#$self		= caller(1) if $self eq 'rise::core::commands';
+	
+#	my $obj		= caller(0);
+#	$obj		= caller(1) if $obj eq 'rise::core::function_new';
+#	
+#	print ">>>>>>>>
+#	EQ	: self: $self | $target == $obj 
+#<<<<<<<<<\n";
 
 	for (@export_list) {
-		*{$self . "::$_"} = *$_;
+		*{$self . "::$_"} = \&$_;
 	}
 }
+
+sub _ { $_ };
 
 sub clone {
 	my $var = shift;
@@ -63,6 +76,29 @@ sub __RISE_R2 { no strict;
 	return %$var if ${__PACKAGE__."::__VARTYPE__"} eq 'HASH';
 	return &$var if ${__PACKAGE__."::__VARTYPE__"} eq 'CODE';
 	return *$var if ${__PACKAGE__."::__VARTYPE__"} eq 'GLOB';
+}
+
+sub __RISE_VAR_PRIV {
+	my $class		= shift;
+	my $caller		= caller(1);
+	my $name		= shift;
+	
+#	print ">>> PRIV <<<
+#	class:	$class
+#	caller:	$caller
+#	name:	$name
+#>>>>>>>>>>\n";
+	
+	$class->__RISE_ERR('PRIVATE_VAR', $name) unless ($caller eq $class || $caller =~ m/^$class\b/o);
+	1;
+}
+
+sub __RISE_VAR_PROT {
+	my $class		= shift;
+	#my $caller		= shift;
+	#my $name		= shift;
+	$class->__RISE_ERR('PROTECTED_VAR', $_[1]) unless $_[0]->isa($class);
+	1;
 }
 
 sub test {

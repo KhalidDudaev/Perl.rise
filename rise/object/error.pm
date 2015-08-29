@@ -24,8 +24,22 @@ my $ERROR		= {
 	code_priv				=> [ [ 1, 2 ], '"ERROR FUNCTION: Can\'t access function \"$name\" from \"$class\" at $file line $line\n"' ],
 	code_prot				=> [ [ 1, 2 ], '"ERROR FUNCTION: Function \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
 	
+	CODE_PRIVATE			=> [ [ 0, 1 ], '"ERROR FUNCTION: Can\'t access function \"$name\" from \"$class\" at $file line $line\n"' ],
+	CODE_PROTECTED			=> [ [ 0, 1 ], '"ERROR FUNCTION: Function \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],	
+	
 	var_priv				=> [ [ 1, 2 ], '"ERROR VARIABLE: Can\'t access variable \"$name\" from \"$class\" at $file line $line\n"' ],
 	var_prot				=> [ [ 1, 2 ], '"ERROR VARIABLE: Variable \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
+	
+	VAR_PRIVATE				=> [ [ 0, 1 ], '"ERROR VARIABLE: Can\'t access variable \"$name\" from \"$class\" at $file line $line\n"' ],
+	VAR_PROTECTED			=> [ [ 0, 1 ], '"ERROR VARIABLE: Variable \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
+	
+	VAR_CAST				=> [ [ 1, 2 ], '"ERROR TYPE: You can only assign a value type \"$name\" at $file line $line\n"' ],
+	#VAR_PROTECTED			=> [ [ 0, 1 ], '"ERROR VARIABLE: Variable \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
+	
+	
+	PRIVATE					=> [ [ 0, 1 ], '"ERROR ACCESS: Can\'t access function \"$name\" from \"$class\" at $file line $line\n"' ],
+	PROTECTED				=> [ [ 0, 1 ], '"ERROR ACCESS: Function \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
+	
 };
 #my $conf						= {
 #	class_priv				=> [0,1],
@@ -129,6 +143,39 @@ sub _error {
 	
 	$file =~ s/(.*?)bin\/(\w+)\.pm/$1source\/$2.dclass/gsx;
 	$func =~ s/.*::(\w+)/$1/g;
+	
+	$err_msg = eval $err_conf->[1];
+	
+	die $err_msg;
+}
+
+sub __RISE_ERR {
+	my $class		= shift;
+	my $err			= shift;
+	my $name		= shift;
+	
+	my $err_conf	= $ERROR->{$err};
+	my $level		= $err_conf->[0];
+	my $parent		= (caller($level->[0]))[0];
+	my ($child, $file, $line, $func) = (caller($level->[1]));
+	my $err_msg;
+	
+	$file			=~ s/\.pm/\.class/gsx;
+	$func			=~ s/.*::(\w+)/$1/;	
+	$class			=~ s/::$func//;
+	
+#	print "----------------
+#	self	: $self
+#	error	: $err
+#	parent	: $parent
+#	child	: $child
+#	file	: $file
+#	line	: $line
+#	func	: $name
+#----------------\n";
+	#print ">>>>>> $class - $name | ".$level->[0]." <<<<<<<\n";
+	
+
 	
 	$err_msg = eval $err_conf->[1];
 	

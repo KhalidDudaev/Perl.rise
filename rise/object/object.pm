@@ -3,12 +3,25 @@ use strict;
 use warnings;
 use utf8;
 
+#use parent qw/
+#	rise::object::error
+#/;
+
 our $VERSION = '0.01';
 
 #our $INHERIT = 0;
 our $caller = 'rise::object::object';
 #our @renv = ('rise::object::object');
 our $renv = { caller => { class => 'rise::object::object'}};
+
+my $ENV_CLASS		= {
+	this_class		=> 'rise::object::object',
+	caller_class	=> 'CALLER',
+	caller_code		=> 'CODE',
+	caller_data		=> 'DATA'
+};
+
+sub __RISE_ENV { shift->new }
 
 my $VARS		= {};
 #my $ERROR		= {
@@ -63,6 +76,12 @@ sub obj {
 #	$this                   	= bless($lock, $class);                         # обьявляем класс и его свойства
 #	return $this;
 #}
+
+sub new {
+	#my $class					= ref $_[0] || $_[0];
+	return bless($ENV_CLASS, (ref $_[0] || $_[0]));
+}
+
 
 #sub __error {
 #	my $self		= shift;

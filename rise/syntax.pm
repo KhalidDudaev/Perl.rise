@@ -54,6 +54,7 @@ sub confirm {
 	#var('class')					= '';
 	#var('function')					= '';
 	var('anon_fn_count')			= 0;
+	var('local_var_count')			= 0;
 	var('anon_code_pref')			= 'ACODE';
 	#var('class_blocknum')			= undef;
 	var('members')					= {};
@@ -82,13 +83,22 @@ sub confirm {
 	var('protected_interface')		= q/'__PACKAGE__->protected_interface("' . ($parent_class||'main') . '", "' . $name .'");'/;
 	var('public_interface')			= q/'__PACKAGE__->public_interface("' . ($parent_class||'main') . '", "' . $name .'");'/;
 	
-	var('private_var')				= q/'__PACKAGE__->private_var("' . $parent_class . '", "' . $name .'");'/;
-	var('protected_var')			= q/'__PACKAGE__->protected_var("' . $parent_class . '", "' . $name .'");'/;
-	var('public_var')				= '';
+	#var('private_var')				= q/'__PACKAGE__->private_var("' . $parent_class . '", "' . $name .'");'/;
+	#var('protected_var')			= q/'__PACKAGE__->protected_var("' . $parent_class . '", "' . $name .'");'/;
+	#var('public_var')				= '';
 	
-	var('private_code')				= q/'__PACKAGE__->private_code("' . $parent_class . '", "' . $name .'");'/;
-	var('protected_code')			= q/'__PACKAGE__->protected_code("' . $parent_class . '", "' . $name .'");'/;
-	var('public_code')				= '';
+	var('private_var')				= q{'__PACKAGE__->__RISE_ERR(\'PRIVATE_VAR\', \''.$name.'\') unless (caller eq \''.$parent_class.'\' || caller =~ m/^' . $parent_class . '\b/o);'};
+	var('protected_var')			= q/'__PACKAGE__->__RISE_ERR(\'PROTECTED_VAR\', \''.$name.'\') unless caller->isa(\''.$parent_class.'\');'/;
+	var('public_var')				= q/''/;
+	var('local_var')				= q/''/;
+	
+	#var('private_code')				= q/'__PACKAGE__->private_code("' . $parent_class . '", "' . $name .'");'/;
+	#var('protected_code')			= q/'__PACKAGE__->protected_code("' . $parent_class . '", "' . $name .'");'/;
+	#var('public_code')				= q/''/;
+	
+	var('private_code')				= q{'__PACKAGE__->__RISE_ERR(\'PRIVATE_CODE\', \''.$name.'\') unless (caller eq \''.$parent_class.'\' || caller =~ m/^' . $parent_class . '\b/o);'};
+	var('protected_code')			= q/'__PACKAGE__->__RISE_ERR(\'PROTECTED_CODE\', \''.$name.'\') unless caller->isa(\''.$parent_class.'\');'/;
+	var('public_code')				= q/''/;
 	
 	var ('parser_variable')			= [
 		
@@ -228,15 +238,23 @@ sub confirm {
 	keyword inherits				=> 'extends';
 	keyword implements				=> 'implements';
 	keyword inject					=> 'inject';
+	
 	keyword function				=> 'function';
 	keyword method					=> 'method';
 	keyword fmethod					=> 'fmethod';
+	
 	keyword variable				=> 'var';
 	keyword constant				=> 'const';
 	keyword private					=> 'private';
 	keyword protected				=> 'protected';
 	keyword public					=> 'public';
 	keyword local					=> 'local';
+	
+	#keyword numeric					=> 'numeric';
+	#keyword string					=> 'string';
+	#keyword array					=> 'array';
+	#keyword hash					=> 'hash';
+	
 	keyword self					=> 'this';
 	
 	keyword for						=> 'for';
@@ -262,6 +280,14 @@ sub confirm {
 	token protected					=> keyword 'protected';
 	token public					=> keyword 'public';
 	token local						=> keyword 'local';
+	
+	#token numeric					=> keyword 'numeric';
+	#token str						=> keyword 'string';
+	#token array						=> keyword 'array';
+	#token hash						=> keyword 'hash';
+	
+	token variable_type				=> q/\:\s*\w+(?:\s*block_paren)?/;
+	
 	token self						=> keyword 'self';
 	token for						=> keyword 'for';
 	token foreach					=> keyword 'foreach';
@@ -422,7 +448,7 @@ sub confirm {
 	
 	token brackets_brace			=> q/(?:\{(?!\s)|(?<!\s)\})/;
 	
-	token CONDITION					=> q/content/;
+	token condition					=> q/content/;
 	token STATEMENT					=> q/content/;
 	token THEN						=> q/content/;
 	token ELSE						=> q/content/;
@@ -462,9 +488,12 @@ sub confirm {
 	rule _interface							=> q/[<accessmod>] <interface> <name> [<content>] <block_brace>/;
 	rule _interface_set						=> q/[<accessmod>] <object_members> <name> <op_end>/;
 	
-	rule _foreach							=> q/<for_each> [<variable>] [<name>] \(<CONDITION>\) <block_brace>/;
-	rule _for								=> q/<for_each> \( <variable> <name> <CONDITION>\) <block_brace>/;
-	rule _while								=> q/<while> \( <variable> <name> <CONDITION>\) <block_brace>/;
+	rule _foreach							=> q/<for_each> [<variable>] [<name>] \(<condition>\) [<block_brace>]/;
+	rule _for								=> q/<for_each> \( <variable> <name> <condition>\) [<block_brace>]/;
+	
+	#rule _for_foreach						=> q/<for_each> [<variable>] [<name>] \(<condition>\) [<block_brace>]/;
+	
+	rule _while								=> q/<while> \( <variable> <name> <condition>\) [<block_brace>]/;
 
 	rule _function 							=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
 	rule _function_defs 					=> q/[<accessmod>] <function> [<args_attr>] <op_end><nline>/;
@@ -474,7 +503,7 @@ sub confirm {
 	rule _function_method_post2				=> q/__PACKAGE__\,\)/;
 	
 	rule _variable_list						=> q/[<accessmod>] <variable> \( <name_list> \) [<op_end>]/;
-	rule _variable							=> q/[<accessmod>] <variable> <name> [<op_end>]/;
+	rule _variable							=> q/[<accessmod>] <variable> <name> [<variable_type>] [<op_end>]/;
 	rule _constant							=> q/[<accessmod>] <const> <name> = <content> <op_end>/;
 	#rule _variable_boost					=> q/((_NOT:sigils)(_NOT:sub)<spss>)<name>/;
 	#rule _variable_boost					=> q/(_NOT:__VARBOOSTED__)(_NOT:sigils)<name>/;
@@ -507,7 +536,7 @@ sub confirm {
 	
 	############################# post rules ########################################
 	# rule _parser_list_iter					=> q/LI: \( <name_list> \) \{ <content> \}/;
-	# rule _parser_if							=> q/IF: \( [<CONDITION>] \) \{<THEN>\}[ ELSE: \{<ELSE>\} ]/;
+	# rule _parser_if							=> q/IF: \( [<condition>] \) \{<THEN>\}[ ELSE: \{<ELSE>\} ]/;
 	
 	############################# actions ########################################
 	action _								=> \&_;
@@ -528,6 +557,8 @@ sub confirm {
 
 	action _foreach 						=> \&_syntax_foreach;
 	action _for 							=> \&_syntax_for;
+	#action _for_foreach 					=> \&_syntax_for_foreach;
+	
 	action _while 							=> \&_syntax_while;
 
 	action _function_defs 					=> \&_syntax_function_defs;
@@ -599,7 +630,7 @@ sub parse_parser_list_iter {
 sub parse_parser_if {
 	my $res = '';
 
-	if ( eval &CONDITION ) {
+	if ( eval &condition ) {
 		$res = &THEN;
 	} else {
 		$res = &ELSE;
@@ -702,25 +733,78 @@ sub _syntax_implements {
 sub _syntax_foreach {
 	my ($self, $rule_name, $confs)			= @_;
 	my $name			= &name;
-	my $cond			= &CONDITION;
+	my $cond			= &condition;
 	my $block			= &block_brace;
 	my $tk_self_name	= token 'self_name';
 	my $tk_sigils		= token 'sigils';
 	my $for				= '';
 	
 	$name				= '<name> = $_;' if $name;
-	$cond				=~ s/^($tk_sigils)?($tk_self_name)$/'@'.'{'.($1||'').$2.'}'/sxe;
+	
+	#$cond				=~ s/^($tk_sigils)?($tk_self_name)$/'@'.'{'.($1||'&').$2.'}'/sxe;
+	#$cond				=~ s/^(\[.*?\])$/\@\{$1\}/sx;
+	
+	$cond				=~ s/^($tk_sigils)?($tk_self_name)$/'__RISE_R2A '.($1||'&').$2/sxe;
+	$cond				=~ s/^(\[.*?\])$/__RISE_R2A $1/sx;
+	
 	$block 				=~ s/\{(.*)\}/$1/gsx;
-	$for 				= '<for_each>...(...'.$cond.'...)...{ '.$name.''.$block.'}';
+	$block				= '{ '.$name.''.$block.'}' if &block_brace;
+	
+	$for 				= '<for_each>...(...'.$cond.'...)...'.$block;
 	$for 				= '{ <kw_local> <variable> <name>; '.$for.'}' if &variable;
 	return $for;
 }
 
-sub _syntax_for { "{ <kw_local> <variable> <name>; <for_each>...(...<name>...<CONDITION>...)...<block_brace>}" }
+sub _syntax_for { "{ <kw_local> <variable> <name>; <for_each>...(...<name>...<condition>...)...<block_brace>}" }
 
-sub _syntax_while { "{ <kw_local> <variable> <name>; <while>...(...<name>...<CONDITION>...)...<block_brace>}" }
+sub _syntax_for_foreach {
+	my ($self, $rule_name, $confs)			= @_;
+	
+	
+	my $variable		= &variable;
+	my $name			= &name;	
+	my $condition		= &condition;
+	my $block			= &block_brace;
+	
+	my $tk_variable		= token 'variable';
+	my $tk_name			= token 'name';
+	my $tk_self_name	= token 'self_name';
+	my $tk_sigils		= token 'sigils';
+	my $for				= '';
+	my $for_block		= '';
+	my $for_var_block	= '';
+
+	my $cond			= '';
+	
+	
+	$block 				=~ s/\{(.*)\}/$1/gsx;
+	
+	#($variable, $name, $cond) = $content =~ m/($tk_variable)?\s*($tk_name)?\s*(.*?)/gsx;
+	
+	
+	$name				= ' '.$name.' = $_;' if $name;
+	
+	#$cond				=~ s/^($tk_sigils)?($tk_self_name)$/'@'.'{'.($1||'&').$2.'}'/sxe;
+	#$cond				=~ s/^(\[.*?\])$/\@\{$1\}/sx;
+	
+	$condition			=~ s/^($tk_sigils)?($tk_self_name)$/'__RISE_R2A '.($1||'&').$2/sxe;
+	$condition			=~ s/^(\[.*?\])$/__RISE_R2A $1/sx;
+	
+	$block				= '{'.$name.''.$block.'}' if &block_brace;
+	
+	
+	
+	$for				= '<for_each>...(...'.$name.'...'.$condition.'...)...'.$block;
+	
+	#$for 				= '{ <kw_local> <variable> <name>; '.$for.'}' if $variable;
+	$for 				= '{ <kw_local> <variable> <name>; '.$for.'}' if $variable;
+	
+	return $for;
+}
+
+sub _syntax_while { "{ <kw_local> <variable> <name>; <while>...(...<name>...<condition>...)...<block_brace>}" }
 #sub _syntax_prepare_while {
-#	my $while = '<while>...(...<CONDITION>...)...{ <name> = $_;<STATEMENT>}';
+#	my $while = '<while>...(...<condition>...)...{ <name> = $_;<STATEMENT>}';
 #	$while = '{ <kw_local> <variable> <name>; '.$while.'}' if &variable;
 #	return $while;
 #}
@@ -942,8 +1026,11 @@ sub _syntax_function {
 	
 	#return 0;
 	
-	$accmod				= var($accmod.'_code');
-	$accmod				= eval $accmod if $accmod ne '';	
+	$accmod = __accessmod($self, 'code_'.$accmod, $parent_class, $name);
+	#$accmod				= var($accmod.'_code');
+	#$accmod				= eval var($accmod.'_code') if $accmod ne '';	#$self->{debug}
+	
+	
 	$name				= $parent_class . '::' . $name;
 	$args				=~ s/\s//gsx;
 	$args				=~ s/\((.*?)\)/$1/gsx;
@@ -958,7 +1045,9 @@ sub _syntax_function {
 	#var('wrap_code')->{$name} = $block;
 	#$block = '%%%WRAP_CODE_' . $name . '%%%';
 	
-	$res				= "${anon_code}{ package ${name}; use strict; use warnings; use rise::core::extends 'rise::object::function', '${parent_class}'; use rise::core::function; BEGIN { __PACKAGE__->__RISE_COMMANDS } sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}";
+	#$res				= "${anon_code}{ package ${name}; use strict; use warnings; use rise::core::extends 'rise::object::function', '${parent_class}'; use rise::core::function; BEGIN { __PACKAGE__->__RISE_COMMANDS } sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}";
+	$res				= "${anon_code}{ package ${name}; use rise::core::function_new; sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}";
+	
 	#$res 				= parse($self, $res, &grammar, [@{var 'parser_code'}], { parent => $parent_class });
 	var('wrap_code')->{$name} = $res;
 	$res = '%%%WRAP_CODE_' . $name . '%%%';
@@ -1120,6 +1209,9 @@ sub _syntax_variable {
 	
 	my $accmod			= &accessmod || var 'accessmod';
 	my $name			= &name;
+	my $variable_type	= &variable_type;
+	my $var_type		= '';
+	my $var_type_args	= '';
 	my $parent_class	= $confs->{parent};
 	#my $parent_name		= $confs->{parent} || 'main';
 	my $boost_vars		= '';
@@ -1133,14 +1225,23 @@ sub _syntax_variable {
 	var('members')->{$parent_class} .= ' '.$members_var if $members_var !~ /$members_list/;  # if $accmod ne 'local';
 	var('members')->{$parent_class} =~ s/^\s+//;
 
-	$accmod				= var($accmod.'_var');
+	
+	
+	$accmod = __accessmod($self, 'var_'.$accmod, $parent_class, $name);
+	#$accmod				= eval var($accmod.'_var');
 	
 	if (&accessmod eq 'local') {
-		$accmod			= '';
+		#$accmod			= '';
 		$local_var		= "local *$name; ";
 	}
+	($var_type, $var_type_args)	= $variable_type =~ m/^\:\s*(\w+)(?:\((.*?)\))?$/;
 	
-	$accmod				= eval $accmod if $accmod ne '';
+	$var_type_args		= ", ".$var_type_args if $var_type_args;
+	$var_type_args		||= '';
+	
+	$var_type			= "__PACKAGE__->__RISE_CAST('$var_type', \\\$$name".$var_type_args."); " if $var_type;
+	$var_type			||= '';
+	
 	#$accmod				= $accmod . '("' . $name . '", "' . $parent_name .'");' if $accmod ne '';
 	
 	$op_end				= " \$$name".&op_end." " if !&op_end;
@@ -1148,7 +1249,82 @@ sub _syntax_variable {
 	#return q/my $<name>; { no warnings; sub <name> ():lvalue { $<name> } } IF: ( !'<op_end>' ) {<name><op_end>}/;
 	#return "my \$$name; $local_var { no warnings; sub $name ():lvalue { \$$name } } $op_end";
 	#return "my \$$name; { no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { $accmod\$$name };}$op_end";
-	return "my \$$name; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name };$op_end";
+	return "my \$$name; $var_type${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name };$op_end";
+}
+
+sub __accessmod {
+	my ($self, $accmod, $parent_class, $name)			= @_;
+	
+	return '' if !$self->{debug};
+	#print "+++++++++++  ".$parent_class.' - '.$name."\n";
+	my %access = (
+		
+		code_private	=> '__PACKAGE__->__RISE_ERR(\'CODE_PRIVATE\', \''.$name.'\') unless (caller eq \''.$parent_class.'\' || caller =~ m/^' . $parent_class . '\b/o);',
+		code_protected	=> '__PACKAGE__->__RISE_ERR(\'CODE_PROTECTED\', \''.$name.'\') unless caller->isa(\''.$parent_class.'\');',
+		code_public		=> '',
+		
+		#var_private		=> '__RISE_VAR_PRIV(\''.$parent_class.'\', \''.$name.'\');',
+		#var_protected	=> '__RISE_VAR_PROT(\''.$parent_class.'\', \''.$name.'\');',		
+		var_private		=> '__PACKAGE__->__RISE_ERR(\'VAR_PRIVATE\', \''.$name.'\') unless (caller eq \''.$parent_class.'\' || caller =~ m/^' . $parent_class . '\b/o);',
+		var_protected	=> '__PACKAGE__->__RISE_ERR(\'VAR_PROTECTED\', \''.$name.'\') unless caller->isa(\''.$parent_class.'\');',
+		var_public		=> '',
+		var_local		=> '',
+
+		
+		
+	);
+	
+	return $access{$accmod};
+}
+
+sub _syntax_variable_NEW {
+	my ($self, $rule_name, $confs)			= @_;
+	
+	my $accmod			= &accessmod || var 'accessmod';
+	my $name			= &name;
+	my $parent_class	= $confs->{parent};
+	#my $parent_name		= $confs->{parent} || 'main';
+	my $boost_vars		= '';
+	my $local_var		= '';
+	my $op_end			= '';
+	my $obj_name		= $parent_class.'::'.$name;
+	my $obj_name_local	= $obj_name;
+	my $name_local		= $name;
+	
+	my $members_var		= $accmod.'-var-'.$name;
+	my $members_list	= var('members')->{$parent_class}||'';
+	
+	$members_list		=~ s/\s/\|/gsx;
+	var('members')->{$parent_class} .= ' '.$members_var if $members_var !~ /$members_list/;  # if $accmod ne 'local';
+	var('members')->{$parent_class} =~ s/^\s+//;
+
+	#$accmod				= var($accmod.'_var');
+	
+	
+
+	
+	if (&accessmod eq 'local') {
+		var('local_var_count')++;
+		$accmod			= var 'accessmod';
+		$obj_name_local		.= '_LOCAL' . var('local_var_count');	
+		$name_local			.= '_LOCAL' . var('local_var_count');		
+		$local_var		= "$local_var *$name = *$name_local; sub $name ():lvalue; ";
+		#$obj_name		= $obj_name_local;
+	}
+	
+	
+	
+	#$accmod				= eval $accmod if $accmod ne '';
+	#$accmod				= $accmod . '("' . $name . '", "' . $parent_name .'");' if $accmod ne '';
+	
+	$op_end				= " \$$name".&op_end." " if !&op_end;
+
+	#return q/my $<name>; { no warnings; sub <name> ():lvalue { $<name> } } IF: ( !'<op_end>' ) {<name><op_end>}/;
+	#return "my \$$name; $local_var { no warnings; sub $name ():lvalue { \$$name } } $op_end";
+	#return "my \$$name; { no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { $accmod\$$name };}$op_end";
+	#return "my \$$name; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name };$op_end";
+	return $local_var."my \$$name; { package $obj_name_local; no warnings; use rise::core::variable \\\$$name, '$accmod'; }$op_end";
+	#return "my \$$name; { package $obj_name; no warnings; use rise::core::variable \\\$$name, '$accmod'; }$op_end"
 }
 
 sub _syntax_variable_boost_OFF {
@@ -1237,17 +1413,21 @@ sub _syntax_constant {
 	var('members')->{$parent_class} .= ' '.$accmod.'-const-'.$name if $accmod ne 'local';
 	var('members')->{$parent_class} =~ s/^\s+//;
 	
+	
+	$accmod				= __accessmod($self, 'var_'.$accmod, $parent_class, $name);
+	#$accmod				= eval var($accmod.'_var'); # if &accessmod ne 'local';
+	#$accmod				= var($accmod.'_var');
 	if (&accessmod eq 'local') {
-		$accmod			= '';
+		#$accmod			= '';
 		$local_var		= "local *$name; ";
 	}
-	
+	#$accmod				= eval $accmod if $accmod ne '';
 	#$name				=~ s/\w+(?:::\w+)*::(\w+)/$1/sx;
 	#$sname				= $name;
 	#$parent_name		=~ s/(\w+(?:::\w+)*)::\w+/$1/gsx;
 	#$accmod			= '_'.uc($accmod).'_VAR_; ' ;
-	$accmod				= var($accmod.'_var');
-	$accmod				= eval $accmod if $accmod ne '';
+	
+	
 	#$accmod				= $accmod . '("' . $name . '", "' . $parent_name .'");' if $accmod ne '';
 
 	return "${local_var}sub $name () { $accmod<content> }";

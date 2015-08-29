@@ -41,14 +41,14 @@ sub private_code {
 	my ($self, $class, $name)			= @_;
 	my $caller			= (caller(1))[0];	#$class		=~ s/(.*)::\w+/$1/;
 	#print ">>>>>>>>>>>>> self - $self | class - $class | name - $name | caller - $caller\n";
-	$caller =~ m/$class.*/ or $self->__error('code_priv', $class, $name, $caller);
+	$caller =~ m/$class.*/ || $self->__error('code_priv', $class, $name, $caller);
 }
 
 sub protected_code {
 	my ($self, $class, $name)			= @_;
 	my $caller			= (caller(1))[0];	#$class		=~ s/(.*)::\w+/$1/;
 	#print ">>>>>>>>>>>>> self - $self | class - $class | name - $name | caller - $caller\n";
-	$caller->isa($class) or  $self->__error('code_prot', $class, $name, $caller);
+	$caller->isa($class) ||  $self->__error('code_prot', $class, $name, $caller);
 }
 
 sub public_code {}

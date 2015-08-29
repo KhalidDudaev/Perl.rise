@@ -8,8 +8,16 @@ use utf8;
 #use overload
 #  '""'	=> sub { @_ },
 #  '0+'	=> sub { @_ };
-  
-use parent 'rise::object::object', 'rise::object::error', 'rise::object::variable', 'rise::core::commands';
+#use rise::core::attribute; 
+
+use parent qw/
+	rise::object::object
+	rise::object::error
+	rise::object::function
+	rise::object::variable
+	rise::core::commands
+	rise::core::attribute
+/;
 
 our $VERSION 	= '0.01';
 
@@ -26,7 +34,7 @@ my @export_list = qw/
 
 #our $INHERIT = 0;
 
-my $conf		= {
+my $ENV_CLASS		= {
 	this_class		=> 'rise::object::class',
 	caller_class	=> 'CALLER',
 	caller_code		=> 'CODE',
@@ -46,20 +54,20 @@ my $conf		= {
 #    return bless +{ string => $string }, $class;
 #}
 
-sub new {
-	my $class					= ref $_[0] || $_[0];
-
-	my $this					= $conf;
-	#my $lock = sub {
-	#	my $field				= shift;
-	#	$this->{$field} 		= shift if @_;
-	#	$this->{$field};
-	#};
-	
-	$this                   	= bless($this, $class);                         # обьявляем класс и его свойства
-	
-	return $this;
-}
+#sub new {
+#	my $class					= ref $_[0] || $_[0];
+#
+#	my $this					= $conf;
+#	#my $lock = sub {
+#	#	my $field				= shift;
+#	#	$this->{$field} 		= shift if @_;
+#	#	$this->{$field};
+#	#};
+#	
+#	$this                   	= bless($this, $class);                         # обьявляем класс и его свойства
+#	
+#	return $this;
+#}
 
 #sub new {
 #    my ($param, $class, $self)	= ($PACK_ENV, ref $_[0] || $_[0], $_[1] || {});    	# получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
@@ -143,7 +151,7 @@ sub private_class {
 	#print ">>> $access - $starter - $callercode - $callercode_eval \n";
 	#print ">>> $caller0 - $caller1 - $caller2 - $caller3 - $caller4 \n";
 	
-	$starter eq 'RUN' or $self->__error($access);
+	$starter eq 'RUN' || $self->__error($access);
 }
 
 sub protected_class {
@@ -153,7 +161,7 @@ sub protected_class {
 	
 	#print ">>>>>>>>>>>>> $callercode\n";
 	
-	($callercode eq 'import' || $callercode_eval eq 'import') or $self->__error('class_prot');
+	($callercode eq 'import' || $callercode_eval eq 'import') || $self->__error('class_prot');
 }
 
 sub public_class {}
