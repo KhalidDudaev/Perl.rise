@@ -36,7 +36,7 @@ sub import { no strict; no warnings;
 #	name	: $var_name
 #<<<<<<<<<\n";
 	
-	my $r			= qr/^$parent\b/o;
+	my $r			= qr/^$parent\b/;
 	
 
 	

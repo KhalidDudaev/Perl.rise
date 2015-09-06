@@ -3,42 +3,46 @@ use strict;
 use warnings;
 use utf8;
 
+use Carp;
+
 our $VERSION = '0.01';
 
 #our $INHERIT = 0;
 my $VARS		= {};
 my $ERROR		= {
-	class_priv				=> [ [ 1, 2 ], '"ERROR CLASS: Can\'t access class \"$parent\" at $file line $line\n"' ],
-	class_priv_inherit		=> [ [ 1, 3 ], '"ERROR CLASS: Can\'t access class \"$parent\" at $file line $line\n"' ],	
-	class_prot				=> [ [ 1, 2 ], '"ERROR CLASS: Class \"$parent\" only extends at $file line $line\n"' ],
-	class_inherits			=> [ [ 1, 1 ], '"ERROR CLASS: extends or implements syntaxis eror in class \"$parent\" at $file line $line\n"' ],
+	class_priv				=> [ [ 1, 2 ], '"ERROR CLASS: Can\'t access class \"$parent\" \nat $file line $line"' ],
+	class_priv_inherit		=> [ [ 1, 3 ], '"ERROR CLASS: Can\'t access class \"$parent\" \nat $file line $line"' ],	
+	class_prot				=> [ [ 1, 2 ], '"ERROR CLASS: Class \"$parent\" only extends \nat $file line $line"' ],
+	class_inherits			=> [ [ 1, 1 ], '"ERROR CLASS: extends or implements syntaxis eror in class \"$parent\" \nat $file line $line"' ],
 	
-	abstract_prot			=> [ [ 1, 2 ], '"ERROR ABSTRACT: Abstract class \"$parent\" only extends at $file line $line\n"' ],
-	abstract_priv			=> [ [ 1, 1 ], '"ERROR ABSTRACT: An abstract class \"$parent\" cannot be private at $file line $line\n"' ],
-	abstract_publ			=> [ [ 1, 1 ], '"ERROR ABSTRACT: An abstract class \"$parent\" cannot be public at $file line $line\n"' ],
+	abstract_prot			=> [ [ 1, 2 ], '"ERROR ABSTRACT: Abstract class \"$parent\" only extends \nat $file line $line"' ],
+	abstract_priv			=> [ [ 1, 1 ], '"ERROR ABSTRACT: An abstract class \"$parent\" cannot be private \nat $file line $line"' ],
+	abstract_publ			=> [ [ 1, 1 ], '"ERROR ABSTRACT: An abstract class \"$parent\" cannot be public \nat $file line $line"' ],
 	
-	interface_prot			=> [ [ 1, 2 ], '"ERROR INTERFACE: Interface \"$parent\" only extends at $file line $line\n"' ],
-	interface_priv			=> [ [ 1, 1 ], '"ERROR INTERFACE: An interface \"$parent\" cannot be private at $file line $line\n"' ],
-	interface_publ			=> [ [ 1, 1 ], '"ERROR INTERFACE: An interface \"$parent\" cannot be public at $file line $line\n"' ],
+	interface_prot			=> [ [ 1, 2 ], '"ERROR INTERFACE: Interface \"$parent\" only extends \nat $file line $line"' ],
+	interface_priv			=> [ [ 1, 1 ], '"ERROR INTERFACE: An interface \"$parent\" cannot be private \nat $file line $line"' ],
+	interface_publ			=> [ [ 1, 1 ], '"ERROR INTERFACE: An interface \"$parent\" cannot be public \nat $file line $line"' ],
 	
-	code_priv				=> [ [ 1, 2 ], '"ERROR FUNCTION: Can\'t access function \"$name\" from \"$class\" at $file line $line\n"' ],
-	code_prot				=> [ [ 1, 2 ], '"ERROR FUNCTION: Function \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
+	INTERFACE_CONFIRM		=> [ [ 1, 1 ], '"ERROR INTERFACE: $msg_error"' ],
 	
-	CODE_PRIVATE			=> [ [ 0, 1 ], '"ERROR FUNCTION: Can\'t access function \"$name\" from \"$class\" at $file line $line\n"' ],
-	CODE_PROTECTED			=> [ [ 0, 1 ], '"ERROR FUNCTION: Function \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],	
+	code_priv				=> [ [ 1, 2 ], '"ERROR FUNCTION: Can\'t access function \"$name\" from \"$class\" \nat $file line $line"' ],
+	code_prot				=> [ [ 1, 2 ], '"ERROR FUNCTION: Function \"$name\" from \"$class\" only inheritable \nat $file line $line"' ],
 	
-	var_priv				=> [ [ 1, 2 ], '"ERROR VARIABLE: Can\'t access variable \"$name\" from \"$class\" at $file line $line\n"' ],
-	var_prot				=> [ [ 1, 2 ], '"ERROR VARIABLE: Variable \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
+	CODE_PRIVATE			=> [ [ 0, 1 ], '"ERROR FUNCTION: Can\'t access function \"$name\" from \"$class\" \nat $file line $line"' ],
+	CODE_PROTECTED			=> [ [ 0, 1 ], '"ERROR FUNCTION: Function \"$name\" from \"$class\" only inheritable \nat $file line $line"' ],	
 	
-	VAR_PRIVATE				=> [ [ 0, 1 ], '"ERROR VARIABLE: Can\'t access variable \"$name\" from \"$class\" at $file line $line\n"' ],
-	VAR_PROTECTED			=> [ [ 0, 1 ], '"ERROR VARIABLE: Variable \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
+	var_priv				=> [ [ 1, 2 ], '"ERROR VARIABLE: Can\'t access variable \"$name\" from \"$class\" \nat $file line $line"' ],
+	var_prot				=> [ [ 1, 2 ], '"ERROR VARIABLE: Variable \"$name\" from \"$class\" only inheritable \nat $file line $line"' ],
 	
-	VAR_CAST				=> [ [ 1, 2 ], '"ERROR TYPE: You can only assign a value type \"$name\" at $file line $line\n"' ],
-	#VAR_PROTECTED			=> [ [ 0, 1 ], '"ERROR VARIABLE: Variable \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
+	VAR_PRIVATE				=> [ [ 0, 1 ], '"ERROR VARIABLE: Can\'t access variable \"$name\" from \"$class\" \nat $file line $line"' ],
+	VAR_PROTECTED			=> [ [ 0, 1 ], '"ERROR VARIABLE: Variable \"$name\" from \"$class\" only inheritable \nat $file line $line"' ],
+	
+	VAR_CAST				=> [ [ 1, 2 ], '"ERROR TYPE: You can only assign a value type \"$name\" \nat $file line $line"' ],
+	#VAR_PROTECTED			=> [ [ 0, 1 ], '"ERROR VARIABLE: Variable \"$name\" from \"$class\" only inheritable \nat $file line $line"' ],
 	
 	
-	PRIVATE					=> [ [ 0, 1 ], '"ERROR ACCESS: Can\'t access function \"$name\" from \"$class\" at $file line $line\n"' ],
-	PROTECTED				=> [ [ 0, 1 ], '"ERROR ACCESS: Function \"$name\" from \"$class\" only inheritable at $file line $line\n"' ],
+	PRIVATE					=> [ [ 0, 1 ], '"ERROR ACCESS: Can\'t access function \"$name\" from \"$class\" \nat $file line $line"' ],
+	PROTECTED				=> [ [ 0, 1 ], '"ERROR ACCESS: Function \"$name\" from \"$class\" only inheritable \nat $file line $line"' ],
 	
 };
 #my $conf						= {
@@ -103,7 +107,7 @@ sub __error {
 	my $name		= shift;
 	my $caller		= shift;
 	
-	my $err_msg;
+	my $err_msg		= "################################ ERROR ##################################\n";
 	
 	my $err_conf	= $ERROR->{$err};
 	my $level		= $err_conf->[0];
@@ -112,34 +116,6 @@ sub __error {
 	my ($child, $file, $line, $func) = (caller($level->[1]));
 	
 	
-	
-	$file =~ s/(.*?)bin\/(\w+)\.pm/$1source\/$2.dclass/gsx;
-	$func =~ s/.*::(\w+)/$1/g;
-	
-	$err_msg = eval $err_conf->[1];
-	
-	die $err_msg;
-}
-
-sub __error_i {
-	my $self		= shift;
-	my $err_msg		= shift;
-	
-	die $err_msg;
-}
-
-sub _error {
-	my $self		= shift;
-	my $err_conf	= shift;
-	my $level		= $err_conf->[0];
-
-	#my $parent		= (caller($level->[0]))[0];
-	#my ($child, $file, $line, $func) = (caller($level->[1]));
-	
-	my $parent		= (caller($level->[0] + 1))[0];
-	my ($child, $file, $line, $func) = (caller($level->[1] + 1));
-	
-	my $err_msg;
 	
 	$file =~ s/(.*?)bin\/(\w+)\.pm/$1source\/$2.dclass/gsx;
 	$func =~ s/.*::(\w+)/$1/g;
@@ -157,29 +133,63 @@ sub __RISE_ERR {
 	my $err_conf	= $ERROR->{$err};
 	my $level		= $err_conf->[0];
 	my $parent		= (caller($level->[0]))[0];
-	my ($child, $file, $line, $func) = (caller($level->[1]));
-	my $err_msg;
+	my ($child, $file, $line, $func); # = (caller($level->[1]));
+	my $err_msg		= "################################ ERROR ##################################\n";
 	
+	#my $child;
+	#my $file;
+	#my $line = '';
+	#my $func;
+	
+	($child, $file, $line, $func) = (caller($level->[1]));
 	$file			=~ s/\.pm/\.class/gsx;
-	$func			=~ s/.*::(\w+)/$1/;	
-	$class			=~ s/::$func//;
+	$func			=~ s/.*::(\w+)$/$1/;	
+	$class			=~ s/::$func$//;	
 	
 #	print "----------------
-#	self	: $self
+#	self	: $class
 #	error	: $err
 #	parent	: $parent
 #	child	: $child
 #	file	: $file
 #	line	: $line
 #	func	: $name
-#----------------\n";
+#----------------\n";	
+	
+	#for ( my $i = 3; $line =~ /\d+/ && $i > 0; --$i  ) {
+	#	($child, $file, $line, $func) = (caller($i));
+	#	$line ||= '';
+	#}
+	
+
+	
+
 	#print ">>>>>> $class - $name | ".$level->[0]." <<<<<<<\n";
 	
 
 	
-	$err_msg = eval $err_conf->[1];
+	$err_msg .= eval $err_conf->[1];
+	
+	($child, $file, $line, $func) = (caller($level->[1] + 1));# if $child eq 'main';
+	$file			=~ s/\.pm/\.class/gsx;
+	$func			=~ s/.*::(\w+)$/$1/;	
+	$class			=~ s/::$func$//;
+	
+#	print "----------------
+#	self	: $class
+#	error	: $err
+#	parent	: $parent
+#	child	: $child
+#	file	: $file
+#	line	: $line
+#	func	: $name
+#----------------\n";	
+	
+	$err_msg .= eval '"\nat $file line $line"' if $file && $line && $child ne 'main';
+	$err_msg .= "\n#########################################################################\n\n";
 	
 	die $err_msg;
+	#confess $err_msg;
 }
 
 sub DESTROY {}

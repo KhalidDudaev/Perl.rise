@@ -148,6 +148,7 @@ sub confirm {
 	];
 	
 	var ('parser_namespace')		= [
+		'_comma_quarter',
 		'_namespace',
 		'_inject',
 		'_using',
@@ -157,13 +158,20 @@ sub confirm {
 	];
 	
 	var ('parser__')				= [
+		
+		
 		'_excluding',
+		'_commentC',
+		
 		'_nonamedblock',
 		@{var 'parser_namespace'},
 		'_unwrap_code',
 		
+		'_op_math',
+		'_op_scalar',
 		'_op_array1',
 		'_op_array2',
+		'_op_array21',
 		'_op_array3',
 		'_op_reverse',
 		'_op_hash',
@@ -180,7 +188,7 @@ sub confirm {
 		#'_variable_boost_post',
 		#'_optimize5',
 		'_including',
-		'_commentC',
+		
 	];
 
 	#print dump(var 'parser__');
@@ -330,14 +338,17 @@ sub confirm {
 	token nline						=> q/\r|\n|\r\n/;
 	token op_end					=> q/\;/;
 	
-	token name_ex					=> q/ident(?:::ident)*/;
+	token name_ex					=> q/ident(?:(?:::|\.)ident)*/;
 	
 	#token name						=> q/word(?:\:\:word)*/;
-	token name						=> q/\b(?:ident(?:::ident)*)\b/;
+	token name						=> q/\b(?:ident(?:(?:::|\.)ident)*)\b/;
+	token name_type					=> q/\b(name(\s*:\s*ident)?)\b/;
 	#token name						=> q/(?:\b[^\d\W]\w*\b)(?:::(?:\b[^\d\W]\w*\b))*/;
 	
 	#token name						=> q/[^\d\s](?:word\:\:)*word/;
 	token name_list					=> q/name(?:\s*\,\s*name)*/;
+	token name_list_wtype			=> q/name_type(?:\s*\,\s*name_type)*/;
+	token func_args					=> q/name_type(\s*\=\s*content)?(?:\s*\,\s*name_type(\s*\=\s*content)?)*/;
 	token namestrong				=> q/[^\d\W][\w:]+[^\W]/;
 	token name_ext					=> q/name/;
 	token name_impl					=> q/name_list/;
@@ -345,8 +356,9 @@ sub confirm {
 	#token comment					=> q`(?<![$@%])[#] nnline*`;
 	#token comment					=> q`(?<![$@%])(?:\#|//) nnline*`;
 	token comment_Perl				=> q`(?<![$@%])\# nnline*`;
-	token comment_C					=> q`(?<![$@%])\/\/ nnline*`;
-	token comment					=> q/comment_Perl|comment_C/;
+	token comment_C					=> q`(?<![\$\@\%\\\])\/\/ nnline*`;
+	#token comment					=> q/comment_Perl|comment_C/;
+	token comment					=> q/comment_Perl/;
 	
 	#token comment					=> q/(?<![$@%])\#string/;
 	#token comment					=> q/(?<![$@%])\#string\n/;
@@ -412,7 +424,8 @@ sub confirm {
 	token DATA 						=> q/(?:^__DATA__\r?\n.*)/;
 	token END 						=> q/(?:^__END__\r?\n.*)/;
 	
-	token text						=> q/(?:qtext|textqq|textqw|qregex)/;
+	token text						=> q/(?:qtext|textqq|textqw)/;
+	#token text						=> q/(?:qtext|textqq|textqw|qregex)/;
 	#token textqq					=> q/(?:''|'content[^\\\]')/;
 	#token textqw					=> q/(?:""|"content[^\\\]")/;
 	token textqq					=> q/(?:\'content[^\\\']?\')/;
@@ -457,8 +470,12 @@ sub confirm {
 	#token op_dot					=> q/(?:[^\s])\.(?:[^\s\d\.])/;
 	
 	token self_name					=> q/(?:this\.)*name/;
-	token op_array1					=> q/\b(?:pop|push|shift|splice|unshift|sort)\b/;
-	token op_array2					=> q/\b(?:grep|map|join|sort)\b/;
+	
+	token op_math					=> q/[=!]\~\s*m/;
+	token op_scalar					=> q/\b(?:split)\b/;
+	token op_array1					=> q/\b(?:pop|push|shift|slice|unshift|sort)\b/;
+	token op_array2					=> q/\b(?:grep|map|sort)\b/;
+	token op_array3					=> q/\b(?:join)\b/;
 	
 	token op_hash					=> q/\b(?:keys|values|each)\b/;
 	token op_reverse				=> q/\b(?:reverse)\b/;
@@ -488,8 +505,8 @@ sub confirm {
 	rule _interface							=> q/[<accessmod>] <interface> <name> [<content>] <block_brace>/;
 	rule _interface_set						=> q/[<accessmod>] <object_members> <name> <op_end>/;
 	
-	rule _foreach							=> q/<for_each> [<variable>] [<name>] \(<condition>\) [<block_brace>]/;
-	rule _for								=> q/<for_each> \( <variable> <name> <condition>\) [<block_brace>]/;
+	rule _foreach							=> q/<for_each> [<variable>] [<name>] \( <condition> \) [<block_brace>]/;
+	rule _for								=> q/<for_each> \( <variable> <name> <condition> \) [<block_brace>]/;
 	
 	#rule _for_foreach						=> q/<for_each> [<variable>] [<name>] \(<condition>\) [<block_brace>]/;
 	
@@ -497,12 +514,12 @@ sub confirm {
 
 	rule _function 							=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
 	rule _function_defs 					=> q/[<accessmod>] <function> [<args_attr>] <op_end><nline>/;
-	rule _function_method					=> q/(NOT:__METHOD__)<name>\((NOT:__PACKAGE__)/;
+	rule _function_method					=> q/(NOT:__METHOD__)<name> \( (NOT:__PACKAGE__)/;
 	#rule _function_method					=> q/<name>\((NOT:__PACKAGE__)/;
 	rule _function_method_post1				=> q/(__METHOD__)+/;
 	rule _function_method_post2				=> q/__PACKAGE__\,\)/;
 	
-	rule _variable_list						=> q/[<accessmod>] <variable> \( <name_list> \) [<op_end>]/;
+	rule _variable_list						=> q/[<accessmod>] <variable> \( <name_list_wtype> \) [<op_end>]/;
 	rule _variable							=> q/[<accessmod>] <variable> <name> [<variable_type>] [<op_end>]/;
 	rule _constant							=> q/[<accessmod>] <const> <name> = <content> <op_end>/;
 	#rule _variable_boost					=> q/((_NOT:sigils)(_NOT:sub)<spss>)<name>/;
@@ -517,13 +534,17 @@ sub confirm {
 	rule _var_boost3						=> q/variable \$/;
 	rule _var_boost_post1					=> q/_var_ \$/;
 	rule _var_boost_post2					=> q/\.\$/;
-
+	
+	rule _op_math							=> q/<sigils><self_name> <op_math>/;
+	rule _op_scalar							=> q/<op_scalar> <string>\,/;
 	rule _op_array1							=> q/<op_array1> [<paren_L>] [<sigils>]<self_name>/;
 	rule _op_array2							=> q/<op_array2> <block_brace>/;
-	rule _op_array3							=> q/<op_array2> <string>\,/;
+	rule _op_array21						=> q/<op_array2> <string>\,/;
+	rule _op_array3							=> q/<op_array3> <string>\,/;
 	rule _op_hash							=> q/<op_hash> [<paren_L>] [<sigils>]<self_name>/;
 	rule _op_reverse						=> q/<op_reverse>/;
 	
+	rule _comma_quarter 					=> q/<name_ops> <name_list>/;
 	rule _op_dot							=> q/op_dot/;
 	rule _optimize4 						=> q/\s+\;/;
 	#rule _optimize5 						=> q/\s\s+(_NOT:\n|\t)/;
@@ -578,12 +599,16 @@ sub confirm {
 
 	action _unwrap_code						=> \&_syntax_unwrap_code;
 	
+	action _op_math							=> \&_syntax_op_math;
+	action _op_scalar						=> \&_syntax_op_scalar;
 	action _op_array1						=> \&_syntax_op_array1;
 	action _op_array2						=> \&_syntax_op_array2;
+	action _op_array21						=> \&_syntax_op_array21;
 	action _op_array3						=> \&_syntax_op_array3;
 	action _op_hash							=> \&_syntax_op_hash;
 	action _op_reverse						=> \&_syntax_op_reverse;
 	
+	action _comma_quarter					=> \&_syntax_comma_quarter;
 	action _op_dot							=> \&_syntax_op_dot;
 	action _optimize4		 				=> \&_syntax_optimize4;
 	action _optimize5		 				=> \&_syntax_optimize5;
@@ -714,7 +739,7 @@ sub _syntax_inject {
 	return "require...${content}<op_end>"
 }
 
-sub _syntax_using {	
+sub _syntax_using {
 	#__add_stack(&name);
 	return "use...<name>...<content><op_end>";
 }
@@ -889,6 +914,7 @@ sub _syntax_function_method {
 	my $tk_accmod		= token 'accessmod';
 	my $fn_list			= var('members')->{$parent_class}||'';
 	my $method			= '__METHOD__';
+	my $members_list;
 	
 	#if ($fn_list) {
 	#	$fn_list			=~ s/\b(?:$tk_accmod)\-(?!function)\w+\-\w+(?:::\w+)*//gsx;
@@ -906,11 +932,13 @@ sub _syntax_function_method {
 	#	#print ">>> class - $parent_class | fname - $name | fnlist - *$fn_list* \n";
 	#}
 	
-	my $members_fn		= '-function-'.$name;
-	my $members_list	= var('members')->{$parent_class}||'';
+	#my $members_fn		= '-function-'.$name;
+	$members_list		= var('members')->{$parent_class}||'';
+	
 	
 	$members_list		=~ s/$tk_accmod//gsx;
 	$members_list		=~ s/\-function\-//gsx;
+	#$members_list		=~ s/^\s+(.*?)\s+$/$1/sx; 
 	$members_list		=~ s/\s/\|/gsx;
 	
 	if ($name =~ m/\b(?:$members_list)\b/sx) {
@@ -998,6 +1026,7 @@ sub _syntax_function {
 		
 		var('members')->{$parent_class} .= ' '.$accmod.'-function-'.$name;
 		var('members')->{$parent_class} =~ s/^\s+//;
+		var('members')->{$parent_class.'::'.$name} .= var('members')->{$parent_class}; # for recurdion caller
 		
 		#$fn_list			= var('members')->{$parent_class};
 		#if ($fn_list) {
@@ -1032,10 +1061,46 @@ sub _syntax_function {
 	
 	
 	$name				= $parent_class . '::' . $name;
-	$args				=~ s/\s//gsx;
-	$args				=~ s/\((.*?)\)/$1/gsx;
-	$self_args			.= ',' . $args if $args; $self_args =~ s/^\,//;
-	$arguments			= &kw_local." ".&kw_variable." ($self_args) = \@_;" if $self_args;
+	
+	#$args				=~ s/\s//gsx;
+	#$args				=~ s/\((.*?)\)/$1/gsx;
+	
+	#if ($args) {
+		$args				=~ s/^\((.*?)\)$/$1/;
+		$self_args			.= ',' . $args if $args;
+		
+		my @args = split /\,/,$self_args;
+		my $args_list			= '';
+		my $args_def			= '';
+		my $proto			= '';
+		my $i = 0;
+		
+		s{
+			(?<name>\b\w+(?:\s*\:\s*\w+)?\b)
+			(\s*\=\s*(?<def>.*))?
+		  }{
+			$args_list	.= $+{name} . ',';
+			$args_def 	.= '$_['.$i.']';
+			$args_def	.=('||'.$+{def}) if $+{def};
+			$args_def	.=',';
+			$proto		.= '$';
+			$i++;
+		}sxe for @args;
+		
+		$args_list	=~ s/\,$//;
+		$args_def	=~ s/\,$//;
+		#$attr	||= '('.$proto.')';
+		
+		$self_args	= $args_list;	
+	#}
+	
+	$self_args =~ s/^\,//;
+	
+	#$arguments			= &kw_local." ".&kw_variable." ($self_args) = \@_;" if $self_args;
+	$arguments			= &kw_local." ".&kw_variable." ($self_args) = ($args_def);" if $self_args;
+	
+	
+	
 	$arguments			= parse($self, $arguments, &grammar, ['_variable_list','_variable'], { parent => $name });
 	$block 				=~ s/\{(.*)\}/$1/gsx;
 	$block 				= parse($self, $block, &grammar, ['_variable_boost', '_var_boost3'], { parent => $parent_class });
@@ -1045,8 +1110,8 @@ sub _syntax_function {
 	#var('wrap_code')->{$name} = $block;
 	#$block = '%%%WRAP_CODE_' . $name . '%%%';
 	
-	#$res				= "${anon_code}{ package ${name}; use strict; use warnings; use rise::core::extends 'rise::object::function', '${parent_class}'; use rise::core::function; BEGIN { __PACKAGE__->__RISE_COMMANDS } sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}";
-	$res				= "${anon_code}{ package ${name}; use rise::core::function_new; sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}";
+	$res				= "${anon_code}{ package ${name}; use rise::core::extends 'rise::object::function', '${parent_class}'; use rise::core::function; BEGIN { __PACKAGE__->__RISE_COMMANDS } sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}";
+	#$res				= "${anon_code}{ package ${name}; use rise::core::function_new; sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}";
 	
 	#$res 				= parse($self, $res, &grammar, [@{var 'parser_code'}], { parent => $parent_class });
 	var('wrap_code')->{$name} = $res;
@@ -1102,12 +1167,14 @@ sub _syntax_nonamedblock {
 sub _syntax_variable_list {
 	my ($self, $rule_name, $confs)			= @_;
 	
-	my $var_def				= &name_list;
-	my $var_init			= &name_list;
+	my $var_def				= &name_list_wtype;
+	my $var_init			= &name_list_wtype;
+	my $tk_name				= token 'name';
+	my $tk_name_type		= token 'name_type';
 	my $op_end				= '';
 	
-	$var_def				=~ s/(\w+)\,?/<accessmod> <variable> $1;/gsx;
-	$var_init				=~ s/(?<!\$)\b(\w+(?:::\w+)*)\b/\$$1/gsx;
+	$var_def				=~ s/($tk_name_type)\,?/<accessmod> <variable> $1;/gsx;
+	$var_init				=~ s/(?<!\$)\b($tk_name)\b(?:\s*\:\s*\w+)?/\$$1/gsx;
 	
 	$op_end					= " ($var_init) " if !&op_end;
 	
@@ -1249,7 +1316,7 @@ sub _syntax_variable {
 	#return q/my $<name>; { no warnings; sub <name> ():lvalue { $<name> } } IF: ( !'<op_end>' ) {<name><op_end>}/;
 	#return "my \$$name; $local_var { no warnings; sub $name ():lvalue { \$$name } } $op_end";
 	#return "my \$$name; { no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { $accmod\$$name };}$op_end";
-	return "my \$$name; $var_type${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name };$op_end";
+	return "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings; $op_end";
 }
 
 sub __accessmod {
@@ -2077,79 +2144,27 @@ sub _syntax_prepare_name_object_helper {
 	return $block;
 }
 
+sub _syntax_op_math { "__RISE_A2R <sigils><self_name><sps1><op_math>" }
+sub _syntax_op_scalar { "__RISE_A2R <op_scalar><sps1><string>," }
+
 sub _syntax_op_array1 {
-
-	#my $var				= '';
 	my $sigils			= &sigils || '&';
-	
-	#my ($sps1,$sps2,$sps3,$sps4) = (&sps1,&sps2,&sps3,&sps4);
-
-	#$var 				= "${sigils}<self_name>";
-	#$var 				= "\@{${sigils}<self_name>}"; # if $sigils eq '$';
-	
 	return "<op_array1><sps1><paren_L><sps2>\@{${sigils}<self_name>}";
 }
 
-sub _syntax_op_array2 {
-	#my ($self, $rule_name, $confs)			= @_;
-	
-	#my $parent_class	= $confs->{parent};
-	#my $op_array2		= &op_array2;
-	#my $block			= &block_brace;
-	#my $sigils			= &sigils; # || '&';
-	#my $self_name		= &self_name;
-	
-	#my ($sps1,$sps2,$sps3,$sps4) = (&sps1,&sps2,&sps3,&sps4);
-	
-	#my $var				= '';
-	#my $res;
-
-	#$var 				= "${sigils}${self_name}";
-	#$var 				= "\@{${sigils}${self_name}}"; # if $sigils eq '$';
-	
-	#$block 				=~ s/\{(.*)\}/$1/gsx;
-			 
-	#$block 				= parse($self, $block, &grammar, ['_op_array1','_op_array2'], { parent => $parent_class });
-	
-	#$res				= '['.$op_array2.$sps1.'{'.$block.'}'.$sps2.$var.']';
-	#$res				= "__RISE_A2R ${op_array2}${sps1}${block}${sps2}__RISE_R2A ";
-	
-	#var('wrap_code')->{$name} = $res;
-	#$res = '%%%WRAP_CODE_' . $name . '%%%';
-	
-	#return $res;
-	return "__RISE_A2R <op_array2><sps1><block_brace> __RISE_R2A";
-}
-
-sub _syntax_op_array3 {
-
-	#my $var				= '';
-	#my $sigils			= &sigils; # || '&';
-	
-
-	#$var 				= "${sigils}<self_name>";
-	#$var 				= "\@{${sigils}<self_name>}"; # if $sigils eq '$';
-	#$var 				= "\@{${sigils}<self_name>}" if $sigils eq '&';
-	
-	#return "[<op_array2><sps1><string>,<sps2>${var}]";
-	return "__RISE_A2R <op_array2><sps1><string>, __RISE_R2A";
-}
+sub _syntax_op_array2  { "__RISE_A2R <op_array2><sps1><block_brace> __RISE_R2A" }
+sub _syntax_op_array21 { "__RISE_A2R <op_array2><sps1><string>, __RISE_R2A" }
+sub _syntax_op_array3  { "<op_array3><sps1><string>, __RISE_R2A" }
 
 sub _syntax_op_hash {
-
-	#my $var				= &self_name;
 	my $sigils			= &sigils || '&';
 	my $selfname		= &self_name;
-	#my ($sps1,$sps2,$sps3,$sps4) = (&sps1,&sps2,&sps3,&sps4);
-	#print "############### $selfname\n";
-	
-	#$var 				= "${sigils}<self_name>";
-	$selfname 				= "\%{${sigils}<self_name>}" if &self_name !~ /\_\_RISE/; # if $sigils eq '$';
+	$selfname 			= "\%{${sigils}<self_name>}" if &self_name !~ /\_\_RISE/; # if $sigils eq '$';
 	
 	return "__RISE_A2R <op_hash><sps1><paren_L><sps2>${selfname}";
 }
 
-sub _syntax_op_reverse {'__RISE_2R <op_reverse> __RISE_R2'}
+sub _syntax_op_reverse { '__RISE_2R <op_reverse> __RISE_R2' }
 
 
 sub _syntax_op_array3_OFF {
@@ -2195,6 +2210,19 @@ sub _syntax_op_array3_OFF {
 	#$res = '%%%WRAP_CODE_' . $name . '%%%';
 	
 	return $res;
+}
+
+sub _syntax_comma_quarter {
+		my $name_ops		= &name_ops;
+		my $name			= &name_list;
+		$name				= __name2name($name);
+		return $name_ops . ' ' . $name;
+}
+
+sub  __name2name {
+	my $name = shift;
+	$name =~ s/\./\:\:/gsx;
+	return $name;
 }
 
 sub _syntax_op_dot {'->'}
