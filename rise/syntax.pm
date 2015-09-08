@@ -101,10 +101,9 @@ sub confirm {
 	var('public_code')				= q/''/;
 	
 	var ('parser_variable')			= [
-		
-		'_variable_boost',
-		#'_var_boost2',
-		'_var_boost3',			
+		'_variable_boost1',
+		'_variable_boost2',
+		'_variable_boost3',			
 		'_variable',
 		'_constant',
 	];
@@ -112,6 +111,7 @@ sub confirm {
 	var ('parser_function')			= [
 		'_function',
 		'_function_method',
+		#@{var 'parser_variable'},
 	];
 	
 	var ('parser_code')				= [
@@ -122,7 +122,7 @@ sub confirm {
 		
 		'_function_defs',		
 		'_variable_list',
-		'_var_boost1',
+		
 		
 		@{var 'parser_function'},
 		@{var 'parser_variable'},
@@ -159,15 +159,15 @@ sub confirm {
 	
 	var ('parser__')				= [
 		
-		
-		'_excluding',
 		'_commentC',
+		'_excluding',
+		
 		
 		'_nonamedblock',
 		@{var 'parser_namespace'},
 		'_unwrap_code',
 		
-		'_op_math',
+		'_op_regex',
 		'_op_scalar',
 		'_op_array1',
 		'_op_array2',
@@ -181,6 +181,7 @@ sub confirm {
 		
 		'_optimize6',
 		'_optimize7',
+		'_optimize8',		
 		'_function_method_post1',
 		'_function_method_post2',
 		#'_function_boost_post1',
@@ -188,6 +189,7 @@ sub confirm {
 		#'_variable_boost_post',
 		#'_optimize5',
 		'_including',
+
 		
 	];
 
@@ -424,16 +426,47 @@ sub confirm {
 	token DATA 						=> q/(?:^__DATA__\r?\n.*)/;
 	token END 						=> q/(?:^__END__\r?\n.*)/;
 	
-	token text						=> q/(?:qtext|textqq|textqw)/;
+	#token text						=> q/(?:qtext|textqq|textqw)/;
 	#token text						=> q/(?:qtext|textqq|textqw|qregex)/;
+	token text						=> q/(?:qregex_m|qregex_s|qtext|textqq|textqw)/;
 	#token textqq					=> q/(?:''|'content[^\\\]')/;
 	#token textqw					=> q/(?:""|"content[^\\\]")/;
 	token textqq					=> q/(?:\'content[^\\\']?\')/;
 	token textqw					=> q/(?:\"content[^\\\"]?\")/;
 	#token qtext 					=> q/qtext_paren|qtext_brace|qtext_square|qtext_angle|qtext_slash|qtext_char/;
-	token qregex					=> q/\=\~\s*(?:s|m)?(?:in_paren|in_brace|in_square|in_angle|in_slash|in_char)/;
+	#token qregex					=> q/[=!]\~\s*(?:\b(?:s\s*|m\s*)\b)?(?:in_paren|in_brace|in_square|in_angle|in_slash|in_char)/;	
+	#token qregex					=> q/(?:\s[^\n\r])+(?:\bs\b|(?<REGEX_MATH>\bm\b))\s*
+	#	(?:\\
+	#		|in_paren
+	#		|in_brace
+	#		|in_square
+	#		|in_angle
+	#		|in_slash_regex
+	#	)
+	#/;
+
+	token qregex_m					=> q/(?<REGEX_MATH>\bm\b)\s*
+		(?:\\
+			|in_paren
+			|in_brace
+			|in_square
+			|in_angle
+			|in_slash
+		)
+	/;
+	
+	token qregex_s					=> q/\bs\b\s*
+		(?:\\
+			|in_paren \s* in_paren
+			|in_brace \s* in_brace
+			|in_square \s* in_square
+			|in_angle \s* in_angle
+			|in_slash_regex
+		)
+	/;
+	
 	token qtext						=> q/qvar\s*(?:in_paren|in_brace|in_square|in_angle|in_slash|in_char)/;
-	token qvar						=> q/q[qwr]?/;
+	token qvar						=> q/\bq[qwr]?\b/;
 	token qquote					=> q/qvar/;
 	
 	token in_paren					=> q/(?:\(content[^\\\)]\))/;
@@ -441,14 +474,15 @@ sub confirm {
 	token in_square					=> q/(?:\[content[^\\\]]\])/;
 	token in_angle					=> q/(?:\<content[^\\\>]\>)/;
 	token in_slash					=> q/(?:\/content[^\\\/]\/)/;
-	token in_char					=> q/(?:(?<qchar>[\W\w])content(?!\\\&qchar)&qchar)/;	
+	token in_slash_regex			=> q/(?:\/content[^\\\/](?:\/content[^\\\/])?\/)/;
+	token in_char					=> q/(?:(?<qchar>[\W\w])content(?!\\\(?&qchar))(?&qchar))/;	
 	
 	token qtext_paren				=> q/(?:q[qwr]?\s*\(content[^\\\)]\))/;
 	token qtext_brace				=> q/(?:q[qwr]?\s*\{content[^\\\}]\})/;
 	token qtext_square				=> q/(?:q[qwr]?\s*\[content[^\\\]]\])/;
 	token qtext_angle				=> q/(?:q[qwr]?\s*\<content[^\\\>]\>)/;
 	token qtext_slash				=> q/(?:q[qwr]?\s*\/content[^\\\/]\/)/;
-	token qtext_char				=> q/(?:q[qwr]?\s*(?<qchar>[\W\w])content(?!\\\&qchar)&qchar)/;
+	token qtext_char				=> q/(?:q[qwr]?\s*(?<qchar>[\W\w])content(?!\\\(?&qchar))(?&qchar))/;
 	
 	token block_paren				=> q/(?<BLOCK_PAREN>\((?>[^\(\)]+|(?&BLOCK_PAREN))*\))/; # (...)
 	token block_brace				=> q/(?<BLOCK_BRACE>\{(?>[^\{\}]+|(?&BLOCK_BRACE))*\})/; # {...}
@@ -466,12 +500,14 @@ sub confirm {
 	token THEN						=> q/content/;
 	token ELSE						=> q/content/;
 	
-	token op_dot					=> q/(?<![\s\W])\.(?![\s\d\.])/;
+	token op_dot					=> q/(?<! [\s\W] ) \. (?! [\s\d\.] )/;
 	#token op_dot					=> q/(?:[^\s])\.(?:[^\s\d\.])/;
 	
 	token self_name					=> q/(?:this\.)*name/;
 	
-	token op_math					=> q/[=!]\~\s*m/;
+	token op_regex					=> q/[=!]\~/;
+	token op_regex_m				=> q/[=!]\~\s*m/;
+	token op_regex_m				=> q/[=!]\~\s*s/;
 	token op_scalar					=> q/\b(?:split)\b/;
 	token op_array1					=> q/\b(?:pop|push|shift|slice|unshift|sort)\b/;
 	token op_array2					=> q/\b(?:grep|map|sort)\b/;
@@ -522,20 +558,20 @@ sub confirm {
 	rule _variable_list						=> q/[<accessmod>] <variable> \( <name_list_wtype> \) [<op_end>]/;
 	rule _variable							=> q/[<accessmod>] <variable> <name> [<variable_type>] [<op_end>]/;
 	rule _constant							=> q/[<accessmod>] <const> <name> = <content> <op_end>/;
-	#rule _variable_boost					=> q/((_NOT:sigils)(_NOT:sub)<spss>)<name>/;
-	#rule _variable_boost					=> q/(_NOT:__VARBOOSTED__)(_NOT:sigils)<name>/;
-	#rule _variable_boost					=> q/(_NOT:sigils|\.)(_NOT:sub\s)(NOT:__VARBOOSTED__)<name>/;
-	#rule _variable_boost					=> q/(_NOT:sigils|\.)(_NOT:sub\s)<name>(NOT:__VARBOOSTED__)/;
-	rule _variable_boost					=> q/(_NOT:sigils|\.)(_NOT:sub\s)<name>/;
+	#rule _variable_boost2					=> q/((_NOT:sigils)(_NOT:sub)<spss>)<name>/;
+	#rule _variable_boost2					=> q/(_NOT:__VARBOOSTED__)(_NOT:sigils)<name>/;
+	#rule _variable_boost2					=> q/(_NOT:sigils|\.)(_NOT:sub\s)(NOT:__VARBOOSTED__)<name>/;
+	#rule _variable_boost2					=> q/(_NOT:sigils|\.)(_NOT:sub\s)<name>(NOT:__VARBOOSTED__)/;
+	rule _variable_boost2					=> q/(_NOT:sigils|\.)(_NOT:sub\s)<name>/;
 	rule _variable_boost_post				=> q/__VARBOOSTED__/;
-	# rule _variable_boost					=> q/<word> (_NOT:sigils)<name>/;
-	rule _var_boost1						=> q/[<accessmod>] <variable> <name>/;
+	# rule _variable_boost2					=> q/<word> (_NOT:sigils)<name>/;
+	rule _variable_boost1						=> q/[<accessmod>] <variable> <name>/;
 	rule _var_boost2						=> q/(_NOT:sigils|\.)(_NOT:sub\s)<var_all>/;
-	rule _var_boost3						=> q/variable \$/;
+	rule _variable_boost3						=> q/variable \$/;
 	rule _var_boost_post1					=> q/_var_ \$/;
 	rule _var_boost_post2					=> q/\.\$/;
 	
-	rule _op_math							=> q/<sigils><self_name> <op_math>/;
+	rule _op_regex							=> q/<sigils><self_name> <op_regex> REGEX_MATH/;
 	rule _op_scalar							=> q/<op_scalar> <string>\,/;
 	rule _op_array1							=> q/<op_array1> [<paren_L>] [<sigils>]<self_name>/;
 	rule _op_array2							=> q/<op_array2> <block_brace>/;
@@ -551,6 +587,7 @@ sub confirm {
 	rule _optimize5 						=> q/space_try/;
 	rule _optimize6 						=> q/_UNNAMEDBLOCK_/;
 	rule _optimize7 						=> q/__RISE_R2A __RISE_[A]2R/;
+	rule _optimize8 						=> q/REGEX_MATH/;
 	rule _including							=> q/<including>/;
 	rule _unwrap_code						=> q/<all>/;
 	rule _commentC							=> q/<comment_C>/;
@@ -591,15 +628,15 @@ sub confirm {
 	action _variable_list 					=> \&_syntax_variable_list;
 	action _variable 						=> \&_syntax_variable;
 	action _constant 						=> \&_syntax_constant;
-	action _var_boost1						=> \&_syntax_var_boost1;
+	action _variable_boost1						=> \&_syntax_variable_boost1;
 	action _var_boost2						=> \&_syntax_var_boost2;
-	action _var_boost3						=> \&_syntax_var_boost3;
-	action _variable_boost					=> \&_syntax_variable_boost;
+	action _variable_boost3						=> \&_syntax_variable_boost3;
+	action _variable_boost2					=> \&_syntax_variable_boost2;
 	action _variable_boost_post				=> \&_syntax_variable_boost_post;
 
 	action _unwrap_code						=> \&_syntax_unwrap_code;
 	
-	action _op_math							=> \&_syntax_op_math;
+	action _op_regex						=> \&_syntax_op_regex;
 	action _op_scalar						=> \&_syntax_op_scalar;
 	action _op_array1						=> \&_syntax_op_array1;
 	action _op_array2						=> \&_syntax_op_array2;
@@ -614,6 +651,7 @@ sub confirm {
 	action _optimize5		 				=> \&_syntax_optimize5;
 	action _optimize6		 				=> \&_syntax_optimize6;
 	action _optimize7						=> \&_syntax_optimize7;
+	action _optimize8						=> \&_syntax_optimize8;
 	
 	action _including						=> \&_syntax_including;
 	action _commentC 						=> \&_syntax_commentC;
@@ -702,8 +740,12 @@ sub _syntax_commentC {
 
 sub _syntax_excluding {
 		#my $self = shift;
+		my $opt			= '';
+		
+		$opt = 'REGEX_MATH ' if $+{REGEX_MATH};
+		
 		push @{&var('excluding')}, &excluding;
-		return '%%%TEXT_' . sprintf("%03d", $#{&var('excluding')}) . '%%%';
+		return $opt . '%%%TEXT_' . sprintf("%03d", $#{&var('excluding')}) . '%%%';
 }
 
 sub _syntax_including {
@@ -1103,10 +1145,10 @@ sub _syntax_function {
 	
 	$arguments			= parse($self, $arguments, &grammar, ['_variable_list','_variable'], { parent => $name });
 	$block 				=~ s/\{(.*)\}/$1/gsx;
-	$block 				= parse($self, $block, &grammar, ['_variable_boost', '_var_boost3'], { parent => $parent_class });
+	$block 				= parse($self, $block, &grammar, ['_variable_boost2', '_variable_boost3'], { parent => $parent_class });
 	#$block 				= parse($self, $block, &grammar, [@{var 'parser_variable'}], { parent => $parent_class });
 	$block 				= parse($self, $block, &grammar, [@{var 'parser_code'}], { parent => $name });
-	#$block 				= parse($self, $block, &grammar, ['_var_boost2', '_var_boost3'], { parent => $parent_class });
+	#$block 				= parse($self, $block, &grammar, ['_var_boost2', '_variable_boost3'], { parent => $parent_class });
 	#var('wrap_code')->{$name} = $block;
 	#$block = '%%%WRAP_CODE_' . $name . '%%%';
 	
@@ -1204,7 +1246,7 @@ sub _syntax_boost_var {
 	return $block;
 }
 
-sub _syntax_var_boost1 {
+sub _syntax_variable_boost1 {
 	my ($self, $rule_name, $confs)			= @_;
 	my $parent_class	= $confs->{parent} || '';
 	
@@ -1237,30 +1279,21 @@ sub _syntax_var_boost1 {
 		
 		#----------------------------------------------------------
 		
-		$members_list = join ('\b|\b', $members_list =~ /\b\w+\-var\-($tk_name)\b/gsx);
-		
+		$members_list = join ('\b|\b', $members_list =~ /\b\w+\-var\-($tk_name)\b/gsx);	
 	}
-	
-	#print ">>>>>>>>>>> $name - *$parent_class* \n" if $name =~ m/($members_list)/sx;
-	
-	
+
 	var('members')->{$parent_class} .= ' '.$members_var if $members_var !~ /$members_list/gsx;  # if $accmod ne 'local';
 	var('members')->{$parent_class} =~ s/^\s+//;
-	
-	
-	#print "VAR $parent_class->$name | list - ".$members_list." \n";
-	
+
 	token 'var_all'		=> $members_list||1;
 	rule '_var_boost2'	=> '(_NOT:\$)<var_all>';
-	
-	#print "VAR $parent_class->$name | list - ".var('members')->{$parent_class}." \n";
 	
 	return "$accmod <kw_variable> $name";
 }
 
 sub _syntax_var_boost2		{ '$<var_all>' }
 
-sub _syntax_var_boost3		{ '<kw_variable> ' }
+sub _syntax_variable_boost3		{ '<kw_variable> ' }
 
 sub _syntax_var_boost_post1	{ '<kw_variable> ' }
 
@@ -1394,7 +1427,7 @@ sub _syntax_variable_NEW {
 	#return "my \$$name; { package $obj_name; no warnings; use rise::core::variable \\\$$name, '$accmod'; }$op_end"
 }
 
-sub _syntax_variable_boost_OFF {
+sub _syntax_variable_boost2_OFF {
 	my $word			= &word;
 	my $sigils			= &sigils;
 	my $name			= &name;
@@ -1405,20 +1438,19 @@ sub _syntax_variable_boost_OFF {
 	return "$word $name";
 }
 
-sub _syntax_variable_boost {
+sub _syntax_variable_boost2 {
 	my ($self, $rule_name, $confs)			= @_;
 	my $parent_class	= $confs->{parent};
-	#my $parent_name		= $confs->{parent} || 'main';
-	#my $sps				= &spss;
+
 	my $name			= &name;
 	#my $args			= &content; #$args ||= '';
-	my $this			= '';
-	my $tk_accmod		= token 'accessmod';
+	#my $this			= '';
+	#my $tk_accmod		= token 'accessmod';
 	my $tk_name			= token 'name';
-	my $var_list		= var('members')->{$parent_class}||'';
+	#my $var_list		= var('members')->{$parent_class}||'';
 	my $sigil			= "";
 	my $varboost		= "";
-	my $members_var		= '-var-'.$name;
+	#my $members_var		= '-var-'.$name;
 	my $members_list	= var('members')->{$parent_class}||'';
 	
 	
@@ -1429,40 +1461,15 @@ sub _syntax_variable_boost {
 	
 	$members_list		= join ('\b|\b', $members_list =~ /\b\w+\-var\-($tk_name)\b/gsx);
 	#######################################################################################
-	
-	
-	#if ($members_list && $members_var =~ /$members_list/) {
-	#	$sigil				= "\$" if $members_var !~ /__VARBOOSTED__/;
-	#	$varboost			= "__VARBOOSTED__";
-	#	#print "VAR $parent_class->$name | fnlist - *$members_list* \n";
-	#}
+
 	
 	if ($members_list && $name =~ m/\b(?:$members_list)\b/gsx) {
 		$sigil				= "\$";
 		$varboost			= "__VARBOOSTED__";
 		#print "VAR $parent_class->$name | fnlist - *$members_list* \n";
 	}
-	
-	#if ($var_list) {
-	#	$var_list			=~ s/\b(?:$tk_accmod)\-(?!var)\w+\-\w+(?:::\w+)*//gsx;
-	#	$var_list			=~ s/\b(?:$tk_accmod)\-var\-(\w+(?:::\w+)*)/\\b$1\\b/gsx;
-	#	#$var_list			=~ s/^\s+(.*?)\s+$/$1/sx;
-	#	$var_list			=~ s/\\b\s+\\b/\\b|\\b/gsx;
-	#	#$var_list			=~ s/\#//gsx;
-	#	$var_list			=~ s/\s+//gsx;
-	#	
-	#	#print ">>>>>>>>>>> *$var_list* \n" if $name =~ m/($var_list)/sx;
-	#	
-	#}
 
-	
-	#$name =~ s/($var_list)/\$$1/sx;
-
-	#return "${name}";
-	#return "${sps}${sigil}${name}";
 	return "${sigil}${name}";
-	#return "${sigil}${name}${varboost}";
-	#return "${sigil}${varboost}${name}";
 }
 
 sub _syntax_variable_boost_post {''}
@@ -1935,7 +1942,7 @@ sub __object {
 
 	$block 				=~ s/\{(.*)\}/$1/gsx;
 			 
-	#$block 				= parse($self, $block, &grammar, ['_variable_boost', '_var_boost3'], { parent => $parent_class });
+	#$block 				= parse($self, $block, &grammar, ['_variable_boost2', '_variable_boost3'], { parent => $parent_class });
 	$block 				= parse($self, $block, &grammar, [@{var 'parser_'.$object}], { parent => $name });
 	
 	#var('excluding_class_code')->{$name} = $block;
@@ -2144,7 +2151,7 @@ sub _syntax_prepare_name_object_helper {
 	return $block;
 }
 
-sub _syntax_op_math { "__RISE_A2R <sigils><self_name><sps1><op_math>" }
+sub _syntax_op_regex { "__RISE_A2R <sigils><self_name><sps1><op_regex>" }
 sub _syntax_op_scalar { "__RISE_A2R <op_scalar><sps1><string>," }
 
 sub _syntax_op_array1 {
@@ -2231,5 +2238,6 @@ sub _syntax_optimize4 { ';' }
 sub _syntax_optimize5 { ' ' }
 sub _syntax_optimize6 { '' }
 sub _syntax_optimize7 { '<sps1>' }
+sub _syntax_optimize8 { '' }
 
 1;

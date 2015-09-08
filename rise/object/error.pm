@@ -13,7 +13,7 @@ my $ERROR		= {
 	class_priv				=> [ [ 1, 2 ], '"ERROR CLASS: Can\'t access class \"$parent\" \nat $file line $line"' ],
 	class_priv_inherit		=> [ [ 1, 3 ], '"ERROR CLASS: Can\'t access class \"$parent\" \nat $file line $line"' ],	
 	class_prot				=> [ [ 1, 2 ], '"ERROR CLASS: Class \"$parent\" only extends \nat $file line $line"' ],
-	class_inherits			=> [ [ 1, 1 ], '"ERROR CLASS: extends or implements syntaxis eror in class \"$parent\" \nat $file line $line"' ],
+	class_inherits			=> [ [ 1, 1 ], '"ERROR CLASS: extends or implements syntaxis erorr in class \"$parent\" \nat $file line $line"' ],
 	
 	abstract_prot			=> [ [ 1, 2 ], '"ERROR ABSTRACT: Abstract class \"$parent\" only extends \nat $file line $line"' ],
 	abstract_priv			=> [ [ 1, 1 ], '"ERROR ABSTRACT: An abstract class \"$parent\" cannot be private \nat $file line $line"' ],
