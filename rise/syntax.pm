@@ -118,7 +118,9 @@ sub confirm {
 		
 		'_foreach',
 		'_for',
-		'_while',		
+		'_while',
+		'_regex_math',
+		'_regex_replace',
 		
 		'_function_defs',		
 		'_variable_list',
@@ -181,14 +183,16 @@ sub confirm {
 		
 		'_optimize6',
 		'_optimize7',
-		'_optimize8',		
+		'_optimize8',	
 		'_function_method_post1',
 		'_function_method_post2',
 		#'_function_boost_post1',
 		#'_function_boost_post2',
 		#'_variable_boost_post',
 		#'_optimize5',
+		
 		'_including',
+		'_optimize9'
 
 		
 	];
@@ -271,6 +275,23 @@ sub confirm {
 	keyword foreach					=> 'foreach';
 	keyword while					=> 'while';
 	
+	keyword regex_kw1				=> 'regex';
+	keyword regex_kw2				=> 're';
+	
+	keyword regex_math1				=> 'm';
+	keyword regex_math2				=> 'math';
+	
+	keyword regex_replace1			=> 's';
+	keyword regex_replace2			=> 'r';
+	keyword regex_replace3			=> 'replace';
+	
+	keyword re_math1				=> 're.m';
+	keyword re_math2				=> 're.math';
+	keyword re_math3				=> 'regex.math';
+	keyword re_repl1				=> 're.s';
+	keyword re_repl2				=> 're.replace';
+	keyword re_repl3				=> 'regex.replace';
+	
 	################################################## rules ####################################################
 	
 	token namespace					=> keyword 'namespace';
@@ -290,6 +311,45 @@ sub confirm {
 	token protected					=> keyword 'protected';
 	token public					=> keyword 'public';
 	token local						=> keyword 'local';
+	
+	token re_math1					=> keyword 're_math1';
+	token re_math2					=> keyword 're_math2';
+	token re_math3					=> keyword 're_math3';
+	token re_repl1					=> keyword 're_repl1';
+	token re_repl2					=> keyword 're_repl2';
+	token re_repl3					=> keyword 're_repl3';
+	
+	token regex_kw1					=> keyword 'regex_kw1';
+	token regex_kw2					=> keyword 'regex_kw2';
+	
+	token regex_math1				=> keyword 'regex_math1';
+	token regex_math2				=> keyword 'regex_math2';
+	
+	token regex_replace1			=> keyword 'regex_replace1';
+	token regex_replace2			=> keyword 'regex_replace2';
+	token regex_replace3			=> keyword 'regex_replace3';
+	
+	token regex_kw					=> q/regex_kw1|regex_kw2/;
+	token regex_kw_math				=> q/regex_math1|regex_math1/;
+	token regex_kw_replace			=> q/regex_replace1|regex_replace2|regex_replace3/;
+	
+	token regex_math				=> q/re_math1|re_math2|re_math3/;
+	token regex_replace				=> q/re_repl1|re_repl2|re_repl3/;
+	
+	#token regex_math				=> q/(?:regex_kw)\.(?:regex_kw_math)/;
+	#token regex_replace				=> q/(?:regex_kw)\.(?:regex_kw_replace)/;
+	
+	token regex_mods				=> q/word/;
+	token regex_sorce				=> q/self_name/;
+	token regex_pattern_txt			=> q/%%%TEXT_ number %%%/;
+	token regex_pattern_var			=> q/self_name/;
+	token regex_expr_txt			=> q/%%%TEXT_ number %%%/;
+	token regex_expr_block			=> q/block_brace/;
+	token regex_pattern_block		=> q/(?<REG_PATTERN_LEFT>%%%REGEXBLOCK\")|(?<REG_PATTERN_RIGHT>\"REGEXBLOCK%%%)/;
+	#token regex_expr_function		=> q/self_name\s*code_args/;
+	
+	token comma_long_short			=> q/\=\>|\,/;
+	token not						=> q/\!/;
 	
 	#token numeric					=> keyword 'numeric';
 	#token str						=> keyword 'string';
@@ -358,7 +418,7 @@ sub confirm {
 	#token comment					=> q`(?<![$@%])[#] nnline*`;
 	#token comment					=> q`(?<![$@%])(?:\#|//) nnline*`;
 	token comment_Perl				=> q`(?<![$@%])\# nnline*`;
-	token comment_C					=> q`(?<![\$\@\%\\\])\/\/ nnline*`;
+	token comment_C					=> q`(?<![msqr\$\@\%\\\])\/\/ nnline*`;
 	#token comment					=> q/comment_Perl|comment_C/;
 	token comment					=> q/comment_Perl/;
 	
@@ -416,9 +476,10 @@ sub confirm {
 	token implement_list			=> q/implements/;
 	#token var_all					=> var('class_var')||1;
 	
-	token excluding					=> q/POD|DATA|END|comment|text/;
+	token excluding					=> q/POD|DATA|END|comment|regex|text/;
 	token including					=> q/%%%TEXT_ number %%%/;
 	token wrap_code					=> q/%%%CLASS_CODE_ name_ex %%%/;
+	
 	
 	token EOP 						=> q/(?:\n\n|\Z)/;
 	token CUT 						=> q/(?:\n=cut.*EOP)/;
@@ -428,11 +489,14 @@ sub confirm {
 	
 	#token text						=> q/(?:qtext|textqq|textqw)/;
 	#token text						=> q/(?:qtext|textqq|textqw|qregex)/;
-	token text						=> q/(?:qregex_m|qregex_s|qtext|textqq|textqw)/;
+	token text						=> q/(?:qtext|textqq|textqw)/;
 	#token textqq					=> q/(?:''|'content[^\\\]')/;
 	#token textqw					=> q/(?:""|"content[^\\\]")/;
-	token textqq					=> q/(?:\'content[^\\\']?\')/;
-	token textqw					=> q/(?:\"content[^\\\"]?\")/;
+	#token textqq					=> q/(?:\'content[^\\\']?\')/;
+	#token textqw					=> q/(?:\"content[^\\\"]?\")/;
+	token textqq					=> q/(?:\'[^\\\]*?\' | \'[^\']content[^\\\]\')/;
+	token textqw					=> q/(?:\"[^\\\]*?\" | \"[^\"]content[^\\\]\")/;
+	token regex						=> q/qregex_s|qregex_m/;
 	#token qtext 					=> q/qtext_paren|qtext_brace|qtext_square|qtext_angle|qtext_slash|qtext_char/;
 	#token qregex					=> q/[=!]\~\s*(?:\b(?:s\s*|m\s*)\b)?(?:in_paren|in_brace|in_square|in_angle|in_slash|in_char)/;	
 	#token qregex					=> q/(?:\s[^\n\r])+(?:\bs\b|(?<REGEX_MATH>\bm\b))\s*
@@ -446,7 +510,7 @@ sub confirm {
 	#/;
 
 	token qregex_m					=> q/(?<REGEX_MATH>\bm\b)\s*
-		(?:\\
+		(?:REGEXNOMATH
 			|in_paren
 			|in_brace
 			|in_square
@@ -456,12 +520,12 @@ sub confirm {
 	/;
 	
 	token qregex_s					=> q/\bs\b\s*
-		(?:\\
+		(?:REGEXNOMATH
 			|in_paren \s* in_paren
 			|in_brace \s* in_brace
 			|in_square \s* in_square
 			|in_angle \s* in_angle
-			|in_slash_regex
+			|in_slash_regex4
 		)
 	/;
 	
@@ -469,12 +533,15 @@ sub confirm {
 	token qvar						=> q/\bq[qwr]?\b/;
 	token qquote					=> q/qvar/;
 	
-	token in_paren					=> q/(?:\(content[^\\\)]\))/;
-	token in_brace					=> q/(?:\{content[^\\\}]\})/;
-	token in_square					=> q/(?:\[content[^\\\]]\])/;
-	token in_angle					=> q/(?:\<content[^\\\>]\>)/;
-	token in_slash					=> q/(?:\/content[^\\\/]\/)/;
-	token in_slash_regex			=> q/(?:\/content[^\\\/](?:\/content[^\\\/])?\/)/;
+	token in_paren					=> q/(?:\(content[^\)]\))/;
+	token in_brace					=> q/(?:\{content[^\}]\})/;
+	token in_square					=> q/(?:\[content[^\]]\])/;
+	token in_angle					=> q/(?:\<content[^\>]\>)/;
+	token in_slash					=> q/(?:\/content[^\/]\/)/;
+	token in_slash_regex			=> q/(?:\/content[^\/]\/content[^\\\/]\/)/;
+	token in_slash_regex2			=> qr/ (?:\/content\/(?<!\\\/)content\/(?<!\\\/)) /sx;
+	token in_slash_regex3			=> qr/ (?:\/content(?!\\\/)\/content(?!\\\/)\/) /sx;
+	token in_slash_regex4			=> qr/ (?:\/content[^\\]\/content[^\\]\/) /sx;
 	token in_char					=> q/(?:(?<qchar>[\W\w])content(?!\\\(?&qchar))(?&qchar))/;	
 	
 	token qtext_paren				=> q/(?:q[qwr]?\s*\(content[^\\\)]\))/;
@@ -493,7 +560,7 @@ sub confirm {
 	
 	token unblk_pref				=> q/[\}\;]\s*/;
 	
-	token brackets_brace			=> q/(?:\{(?!\s)|(?<!\s)\})/;
+	#token brackets_brace			=> q/(?:\{(?!\s)|(?<!\s)\})/;
 	
 	token condition					=> q/content/;
 	token STATEMENT					=> q/content/;
@@ -524,7 +591,7 @@ sub confirm {
 	token paren_R					=> q/\)/;
 	
 	################################################## rules ####################################################
-	rule _									=> q/<all>/;
+	#rule _									=> q/<all>/;
 	
 	rule _excluding							=> q/<excluding>/;
 	rule _nonamedblock						=> q/<unblk_pref><block_brace>/;
@@ -548,6 +615,11 @@ sub confirm {
 	
 	rule _while								=> q/<while> \( <variable> <name> <condition>\) [<block_brace>]/;
 
+	rule _regex_math						=> q/<regex_math> \:<regex_mods> <regex_sorce> <comma_long_short> [<not>](<regex_pattern_txt>|<self_name>)/;
+	rule _regex_replace						=> q/<regex_replace> \:<regex_mods> <regex_sorce>
+												<comma_long_short> [<not>](<regex_pattern_txt>|<self_name>)
+												<comma_long_short> (<regex_expr_txt>|<regex_expr_block>|<self_name> <code_args>)/;
+	
 	rule _function 							=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
 	rule _function_defs 					=> q/[<accessmod>] <function> [<args_attr>] <op_end><nline>/;
 	rule _function_method					=> q/(NOT:__METHOD__)<name> \( (NOT:__PACKAGE__)/;
@@ -588,6 +660,7 @@ sub confirm {
 	rule _optimize6 						=> q/_UNNAMEDBLOCK_/;
 	rule _optimize7 						=> q/__RISE_R2A __RISE_[A]2R/;
 	rule _optimize8 						=> q/REGEX_MATH/;
+	rule _optimize9							=> q/<regex_pattern_block>/;
 	rule _including							=> q/<including>/;
 	rule _unwrap_code						=> q/<all>/;
 	rule _commentC							=> q/<comment_C>/;
@@ -597,7 +670,7 @@ sub confirm {
 	# rule _parser_if							=> q/IF: \( [<condition>] \) \{<THEN>\}[ ELSE: \{<ELSE>\} ]/;
 	
 	############################# actions ########################################
-	action _								=> \&_;
+	#action _								=> \&_;
 	
 	action _excluding 						=> \&_syntax_excluding;
 	action _nonamedblock					=> \&_syntax_nonamedblock;
@@ -619,6 +692,9 @@ sub confirm {
 	
 	action _while 							=> \&_syntax_while;
 
+	action _regex_math						=> \&_syntax_regex_math;
+	action _regex_replace					=> \&_syntax_regex_replace;
+	
 	action _function_defs 					=> \&_syntax_function_defs;
 	action _function 						=> \&_syntax_function;
 	action _function_method					=> \&_syntax_function_method;
@@ -652,6 +728,7 @@ sub confirm {
 	action _optimize6		 				=> \&_syntax_optimize6;
 	action _optimize7						=> \&_syntax_optimize7;
 	action _optimize8						=> \&_syntax_optimize8;
+	action _optimize9						=> \&_syntax_optimize9;
 	
 	action _including						=> \&_syntax_including;
 	action _commentC 						=> \&_syntax_commentC;
@@ -659,7 +736,9 @@ sub confirm {
 	order = var 'parser__';
 	
 	#print dump(order);
-	#print rule '_op_array3';
+	#print rule '_regex_math';
+	#print "\n";
+	#print rule '_regex_replace';
 
 }
 
@@ -750,7 +829,7 @@ sub _syntax_excluding {
 
 sub _syntax_including {
 	my $including		= &including;
-	my $res				= '';
+	my $res				= 'NOMATH';
 	$including			=~ s/%%%TEXT_(\d+)%%%/$1/gsx;
 	$res				= var('excluding')->[$including] if $including;
 	return $res;
@@ -875,6 +954,38 @@ sub _syntax_while { "{ <kw_local> <variable> <name>; <while>...(...<name>...<con
 #	$while = '{ <kw_local> <variable> <name>; '.$while.'}' if &variable;
 #	return $while;
 #}
+
+sub _syntax_regex_math {
+	#my $res				= '';
+	my $re_op			= &not || '=';
+	#my $pattern			= &regex_pattern_txt || '{$'.&self_name.'}';
+	my $pattern			= '%%%REGEXBLOCK'.&regex_pattern_txt.'REGEXBLOCK%%%' if &regex_pattern_txt;
+	my $mods			= &regex_mods;
+	
+	$pattern			||= '{'.&self_name.'}';
+	
+	return "__RISE_A2R <regex_sorce><sps3>${re_op}~<sps2>m<sps1>${pattern}${mods}";
+}
+
+sub _syntax_regex_replace {
+	#my $res				= '';
+	my $re_op			= &not || '=';
+	my $pattern			= '%%%REGEXBLOCK'.&regex_pattern_txt.'REGEXBLOCK%%%' if &regex_pattern_txt;
+	#my $expr_txt		= ''.&regex_expr_txt.'' if &regex_expr_txt;
+	my $expr_block		= &regex_expr_block;
+	#my $fn_name			= &fn_name;
+	#my $fn_args			= &fn_args;
+	my $mods			= &regex_mods;
+	
+	$mods				.= 'e' if &regex_expr_block;
+	$pattern			||= '{'.&self_name.'}';
+	$expr_block			||= '%%%REGEXBLOCK'.&regex_expr_txt.'REGEXBLOCK%%%';
+	 #$expr_block		= &regex_expr_block;
+	
+	#$pattern			= '"$'.&self_name.'"' if !$pattern;
+	
+	return "<regex_sorce><sps3>${re_op}~<sps2>s<sps1>${pattern}${expr_block}${mods}";
+}
 
 #-------------------------------------------------------------------------------------< function_defs | prepare function | function
 #sub _syntax_function_defs { "sub <name><args_attr><op_end>" }
@@ -2239,5 +2350,11 @@ sub _syntax_optimize5 { ' ' }
 sub _syntax_optimize6 { '' }
 sub _syntax_optimize7 { '<sps1>' }
 sub _syntax_optimize8 { '' }
+sub _syntax_optimize9 {
+	my $res;
+	$res = '{' if $+{REG_PATTERN_LEFT};
+	$res = '}' if $+{REG_PATTERN_RIGHT};
+	return $res;
+}
 
 1;

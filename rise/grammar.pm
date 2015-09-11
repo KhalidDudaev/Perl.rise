@@ -315,6 +315,8 @@ sub __parse {
 	#};
 	#die __error('"the action \"'.$rule_name.'\" not correct\n"') if $@;
 	$$last_sourse	= $source;
+	
+	#$res ||= "### RISE COMPILE TEST ###"
 
 	return $res;
 }
