@@ -21,10 +21,12 @@ my $ENV_CLASS		= {
 
 my $VARS		= {};
 
-sub new {
-	#my $class					= ref $_[0] || $_[0];
-	return bless($ENV_CLASS, (ref $_[0] || $_[0]));
-}
+# sub new {
+# 	# return bless($ENV_CLASS, (ref $_[0] || $_[0]));
+# 	my ($class, $args)	= (ref $_[0] || $_[0], $_[1]);
+# 	%$args				= (%$ENV_CLASS, %$args);
+# 	return bless {}, $class;
+# }
 
 sub obj {
 	my $self	= shift;
@@ -37,4 +39,3 @@ sub __RISE_ENV { shift->new }
 sub DESTROY {}
 
 1;
-

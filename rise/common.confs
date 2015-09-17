@@ -1,10 +1,10 @@
 {
 	command 		=> @_ || 'framework',
-	sourse			=> {
+	source			=> {
 		fpath		=> '',
-		fext 		=> '.class',
+		fext 		=> '.puma',
 	},
-	perl 			=> {
+	dest 			=> {
 		fpath		=> '',
 		fext 		=> '.pm',
 	},

@@ -38,7 +38,7 @@ my $inst;
 my $modules;
 
 #__init();
-	
+
 #&tokens;
 ############################################################################################################
 
@@ -49,15 +49,15 @@ sub import {
 	#%$conf						= ( %$ARGS, %$conf );
 	%$conf						= ( %$conf, %$ARGS );
 	__init();
-	
+
 	run ($conf->{run})			if $conf->{run};
 	compile($conf->{compile})	if $conf->{compile};
-	
+
 	no strict 'refs';
 	foreach (@EXPORT) {
 		*{$this."::$_"} = *{$_};
 	}
-	
+
 	return 1;
 }
 
@@ -76,16 +76,16 @@ sub __init {
 	$file						= new rise::file;
 	$grammar					= new rise::grammar $conf;
 	$syntax						= new rise::syntax $conf;
-	
-	#print ">>>>>>>>>>>>>> - ".dump($grammar)."\n";
-	
+
+	# print ">>>>>>>>>>>>>> - ".dump($grammar)."\n";
+
 	$syntax->confirm;
-	
+
 	#$inst    					= new ExtUtils::Installed;
 	#$parser						= $syntax->parser;
 	#$modules 					= join ( " ", $inst->modules);
-		
-	
+
+
 }
 
 sub __confs_load {
@@ -95,42 +95,42 @@ sub __confs_load {
 }
 
 sub run {
-	my ($this, $appname_dialect)				= __class_ref(@_);
+	my ($this, $appname_source)				= __class_ref(@_);
 
-	my $file_perl				= compile($appname_dialect);
-	
-	__message_box("run $appname_dialect ...");
-	my $time_start_run = time;	
+	my $file_dest				= compile([$appname_source]);
 
-	eval { package main; require $file_perl->{fname}; };
+	__message_box("run $appname_source ...");
+	my $time_start_run = time;
+
+	eval { package main; require $file_dest->{fname}; };
 	die $@ if ($@);
 
 	my $time_end_run = time;
 	my $time_run = $time_end_run - $time_start_run;
-	
+
 	__message_box("running time $time_run seconds ...");
-	
+
 }
 
-sub compile {
-	my ($this, $appname_dialect)				= __class_ref(@_);
+sub compile { #print "#### COMPILE ####\n";
+	my ($this, $appname_source)				= __class_ref(@_);
 	my $assembly = '';
 	my $info;
 
 	my $time_start_compile = time;
 
-	#if (__truefile($appname_dialect)){
-	#	__message_box("compilation $appname_dialect ...");
-	#	$assembly = __assembly( $appname_dialect );
+	#if (__truefile($appname_source)){
+	# __message_box("compilation ". dump($appname_source)." ...");
+	#	$assembly = __assembly( $appname_source );
 	#	$info = $assembly->{info};
 	#	__message ("$info\n") if $info ;
 	#}
-	
-	push @{&__syntax->{VAR}{app_stack}}, @$appname_dialect;
-	
+ 	no strict 'refs';
+	push @{&__syntax->{VAR}{app_stack}}, @$appname_source;
+
 	foreach (@{&__syntax->{VAR}{app_stack}}) {
 		if (__truefile($_)){
-			
+
 			__message_box("compilation $_ ...");
 			#$info = __assembly($_)->{info};
 			$assembly = __assembly($_);
@@ -138,7 +138,7 @@ sub compile {
 			__message ("$info\n") if $info;
 		}
 	}
-	
+
 	my $time_end_compile = time;
 	my $time_compile = $time_end_compile - $time_start_compile;
 	__message_box("compilation time $time_compile seconds ...");
@@ -146,38 +146,41 @@ sub compile {
 	return $assembly;
 }
 
-sub __assembly {
-	my ($this, $appname_dialect) 				= __class_ref(@_);
-	
-	my $code_perl;
-	my $code_dialect;
+sub __assembly { #print "#### ASSEMBLY ####\n";
+	my ($this, $appname_source) 				= __class_ref(@_);
+
+	my $code_dest;
+	my $code_source;
 	my $info;
-	
-	my $fname_dialect			= $this->{sourse}{fpath} . $appname_dialect . $this->{sourse}{fext};
-	my $fname_perl				= $this->{perl}{fpath} . $appname_dialect . $this->{perl}{fext};
-	
-	if (!$fname_perl){
-		$fname_perl				= $fname_dialect;
-		$fname_perl				=~ s/(\w+)\$conf->{sourse}{fext}/$1/sx;
-		$fname_perl				= $fname_perl . $this->{perl}{fext};
+	my($path_current)			= $0 =~ m/^(.*?)\w+(?:\.\w+)*$/sx;
+	my $path_source				= $this->{source}{fpath}	|| $path_current;
+	my $path_dest					= $this->{dest}{fpath}		|| $path_current;
+
+	my $fname_source			= $path_source	. $appname_source . $this->{source}{fext};
+	my $fname_dest				= $path_dest		. $appname_source . $this->{dest}{fext};
+
+	if (!$fname_dest){
+		$fname_dest				= $fname_source;
+		$fname_dest				=~ s/(\w+)\$conf->{source}{fext}/$1/sx;
+		$fname_dest				= $fname_dest . $this->{dest}{fext};
 	}
-	
-	$code_dialect				= __file('read', $fname_dialect);
-	
-	if ($code_dialect) {
+
+	$code_source				= __file('read', $fname_source);
+
+	if ($code_source) {
 		&__syntax->{RULE}		= $grammar->compile_RBNF(&__syntax->{RULE});
-		($code_perl, $info)		= __parse($code_dialect, &__syntax);
-		$code_perl .= "\n1;";
-		__file('write', $fname_perl, $code_perl);
+		($code_dest, $info)		= __parse($code_source, &__syntax);
+		$code_dest .= "\n1;";
+		__file('write', $fname_dest, $code_dest);
 	}
 	#print "$info";
-	return {code => $code_perl, fname => $fname_perl, info => $info};
+	return {code => $code_dest, fname => $fname_dest, info => $info};
 }
 
 #sub __obj__		{ $parser }
 sub __parse		{ $grammar->parse(@_) }
 sub __syntax	{ $syntax->syntax(@_) }
-sub __file		{ eval{$file->file(@_)} }
+sub __file		{ $file->file(@_) }
 
 sub __message { print @_ if $conf->{info} }
 

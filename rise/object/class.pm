@@ -9,7 +9,7 @@ use utf8;
 #use overload
 #  '""'	=> sub { @_ },
 #  '0+'	=> sub { @_ };
-#use rise::core::attribute; 
+#use rise::core::attribute;
 
 use parent qw/
 	rise::object::object
@@ -25,12 +25,19 @@ my $ENV_CLASS		= {
 	caller_data		=> 'DATA'
 };
 
+sub new {
+	my $class			= ref $_[0]	|| $_[0];
+	my $args			= $_[1]		|| {};
+	%$args				= (%$ENV_CLASS, %$args);
+	return bless {}, $class;
+}
+
 sub import {
 	my $self	= shift;
 	#autobox::Core->import;
 	$self->__RISE_COMMANDS;
 }
-			
+
 sub self { shift }
 sub obj_type {'CLASS'}
 
@@ -55,7 +62,7 @@ sub interface_confirm {
 		($obj_accmod, $obj_type, $obj_name) = $object =~ m/(\w+)-(\w+)-(\w+(?:\:\:\w+)*)/;
 		$msg_error .= "INTERFACE ERROR: Not created $obj_accmod $obj_type \"$obj_name\" in class \"$class\"\n" if ($objlist !~ m/\b$object\b/);
 	}
-	
+
 	if ($msg_error ne '') {
 		$msg_error			= "################################ ERROR ##################################\n"
 			.$msg_error
@@ -71,18 +78,18 @@ sub private_class {
 	my $starter			= (caller(4))[3] || 'RUN';
 	my $callercode		= (caller(2))[3] || 'PRIV 2'; #$callercode			=~ s/.*::(\w+)/$1/g;
 	my $callercode_eval	= (caller(3))[3] || 'PRIV 3'; #$callercode_eval	=~ s/.*::(\w+)/$1/g;
-	
+
 	#my $caller0			= (caller(0))[3] || 'PRIV 0'; #$callercode_eval	=~ s/.*::(\w+)/$1/g;
 	#my $caller1			= (caller(1))[3] || 'PRIV 1'; #$callercode_eval	=~ s/.*::(\w+)/$1/g;
 	#my $caller2			= (caller(2))[3] || 'PRIV 2'; #$callercode_eval	=~ s/.*::(\w+)/$1/g;
 	#my $caller3			= (caller(3))[3] || 'PRIV 3'; #$callercode_eval	=~ s/.*::(\w+)/$1/g;
 	#my $caller4			= (caller(4))[3] || 'PRIV 4'; #$callercode_eval	=~ s/.*::(\w+)/$1/g;
-	
+
 	my $access			= ($callercode eq 'import' || $callercode_eval eq 'import') ? 'class_priv_inherit' : 'class_priv';
-	
+
 	#print ">>> $access - $starter - $callercode - $callercode_eval \n";
 	#print ">>> $caller0 - $caller1 - $caller2 - $caller3 - $caller4 \n";
-	
+
 	$starter eq 'RUN' || $self->__RISE_ERR($access);
 }
 
@@ -90,9 +97,9 @@ sub protected_class {
 	my ($self)			= @_;
 	my $callercode		= (caller(2))[3]; $callercode		=~ s/.*::(\w+)/$1/;
 	my $callercode_eval	= (caller(3))[3]; $callercode_eval	=~ s/.*::(\w+)/$1/;
-	
+
 	#print ">>>>>>>>>>>>> $callercode\n";
-	
+
 	($callercode eq 'import' || $callercode_eval eq 'import') || $self->__RISE_ERR('class_prot');
 }
 
@@ -105,4 +112,3 @@ sub extends_error {
 sub DESTROY {}
 
 1;
-
