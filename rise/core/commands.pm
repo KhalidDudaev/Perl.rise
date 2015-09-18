@@ -25,17 +25,18 @@ my @export_list 			= qw/
 	__RISE_2R
 	__RISE_R2
 
+	__RISE_MAP_BLOCK
+	__RISE_GREP_BLOCK
 	__RISE_MAP
 	__RISE_GREP
 	__RISE_JOIN
 	__RISE_REVERSE
-	__RISE_SORT
 	__RISE_POP
 	__RISE_PUSH
 	__RISE_SHIFT
 	__RISE_UNSHIFT
 	__RISE_SIZE
-	__RISE_SLICE
+	__RISE_SPLICE
 
 	__RISE_KEYS
 	__RISE_VALUES
@@ -165,14 +166,6 @@ sub __RISE_EACH ($){
 # }
 
 ########## ARRAY ######################################################
-sub __RISE_GREP (&$){
-	my( $code, $array ) = @_;
-	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'grep') unless ref $code eq 'CODE' && ref $array eq 'ARRAY';
-    my $res = [grep { &$code } @$array];
-	return $res;
-	# return wantarray ? @$res : $res;
-}
-
 # sub __RISE_GREP (&$){
 # 	my $filter = shift;
 # 	my $arr = shift;
@@ -220,21 +213,44 @@ sub __RISE_GREP (&$){
 
 ## last version: sub map (\@&) { my $arr = shift; my $sub = shift; [ map { $sub->($_) } @$arr ]; }
 #
-sub __RISE_MAP (&$){
+
+sub __RISE_GREP_BLOCK (&$){
+	my( $code, $array ) = @_;
+	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'grep') unless ref $code eq 'CODE' && ref $array eq 'ARRAY';
+    # my $res = [grep { &$code } @$array];
+	return [grep { &$code } @$array];
+	# return wantarray ? @$res : $res;
+}
+
+sub __RISE_MAP_BLOCK (&$){
 	my( $code, $array ) = @_;
 	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'map') unless ref $code eq 'CODE' && ref $array eq 'ARRAY';
-	my $res = [ map { &$code } @$array ];
-   # [map { &{$_[0]} } @{$_[1]}] || __PACKAGE__->__RISE_ERR('ARR_HASH', 'map');
-	return $res;
+	# my $res = [ map { &$code } @$array ];
+	return [ map { &$code } @$array ];
 	# wantarray ? return @$res : return $res;
 }
 
+sub __RISE_GREP ($$){
+	my( $filter, $array ) = @_;
+	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'grep') unless ref $array eq 'ARRAY';
+    # my $res = [grep $filter, @$array];
+	return [grep { m/$filter/ } @$array];
+	# return wantarray ? @$res : $res;
+}
+
+sub __RISE_MAP ($$){
+	my( $filter, $array ) = @_;
+	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'map') unless ref $array eq 'ARRAY';
+	# my $res = [ map $filter, @$array ];
+	return [ map { m/$filter/ } @$array ];
+	# wantarray ? return @$res : return $res;
+}
 
 sub __RISE_JOIN ($$){
-	my $separ = shift;
-	my $array = shift;
+	my $filter	= shift;
+	my $array	= shift;
 	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'join') unless ref $array eq 'ARRAY';
-	join $separ, @$array;
+	join $filter, @$array;
 }
 
 # sub __RISE_REVERSE {
@@ -243,7 +259,7 @@ sub __RISE_JOIN ($$){
 # }
 
 sub __RISE_REVERSE ($){
-	my $data = shift;
+	my $data	= shift;
 	my $res;
 	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'reverse') unless ref $data eq 'ARRAY' || ref $data eq 'HASH';
 	@$res = reverse @$data if ref $data eq 'ARRAY';
@@ -252,19 +268,13 @@ sub __RISE_REVERSE ($){
 	# return wantarray ? @$res : $res;
 }
 
-sub __RISE_SORT ($;&$){
-	my $sub		= sub { $a cmp $b };
-	my $array	= shift();
-
-	if (ref $array eq 'CODE') {
-		print ">>>>>>>>>>>>> SORT CODE FILTER <<<<<<<<<<<<<<\n";
-		$sub	= $array;
-		$array	= shift;
-	}
+sub __RISE_SORT (&$){
+	my $sub		= shift;
+	my $array	= shift;
 
 	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'sort') unless ref $array eq 'ARRAY' || ref $array eq 'HASH';
 	# my $res = [ sort { $sub->($a, $b) } @$array ];
-	my $res = [ sort { &$sub } @$array ];
+	my $res = [ sort { &$sub || $a <=> $b || $a cmp $b } @$array ];
 
 	# print ">>>>>>>>>>>>> SORT RES - ".dump($res)." <<<<<<<<<<<<<<\n";
 
@@ -278,10 +288,11 @@ sub __RISE_POP ($){
 	return pop @$array;
 }
 
-sub __RISE_PUSH ($){
-	my $array = shift;
+sub __RISE_PUSH ($$){
+	my $array	= shift;
+	my $list 	= shift;
 	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'push') unless ref $array eq 'ARRAY';
-	return push @$array, @_;
+	return push @$array, @$list;
 }
 
 sub __RISE_SHIFT ($){
@@ -290,23 +301,31 @@ sub __RISE_SHIFT ($){
 	return shift @$array;
 }
 
-sub __RISE_UNSHIFT ($){
-	my $array = shift;
+sub __RISE_UNSHIFT ($$){
+	my $array	= shift;
+	my $list 	= shift;
 	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'unshift') unless ref $array eq 'ARRAY';
-	return unshift(@$array, @_);
+	return unshift(@$array, @$list);
 }
 
 sub __RISE_SIZE ($){
 	my $array = shift;
-	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'scalar') unless ref $array eq 'ARRAY';
+	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'size') unless ref $array eq 'ARRAY';
 	scalar @$array;
 }
 
-sub __RISE_SLICE ($){
+sub __RISE_SPLICE ($){
 	my $list = shift;
-	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'slice') unless ref $list eq 'ARRAY';
+	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'splice') unless ref $list eq 'ARRAY';
 	return [@{$list}[@_]];
 }
+
+# sub __RISE_SPLIT ($){
+# 	my $filter	= shift;
+# 	my $data	= shift;
+# 	__PACKAGE__->__RISE_ERR('SCALAR', 'split') unless ref $list;
+# 	return split $filter, $data;
+# }
 
 ##########################################################################################
 

@@ -1,0 +1,51 @@
+__RISE_MAP      EXPR, LIST          | BLOCK LIST
+__RISE_GREP     EXPR, LIST          | BLOCK LIST
+
+__RISE_SPLICE   (ARRAY|EXPR),       | ----------
+__RISE_SORT     LIST                | (BLOCK|FNAME) LIST
+
+__RISE_JOIN     EXPR, LIST          | ----------
+__RISE_PUSH     (ARRAY|EXPR), LIST  | ----------
+__RISE_UNSHIFT  (ARRAY|EXPR), LIST  | ----------
+__RISE_POP      (ARRAY|EXPR)        | ----------
+__RISE_SHIFT    (ARRAY|EXPR)        | ----------
+__RISE_SIZE     (ARRAY|EXPR)        | ----------
+
+__RISE_REVERSE  (LIST|HASH)         | ----------
+
+__RISE_KEYS     HASH|EXPR           | ----------
+__RISE_VALUES   HASH|EXPR           | ----------
+__RISE_EACH     HASH|EXPR           | ----------
+
+#################################################################################
+
+__RISE_SPLICE   (ARRAY|EXPR),       | ----------
+
+
+ARREF   __RISE_SPLIT
+
+ARREF   __RISE_SORT     ARREF
+
+ARREF   __RISE_MAP      FILTER, ARREF
+ARREF   __RISE_GREP     FILTER, ARREF
+SCALAR  __RISE_JOIN     FILTER, ARREF        | ----------
+
+
+SCALAR  __RISE_PUSH     (ARREF|EXPR), ARREF  | ----------
+SCALAR  __RISE_UNSHIFT  (ARREF|EXPR), ARREF  | ----------
+
+--------------------------------------------------------------------------------
+ARREF   __RISE_MAP      BLOCK ARREF
+ARREF   __RISE_GREP     BLOCK ARREF
+-ARREF   __RISE_SORT     BLOCK ARREF
+
+
+ARREF   __RISE_KEYS     HREF
+ARREF   __RISE_VALUES   HREF
+ARREF   __RISE_EACH     HREF
+
+AHREF   __RISE_REVERSE  AHREF
+
+SCALAR  __RISE_POP      ARREF
+SCALAR  __RISE_SHIFT    ARREF
+SCALAR  __RISE_SIZE     ARREF

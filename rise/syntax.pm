@@ -171,16 +171,19 @@ sub confirm {
 		'_unwrap_code',
 
 		'_op_regex',
-		'_op_scalar',
+		# '_op_scalar',
 
-        # '_op_array_block',
-        '_op_array',
+        # '_op_array',
+		# '_op_hash',
+
+        '_op_array_block',
+        '_op_array_hash',
+
 		# '_op_array1',
 		# '_op_array2',
 		# '_op_array21',
 		# '_op_array3',
 		# '_op_reverse',
-		'_op_hash',
 
 		'_op_dot',
 		'_optimize4',
@@ -583,17 +586,39 @@ sub confirm {
 	token op_regex					=> q/[=!]\~/;
 	token op_regex_m				=> q/[=!]\~\s*m/;
 	token op_regex_m				=> q/[=!]\~\s*s/;
+
 	token op_scalar					=> q/\b(?:split)\b/;
     token op_array					=> q/\b(?:map|grep|join|reverse|sort|pop|push|shift|unshift|size|slice)\b/;
-	# token op_array1					=> q/\b(?:pop|push|shift|slice|unshift|sort)\b/;
-	token op_array1					=> q/\b(?:pop|shift|slice|unshift|sort)\b/;
-	# token op_array2					=> q/\b(?:grep|map|sort)\b/;
-	token op_array2					=> q/\b(?:grep|sort)\b/;
-	token op_array3					=> q/\b(?:join)\b/;
-
 	token op_hash					=> q/\b(?:keys|values|each)\b/;
 	token op_reverse				=> q/\b(?:reverse)\b/;
-    token ret_arr_ops				=> q/\b(?:map|grep|reverse|sort|slice|keys|values|each)\b/;
+
+	# token op_array1					=> q/\b(?:pop|push|shift|slice|unshift|sort)\b/;
+
+    token op_array_block            => q/\b(?:map|grep)\b/;
+    token op_array_hash             => q/\b(?:keys|values|each|map|grep|join|reverse|pop|push|shift|unshift|size|splice)\b/;
+
+    token op_ahref_expr			    => q/\b(?:keys|values|each|reverse|pop|shift|size)\b/;
+
+    token op_arr2arr_sort			=> q/\b(?:sort)\b/;
+
+    token op_arr2scl    			=> q/\b(?:join|push|unshift)\b/;
+
+
+	token op_array2					=> q/\b(?:pop|shift|slice|unshift|sort)\b/;
+	# token op_array2					=> q/\b(?:grep|map|sort)\b/;
+	token op_array3					=> q/\b(?:join)\b/;
+
+    token ret_arr_ops				=> q/\b(?:map|grep|reverse|sort|keys|values|each)\b/;
+
+    var ('IO_REF')                   = {
+        keys    => ['__RISE_R2H', '__RISE_A2R'],
+        values  => ['__RISE_R2H', '__RISE_A2R'],
+        each    => ['__RISE_R2H', '__RISE_A2R'],
+        reverse => ['__RISE_R2', '__RISE_2R'],
+        pop     => ['__RISE_R2A',''],
+        shift   => ['__RISE_R2A',''],
+        size    => ['__RISE_R2A',''],
+    };
 
 	token space_try					=> q/(?![\n\r])\s\s/;
 
@@ -658,16 +683,23 @@ sub confirm {
 	rule _var_boost_post2					=> q/\.\$/;
 
 	rule _op_regex							=> q/<sigils><self_name> <op_regex> REGEX_MATH/;
-	rule _op_scalar							=> q/<op_scalar> <string>\,/;
-    rule _op_array							=> q/<op_array>/;
-    # rule _op_array_block					=> q/<op_array> \{/;
-	rule _op_array1							=> q/<op_array1> [<paren_L>] [<sigils>]<self_name>/;
-	rule _op_array2							=> q/<op_array2> <block_brace>/;
-	rule _op_array21						=> q/<op_array2> <string>\,/;
-	rule _op_array3							=> q/<op_array3> <string>\,/;
+	# rule _op_scalar							=> q/<op_scalar> <string>\,/;
+    # rule _op_array							=> q/<op_array>/;
+	# rule _op_hash							=> q/<op_hash>/;
+
+    # rule _op_arref_block					=> q/<op_arref_block> <block_brace>/;
+    rule _op_array_block					=> q/<op_array_block> \{/;
+    rule _op_array_hash 					=> q/<op_array_hash>/;
+
+    # rule _op_ahref_expr 					=> q/<op_ahref_expr> [<paren_L>]/;
+
+	# rule _op_array1							=> q/<op_array1> <block_brace>/;
+	# rule _op_array2							=> q/<op_array2> [<paren_L>] [<sigils>]<self_name>/;
+	# rule _op_array21						=> q/<op_array2> <string>\,/;
+	# rule _op_array3							=> q/<op_array3> <string>\,/;
 	# rule _op_hash							=> q/<op_hash> [<paren_L>] [<sigils>]<self_name>/;
-	rule _op_hash							=> q/<op_hash>/;
-	rule _op_reverse						=> q/<op_reverse>/;
+	# rule _op_hash							=> q/<op_hash> [<paren_L>]/;
+	# rule _op_reverse						=> q/<op_reverse> [<paren_L>]/;
 
 	rule _comma_quarter 					=> q/<name_ops> <name_list>/;
 	rule _op_dot							=> q/op_dot/;
@@ -731,15 +763,21 @@ sub confirm {
 	action _unwrap_code						=> \&_syntax_unwrap_code;
 
 	action _op_regex						=> \&_syntax_op_regex;
-	action _op_scalar						=> \&_syntax_op_scalar;
-	action _op_array						=> \&_syntax_op_array;
-	# action _op_array_block	        		=> \&_syntax_op_array_block;
-	action _op_array1						=> \&_syntax_op_array1;
-	action _op_array2						=> \&_syntax_op_array2;
-	action _op_array21						=> \&_syntax_op_array21;
-	action _op_array3						=> \&_syntax_op_array3;
-	action _op_hash							=> \&_syntax_op_hash;
-	action _op_reverse						=> \&_syntax_op_reverse;
+	# action _op_scalar						=> \&_syntax_op_scalar;
+	# action _op_array						=> \&_syntax_op_array;
+	# action _op_hash							=> \&_syntax_op_hash;
+
+    action _op_array_block	        		=> \&_syntax_op_array_block;
+    action _op_array_hash	        		=> \&_syntax_op_array_hash;
+
+    # action _op_ahref_expr	        		=> \&_syntax_op_ahref_expr;
+
+
+	# action _op_array1						=> \&_syntax_op_array1;
+	# action _op_array2						=> \&_syntax_op_array2;
+	# action _op_array21						=> \&_syntax_op_array21;
+	# action _op_array3						=> \&_syntax_op_array3;
+	# action _op_reverse						=> \&_syntax_op_reverse;
 
 	action _comma_quarter					=> \&_syntax_comma_quarter;
 	action _op_dot							=> \&_syntax_op_dot;
@@ -2310,34 +2348,43 @@ sub _syntax_op_array {
 }
 
 sub _syntax_op_array_block {
-	my $op_array			= '__RISE_' . uc &op_array . '_BLOCK';
 
-	return $op_array . '<sps1>{';
+	# return '__RISE_A2R <op_array>__OFF__...<block_brace> __RISE_R2A';
+
+	my $op_array			= '__RISE_' . uc &op_array_block . '_BLOCK';
+    return $op_array.' {';
+}
+
+sub _syntax_op_array_hash { return '__RISE_' . uc &op_array_hash }
+
+sub _syntax_op_ahref_expr {
+
+    return "__RISE_A2R <op_hash>...<paren_L>...__RISE_R2H ";
 }
 
 sub _syntax_op_array1 {
 	my $sigils			= &sigils || '&';
-	return "<op_array1><sps1><paren_L><sps2>\@{${sigils}<self_name>}";
+	return "<op_array1>...<paren_L>...\@{${sigils}<self_name>}";
 }
 
-sub _syntax_op_array2  { "__RISE_A2R <op_array2><sps1><block_brace> __RISE_R2A" }
-sub _syntax_op_array21 { "__RISE_A2R <op_array2><sps1><string>, __RISE_R2A" }
-sub _syntax_op_array3  { "<op_array3><sps1><string>, __RISE_R2A" }
-
-# sub _syntax_op_hash {
-# 	my $sigils			= &sigils || '&';
-# 	my $selfname		= &self_name;
-# 	$selfname 			= "\%{${sigils}<self_name>}" if &self_name !~ /\_\_RISE/; # if $sigils eq '$';
-#
-# 	return "__RISE_A2R <op_hash><sps1><paren_L><sps2>${selfname}";
-# }
+sub _syntax_op_array2  { "__RISE_A2R <op_array2>...<block_brace> __RISE_R2A" }
+sub _syntax_op_array21 { "__RISE_A2R <op_array2>...<string>, __RISE_R2A" }
+sub _syntax_op_array3  { "<op_array3>...<string>, __RISE_R2A" }
 
 sub _syntax_op_hash {
-    my $op_hash			= '__RISE_' . uc &op_hash;
-	return $op_hash;
+	# my $sigils			= &sigils || '&';
+	# my $selfname		= &self_name;
+	# $selfname 			= "\%{${sigils}<self_name>}" if &self_name !~ /\_\_RISE/; # if $sigils eq '$';
+
+	return "__RISE_A2R <op_hash>...<paren_L>...__RISE_R2H ";
 }
 
-sub _syntax_op_reverse { '__RISE_2R <op_reverse> __RISE_R2' }
+# sub _syntax_op_hash {
+#     my $op_hash			= '__RISE_' . uc &op_hash;
+# 	return $op_hash;
+# }
+
+sub _syntax_op_reverse { '__RISE_2R <op_reverse>...<paren_L>...__RISE_R2 ' }
 
 
 sub _syntax_op_array3_OFF {
