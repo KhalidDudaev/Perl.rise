@@ -176,6 +176,7 @@ sub confirm {
         # '_op_array',
 		# '_op_hash',
 
+        '_op_sort_blockless',
         '_op_array_block',
         '_op_array_hash',
 
@@ -184,7 +185,7 @@ sub confirm {
 		# '_op_array21',
 		# '_op_array3',
 		# '_op_reverse',
-
+        # '_context',
 		'_op_dot',
 		'_optimize4',
 
@@ -249,7 +250,6 @@ sub confirm {
 	#var('public_code')				= '';.
 
 
-
 	keyword namespace				=> 'namespace';
 	keyword class					=> 'class';
 	keyword abstract				=> 'abstract';
@@ -277,6 +277,7 @@ sub confirm {
 	#keyword hash					=> 'hash';
 
 	keyword self					=> 'this';
+    keyword context				    => '_';
 
 	keyword for						=> 'for';
 	keyword foreach					=> 'foreach';
@@ -366,6 +367,7 @@ sub confirm {
 	token variable_type				=> q/\:\s*\w+(?:\s*block_paren)?/;
 
 	token self						=> keyword 'self';
+    token context                   => keyword 'context';
 	token for						=> keyword 'for';
 	token foreach					=> keyword 'foreach';
 	token while 					=> keyword 'while';
@@ -594,7 +596,8 @@ sub confirm {
 
 	# token op_array1					=> q/\b(?:pop|push|shift|slice|unshift|sort)\b/;
 
-    token op_array_block            => q/\b(?:map|grep)\b/;
+    token op_sort_blockless         => q/\bsort\b(?!\s*\{)/;
+    token op_array_block            => q/\b(?:map|grep|sort)\b/;
     token op_array_hash             => q/\b(?:keys|values|each|map|grep|join|reverse|pop|push|shift|unshift|size|splice)\b/;
 
     token op_ahref_expr			    => q/\b(?:keys|values|each|reverse|pop|shift|size)\b/;
@@ -688,6 +691,7 @@ sub confirm {
 	# rule _op_hash							=> q/<op_hash>/;
 
     # rule _op_arref_block					=> q/<op_arref_block> <block_brace>/;
+    rule _op_sort_blockless					=> q/<op_sort_blockless>/;
     rule _op_array_block					=> q/<op_array_block> \{/;
     rule _op_array_hash 					=> q/<op_array_hash>/;
 
@@ -700,7 +704,7 @@ sub confirm {
 	# rule _op_hash							=> q/<op_hash> [<paren_L>] [<sigils>]<self_name>/;
 	# rule _op_hash							=> q/<op_hash> [<paren_L>]/;
 	# rule _op_reverse						=> q/<op_reverse> [<paren_L>]/;
-
+    rule _context                           => q/(_NOT:sigils)\b\_\b/;
 	rule _comma_quarter 					=> q/<name_ops> <name_list>/;
 	rule _op_dot							=> q/op_dot/;
 	rule _optimize4 						=> q/\s+\;/;
@@ -767,6 +771,7 @@ sub confirm {
 	# action _op_array						=> \&_syntax_op_array;
 	# action _op_hash							=> \&_syntax_op_hash;
 
+    action _op_sort_blockless	        	=> \&_syntax_op_sort_blockless;
     action _op_array_block	        		=> \&_syntax_op_array_block;
     action _op_array_hash	        		=> \&_syntax_op_array_hash;
 
@@ -779,6 +784,7 @@ sub confirm {
 	# action _op_array3						=> \&_syntax_op_array3;
 	# action _op_reverse						=> \&_syntax_op_reverse;
 
+	action _context							=> \&_syntax_context;
 	action _comma_quarter					=> \&_syntax_comma_quarter;
 	action _op_dot							=> \&_syntax_op_dot;
 	action _optimize4		 				=> \&_syntax_optimize4;
@@ -2347,6 +2353,8 @@ sub _syntax_op_array {
 	return $op_array;
 }
 
+sub _syntax_op_sort_blockless { "sort {}" }
+
 sub _syntax_op_array_block {
 
 	# return '__RISE_A2R <op_array>__OFF__...<block_brace> __RISE_R2A';
@@ -2431,6 +2439,8 @@ sub _syntax_op_array3_OFF {
 
 	return $res;
 }
+
+sub _syntax_context {"\$_"}
 
 sub _syntax_comma_quarter {
 		my $name_ops		= &name_ops;

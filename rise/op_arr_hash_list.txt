@@ -22,23 +22,20 @@ __RISE_EACH     HASH|EXPR           | ----------
 __RISE_SPLICE   (ARRAY|EXPR),       | ----------
 
 
-ARREF   __RISE_SPLIT
-
 ARREF   __RISE_SORT     ARREF
+ARREF   __RISE_SORT     BLOCK ARREF
+
+
+--------------------------------------------------------------------------------
+ARREF   __RISE_MAP      BLOCK ARREF
+ARREF   __RISE_GREP     BLOCK ARREF
 
 ARREF   __RISE_MAP      FILTER, ARREF
 ARREF   __RISE_GREP     FILTER, ARREF
 SCALAR  __RISE_JOIN     FILTER, ARREF        | ----------
 
-
 SCALAR  __RISE_PUSH     (ARREF|EXPR), ARREF  | ----------
 SCALAR  __RISE_UNSHIFT  (ARREF|EXPR), ARREF  | ----------
-
---------------------------------------------------------------------------------
-ARREF   __RISE_MAP      BLOCK ARREF
-ARREF   __RISE_GREP     BLOCK ARREF
--ARREF   __RISE_SORT     BLOCK ARREF
-
 
 ARREF   __RISE_KEYS     HREF
 ARREF   __RISE_VALUES   HREF

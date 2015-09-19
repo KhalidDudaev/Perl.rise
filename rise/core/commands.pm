@@ -18,6 +18,8 @@ use constant FIVETEN => ($] >= 5.010);
 my $cenv					= {};
 my @export_list 			= qw/
 	_
+	a
+	b
 	__RISE_A2R
 	__RISE_H2R
 	__RISE_R2A
@@ -27,6 +29,7 @@ my @export_list 			= qw/
 
 	__RISE_MAP_BLOCK
 	__RISE_GREP_BLOCK
+	__RISE_SORT_BLOCK
 	__RISE_MAP
 	__RISE_GREP
 	__RISE_JOIN
@@ -75,7 +78,10 @@ sub __RISE_COMMANDS { no strict 'refs';
 	*{$self . "::$_"} = \&$_ for @export_list;
 }
 
-sub _ { $_ };
+sub ac (){ \@_ };
+sub _ (){ $_ };
+sub a (){ $a };
+sub b (){ $b };
 
 sub clone {
 	my $var = shift;
@@ -253,11 +259,6 @@ sub __RISE_JOIN ($$){
 	join $filter, @$array;
 }
 
-# sub __RISE_REVERSE {
-# 	my @res = reverse @{$_[0]};
-# 	wantarray ? @res : \@res;
-# }
-
 sub __RISE_REVERSE ($){
 	my $data	= shift;
 	my $res;
@@ -268,18 +269,12 @@ sub __RISE_REVERSE ($){
 	# return wantarray ? @$res : $res;
 }
 
-sub __RISE_SORT (&$){
+sub __RISE_SORT_BLOCK (&$){
 	my $sub		= shift;
 	my $array	= shift;
-
 	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'sort') unless ref $array eq 'ARRAY' || ref $array eq 'HASH';
-	# my $res = [ sort { $sub->($a, $b) } @$array ];
-	my $res = [ sort { &$sub || $a <=> $b || $a cmp $b } @$array ];
-
-	# print ">>>>>>>>>>>>> SORT RES - ".dump($res)." <<<<<<<<<<<<<<\n";
-
+	my $res = [ sort { &$sub || $a cmp $b } @$array ];
 	return $res;
-	# return wantarray ? @$res : $res;
 }
 
 sub __RISE_POP ($){
