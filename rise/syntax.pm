@@ -503,8 +503,17 @@ sub confirm {
 	#token textqw					=> q/(?:""|"content[^\\\]")/;
 	#token textqq					=> q/(?:\'content[^\\\']?\')/;
 	#token textqw					=> q/(?:\"content[^\\\"]?\")/;
-	token textqq					=> q/(?:\'[^\\\]*?\' | \'[^\']content[^\\\]\')/;
-	token textqw					=> q/(?:\"[^\\\]*?\" | \"[^\"]content[^\\\]\")/;
+
+########################################################################################
+	# token textqq					=> q/(?:\'[^\\\]*?\' | \'[^\']content[^\\\]\')/;
+	# token textqw					=> q/(?:\"[^\\\]*?\" | \"[^\"]content[^\\\]\")/;
+    # token textqa					=> q/(?:\`[^\\\]*?\` | \`[^\`]content[^\\\]\`)/;
+
+    token textqq					=> q/(?:\'\'|\'(?(?<!\\\)[^\']|.)*?[^\\\]\')/;
+	token textqw					=> q/(?:\"\"|\"(?(?<!\\\)[^\"]|.)*?[^\\\]\")/;
+    token textqa					=> q/(?:\`\`|\`(?(?<!\\\)[^\`]|.)*?[^\\\]\`)/;
+########################################################################################
+
 	#token textqq					=> q/(?:\'(?:[^\\\']*(?:\\.[^\\\']*)*)\')/;
 	#token textqw					=> q/(?:\"(?:[^\\\"]*(?:\\.[^\\\"]*)*)\")/;
 
@@ -537,7 +546,7 @@ sub confirm {
 			|in_brace \s* in_brace
 			|in_square \s* in_square
 			|in_angle \s* in_angle
-			|in_slash_regex4
+			|in_slash_regex
 		)
 	/;
 
@@ -545,12 +554,22 @@ sub confirm {
 	token qvar						=> q/\bq[qwr]?\b/;
 	token qquote					=> q/qvar/;
 
-	token in_paren					=> q/(?:\(content[^\)]\))/;
-	token in_brace					=> q/(?:\{content[^\}]\})/;
-	token in_square					=> q/(?:\[content[^\]]\])/;
-	token in_angle					=> q/(?:\<content[^\>]\>)/;
-	token in_slash					=> q/(?:\/content[^\/]\/)/;
-	token in_slash_regex			=> q/(?:\/content[^\/]\/content[^\\\/]\/)/;
+########################################################################################
+	# token in_paren					=> q/(?:\(content[^\)]\))/;
+	# token in_brace					=> q/(?:\{content[^\}]\})/;
+	# token in_square					=> q/(?:\[content[^\]]\])/;
+	# token in_angle					=> q/(?:\<content[^\>]\>)/;
+	# token in_slash					=> q/(?:\/content[^\/]\/)/;
+
+    token in_paren					=> q/(?:\(\)|\((?(?<!\\\)[^\(\)]|.)*?[^\\\]\))/;
+	token in_brace					=> q/(?:\{\}|\{(?(?<!\\\)[^\{\}]|.)*?[^\\\]\})/;
+	token in_square					=> q/(?:\[\]|\[(?(?<!\\\)[^\[\]]|.)*?[^\\\]\])/;
+	token in_angle					=> q/(?:\<\>|\<(?(?<!\\\)[^\<\>]|.)*?[^\\\]\>)/;
+	token in_slash					=> q/(?:\/\/|\/(?(?<!\\\)[^\/]|.)*?[^\\\]\/)/;
+########################################################################################
+
+
+	token in_slash_regex			=> q/(?:\/\/\/|\/(?:(?(?<!\\\)[^\/]|.)*?[^\\\]\/){2})/;
 	token in_slash_regex2			=> qr/ (?:\/content\/(?<!\\\/)content\/(?<!\\\/)) /sx;
 	token in_slash_regex3			=> qr/ (?:\/content(?!\\\/)\/content(?!\\\/)\/) /sx;
 	token in_slash_regex4			=> qr/ (?:\/content[^\\]\/content[^\\]\/) /sx;
