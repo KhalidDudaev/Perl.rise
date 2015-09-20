@@ -17,6 +17,10 @@ use constant FIVETEN => ($] >= 5.010);
 
 my $cenv					= {};
 my @export_list 			= qw/
+
+	line
+	say
+	msg
 	_
 	a
 	b
@@ -78,10 +82,34 @@ sub __RISE_COMMANDS { no strict 'refs';
 	*{$self . "::$_"} = \&$_ for @export_list;
 }
 
-sub ac (){ \@_ };
-sub _ (){ $_ };
-sub a (){ $a };
-sub b (){ $b };
+sub _ (){ $_; };
+sub a (){ $a; };
+sub b (){ $b; };
+
+
+sub line (;$){
+	my $args		= shift;
+	my $char		= $args->{char} || '#';
+	my $title		= $args->{title} || '';
+	my $length		= $args->{length} || 80;
+
+	$title			= $char x 3 . ' ' . $title . ' ' if $title;
+	return $title . $char x ($length - length($title));
+}
+
+sub say { print @_ , "\n"; };
+
+sub msg (;$$){
+	my $text		= shift || 'NO TEXT';
+	my $title		= shift || 'NO TITLE';
+
+	# $title			= '### ' . $title . ' ';
+	# $title			= $title . line('#', 80 - length($title));
+
+	say line { title => $title };
+	say $text;
+	say line;
+}
 
 sub clone {
 	my $var = shift;
@@ -286,6 +314,7 @@ sub __RISE_POP ($){
 sub __RISE_PUSH ($$){
 	my $array	= shift;
 	my $list 	= shift;
+	$list		= [$list] if ref $list ne 'ARRAY';
 	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'push') unless ref $array eq 'ARRAY';
 	return push @$array, @$list;
 }
@@ -299,6 +328,7 @@ sub __RISE_SHIFT ($){
 sub __RISE_UNSHIFT ($$){
 	my $array	= shift;
 	my $list 	= shift;
+	$list		= [$list] if ref $list ne 'ARRAY';
 	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'unshift') unless ref $array eq 'ARRAY';
 	return unshift(@$array, @$list);
 }

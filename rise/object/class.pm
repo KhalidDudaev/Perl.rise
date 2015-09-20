@@ -29,7 +29,7 @@ sub new {
 	my $class			= ref $_[0]	|| $_[0];
 	my $args			= $_[1]		|| {};
 	%$args				= (%$ENV_CLASS, %$args);
-	return bless {}, $class;
+	return bless $args, $class;
 }
 
 sub import {

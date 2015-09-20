@@ -35,7 +35,7 @@ sub type_regs {
 	my $rule		= shift;
 
 	#$self->__RISE_ENV->{VARIABLE}{TYPE}{$name} = wizard (@$rule);
-	$self->{VARIABLE}{TYPE}{$name} = wizard (@$rule);
+	$types->{VARIABLE}{TYPE}{$name} = wizard (@$rule);
 }
 
 sub type_cast { no strict 'refs';
@@ -46,7 +46,7 @@ sub type_cast { no strict 'refs';
 	#$self->__RISE_ENV->{VARIABLE}{TYPE}{anytype_rule} = shift;
 
 	#cast $$var_ref, $self->__RISE_ENV->{VARIABLE}{TYPE}{$type};
-	cast $$var_ref, $self->{VARIABLE}{TYPE}{$type} || __PACKAGE__->__RISE_ERR('VAR_CAST_UNDEFINE', $type);
+	cast $$var_ref, $types->{VARIABLE}{TYPE}{$type} || __PACKAGE__->__RISE_ERR('VAR_CAST_UNDEFINE', $type);
 }
 
 1;
