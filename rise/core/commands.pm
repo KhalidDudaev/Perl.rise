@@ -309,10 +309,16 @@ sub __RISE_SIZE ($){
 	scalar @$array;
 }
 
-sub __RISE_SPLICE ($){
-	my $list = shift;
-	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'splice') unless ref $list eq 'ARRAY';
-	return [@{$list}[@_]];
+sub __RISE_SPLICE {
+	my $array	= shift;
+	my $offset	= shift;
+	my $lenght	= shift;
+	my $list	= shift;
+
+	return [splice @$array,$offset,$lenght, @$list] if $list;
+	return [splice @$array,$offset,$lenght] if $lenght;
+	return [splice @$array,$offset] if $offset;
+	return [splice @$array];
 }
 
 # sub __RISE_SPLIT ($){
