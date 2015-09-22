@@ -91,13 +91,13 @@ sub line (;$){
 	my $args		= shift;
 	my $char		= $args->{char} || '#';
 	my $title		= $args->{title} || '';
-	my $length		= $args->{length} || 80;
+	my $length		= $args->{length} || 75;
 
-	$title			= $char x 3 . ' ' . $title . ' ' if $title;
+	$title			= $char x 3 . '[ ' . $title . ' ]' if $title;
 	return $title . $char x ($length - length($title));
 }
 
-sub say { print @_ , "\n"; };
+sub say { local $\ = ""; print @_ , "\n"; };
 
 sub msg (;$$){
 	my $text		= shift || 'NO TEXT';
