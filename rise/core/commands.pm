@@ -24,6 +24,8 @@ my @export_list 			= qw/
 	_
 	a
 	b
+	true
+	false
 	__RISE_A2R
 	__RISE_H2R
 	__RISE_R2A
@@ -85,6 +87,8 @@ sub __RISE_COMMANDS { no strict 'refs';
 sub _ (){ $_; };
 sub a (){ $a; };
 sub b (){ $b; };
+sub true { !!1; };
+sub false { !!0; };
 
 
 sub line (;$){
@@ -163,7 +167,7 @@ sub clone {
 sub __RISE_KEYS ($){
 	my $hash = shift;
 	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'keys') unless ref $hash eq 'HASH';
-	my $res = [ keys %{$_[0]} ];
+	my $res = [ keys(%$hash) ];
 	return $res;
 	# return wantarray ? @$res : $res;
 }
@@ -171,7 +175,7 @@ sub __RISE_KEYS ($){
 sub __RISE_VALUES ($){
 	my $hash = shift;
 	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'keys') unless ref $hash eq 'HASH';
-	my $res = [ values %{$_[0]} ];
+	my $res = [ values(%$hash) ];
 	return $res;
 	# return wantarray ? @$res : $res;
 }

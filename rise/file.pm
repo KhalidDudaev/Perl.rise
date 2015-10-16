@@ -48,11 +48,25 @@ sub _error {
 	return '' if !%{$file.'::'};
 }
 
-sub read {}
+sub read {
+	my $self			= shift;
+	my $file			= shift;
+	$self->file('read', $file)
+}
 
-sub write {}
+sub write {
+	my $self			= shift;
+	my $file			= shift;
+	my $data			= shift;
+	$self->file('write', $file, $data)
+}
 
-sub append {}
+sub append {
+	my $self			= shift;
+	my $file			= shift;
+	my $data			= shift;
+	$self->file('append', $file, $data)
+}
 
 sub _action {{
 	'read'		=> sub { my $data = join('', $fh->getlines());	$fh->close; return $data; },

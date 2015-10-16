@@ -26,11 +26,18 @@ my $ENV_CLASS		= {
 };
 
 sub new {
-	my $class			= ref $_[0]	|| $_[0];
-	my $args			= $_[1]		|| {};
-	%$args				= (%$ENV_CLASS, %$args);
-	return bless $args, $class;
+  my $class         = ref $_[0] || $_[0];                                         # получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
+  my $object        = $_[1] || {};                                                # получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
+  %$object          = (%$ENV_CLASS, %$object);                                           # применяем умолчания, если имеются входные данные то сохраняем их в умолчаниях
+  return bless($object, $class);                                       # обьявляем класс и его свойства
 }
+
+# sub new {
+# 	my $class			= ref $_[0]	|| $_[0];
+# 	my $args			= $_[1]		|| {};
+# 	%$args				= (%$ENV_CLASS, %$args);
+# 	return bless $args, $class;
+# }
 
 sub import {
 	my $self	= shift;
@@ -38,7 +45,14 @@ sub import {
 	$self->__RISE_COMMANDS;
 }
 
-sub self { shift }
+sub self { args('self', @_) }
+sub args {
+	my $index				= shift;
+	my @args				= @_;
+	return $args[0] if $index eq 'self';
+	return $args[$index + 1];
+}
+
 sub obj_type {'CLASS'}
 
 sub interface_confirm {

@@ -9,7 +9,7 @@ use Data::Dump 'dump';
 
 our $VERSION = '0.001';
 
-#$\ = "\n";
+# $\ = "\n";
 
 #use dialect::Parents;
 use rise::file;
@@ -46,6 +46,8 @@ sub import {
 	my $this					= caller;
 	my $ARGS 					= $_[1] || {};
 
+	# print dump $ARGS;
+
 	#%$conf						= ( %$ARGS, %$conf );
 	%$conf						= ( %$conf, %$ARGS );
 	__init();
@@ -72,6 +74,7 @@ sub new {
 
 sub __init {
 
+	# print dump $conf;
 	#$parser						= new dialect::Parser ({ info => $conf->{info} });
 	$file						= new rise::file;
 	$grammar					= new rise::grammar $conf;
@@ -116,6 +119,7 @@ sub compile { #print "#### COMPILE ####\n";
 	my ($this, $appname_source)				= __class_ref(@_);
 	my $assembly = '';
 	my $info;
+	my @app_stack = @$appname_source;
 
 	my $time_start_compile = time;
 
@@ -126,9 +130,12 @@ sub compile { #print "#### COMPILE ####\n";
 	#	__message ("$info\n") if $info ;
 	#}
  	no strict 'refs';
-	push @{&__syntax->{VAR}{app_stack}}, @$appname_source;
+	# if (&__syntax->{VAR}{app_stack}) {
+		push @app_stack, @{&__syntax->{VAR}{app_stack}};
+	# }
 
-	foreach (@{&__syntax->{VAR}{app_stack}}) {
+	foreach (@app_stack) {
+		# print $_;
 		if (__truefile($_)){
 
 			__message_box("compilation $_ ...");
@@ -155,16 +162,18 @@ sub __assembly { #print "#### ASSEMBLY ####\n";
 	my($path_current)			= $0 =~ m/^(.*?)\w+(?:\.\w+)*$/sx;
 	my $path_source				= $this->{source}{fpath}	|| $path_current;
 	my $path_dest					= $this->{dest}{fpath}		|| $path_current;
+	my $fext							= $this->{source}{fext};
 
 	my $fname_source			= $path_source	. $appname_source . $this->{source}{fext};
 	my $fname_dest				= $path_dest		. $appname_source . $this->{dest}{fext};
 
 	if (!$fname_dest){
 		$fname_dest				= $fname_source;
-		$fname_dest				=~ s/(\w+)\$conf->{source}{fext}/$1/sx;
+		$fname_dest				=~ s/(\w+)$fext/$1/sx;
 		$fname_dest				= $fname_dest . $this->{dest}{fext};
 	}
 
+	# print $fname_source;
 	$code_source				= __file('read', $fname_source);
 
 	if ($code_source) {

@@ -117,8 +117,9 @@ sub confirm {
 	var ('parser_code')				= [
 
 		'_foreach',
+    '_foreach_var',
 		'_for',
-        '_for_foreach_array',
+    '_for_foreach_array',
 		'_while',
 		'_regex_match',
 		'_regex_replace',
@@ -276,7 +277,7 @@ sub confirm {
 	#keyword array					=> 'array';
 	#keyword hash					=> 'hash';
 
-	keyword self					=> 'this';
+	keyword self					=> 'self';
     keyword context				    => '_';
 
 	keyword for						=> 'for';
@@ -436,7 +437,7 @@ sub confirm {
 	#token comment2					=> q/(?<![\$\@\%])\#.*?\n/;
 
 
-	token for_each					=> q/foreach|for/;
+	token for_each					=> q/\b(?:foreach|for)\b/;
 
 	token accessmod					=> q/local|private|protected|public/;
 	token class_type				=> q/namespace|class|abstract|interface/;
@@ -566,13 +567,13 @@ sub confirm {
 #	token in_square					=> q/(?:\[\]|\[(?(?<!\\\)[^\[\]]|.)*?[^\\\]\])/;
 #	token in_angle					=> q/(?:\<\>|\<(?(?<!\\\)[^\<\>]|.)*?[^\\\]\>)/;
 #	token in_slash					=> q/(?:\/\/|\/(?(?<!\\\)[^\/]|.)*?[^\\\]\/)/;
-	
+
     token in_paren					=> q/(?:\(\)|\((?(?<!\\\)[^\(\)]|.)*?(?<!\\\)\))/;
 	token in_brace					=> q/(?:\{\}|\{(?(?<!\\\)[^\{\}]|.)*?(?<!\\\)\})/;
 	token in_square					=> q/(?:\[\]|\[(?(?<!\\\)[^\[\]]|.)*?(?<!\\\)\])/;
 	token in_angle					=> q/(?:\<\>|\<(?(?<!\\\)[^\<\>]|.)*?(?<!\\\)\>)/;
 	token in_slash					=> q/(?:\/\/|\/(?(?<!\\\)[^\/]|.)*?(?<!\\\)\/)/;
-	
+
 ########################################################################################
 
 
@@ -674,7 +675,8 @@ sub confirm {
 	rule _interface							=> q/[<accessmod>] <interface> <name> [<content>] <block_brace>/;
 	rule _interface_set						=> q/[<accessmod>] <object_members> <name> <op_end>/;
 
-	rule _foreach							=> q/<for_each> [<variable>] [<name>] \( <condition> \) [<block_brace>]/;
+	rule _foreach							=> q/<for_each> <block_paren> [<block_brace>]/;
+	rule _foreach_var							=> q/<for_each> [<variable>] <name> <block_paren> [<block_brace>]/;
 	rule _for								=> q/<for_each> \( <variable> <name> <condition> \) [<block_brace>]/;
     rule _for_foreach_array                 => q/<for_each> \( <ret_arr_ops>/;
 
@@ -766,6 +768,7 @@ sub confirm {
 	action _implements 						=> \&_syntax_implements;
 
 	action _foreach 						=> \&_syntax_foreach;
+	action _foreach_var 						=> \&_syntax_foreach_var;
 	action _for 							=> \&_syntax_for;
 	#action _for_foreach 					=> \&_syntax_for_foreach;
 	action _for_foreach_array 				=> \&_syntax_for_foreach_array;
@@ -968,8 +971,33 @@ sub _syntax_implements {
 #-------------------------------------------------------------------------------------< for | foreach | while
 sub _syntax_foreach {
 	my ($self, $rule_name, $confs)			= @_;
+	# my $name			= &name;
+	my $cond			= &block_paren;
+	# my $block			= &block_brace;
+	my $tk_self_name	= token 'self_name';
+	my $tk_sigils		= token 'sigils';
+	# my $for				= '';
+
+	# $name				= '<name> = $_;' if $name;
+
+	#$cond				=~ s/^($tk_sigils)?($tk_self_name)$/'@'.'{'.($1||'&').$2.'}'/sxe;
+	#$cond				=~ s/^(\[.*?\])$/\@\{$1\}/sx;
+
+  $cond				=~ s/\((.*)\)/$1/sx;
+
+	$cond				=~ s/^(\s*)($tk_sigils)?($tk_self_name)(\s*)$/$1.'__RISE_R2A '.($2||'').$3.$4/sxe;
+	$cond				=~ s/^(\s*)(\[.*?\])$/$1 __RISE_R2A $2/sx;
+
+	# $block 				=~ s/\{(.*)\}/$1/gsx;
+	# $block				= '{ '.$name.''.$block.'}' if &block_brace;
+
+	return '<for_each>...('.$cond.')...<block_brace>';
+}
+
+sub _syntax_foreach_var {
+	my ($self, $rule_name, $confs)			= @_;
 	my $name			= &name;
-	my $cond			= &condition;
+	my $cond			= &block_paren;
 	my $block			= &block_brace;
 	my $tk_self_name	= token 'self_name';
 	my $tk_sigils		= token 'sigils';
@@ -980,14 +1008,18 @@ sub _syntax_foreach {
 	#$cond				=~ s/^($tk_sigils)?($tk_self_name)$/'@'.'{'.($1||'&').$2.'}'/sxe;
 	#$cond				=~ s/^(\[.*?\])$/\@\{$1\}/sx;
 
-	$cond				=~ s/^($tk_sigils)?($tk_self_name)$/'__RISE_R2A '.($1||'&').$2/sxe;
-	$cond				=~ s/^(\[.*?\])$/__RISE_R2A $1/sx;
+  $cond				=~ s/\((.*)\)/$1/sx;
+
+  # $cond				=~ s/^(\s*)($tk_sigils)?($tk_self_name)/$1.'__RISE_R2A '.($2||'&').$3/sxe;
+  # $cond				=~ s/^(\s*)($tk_sigils)?($tk_self_name)/$1.'__RISE_R2A '.($2||'').$3/sxe;
+  $cond				=~ s/^(\s*)($tk_sigils)?($tk_self_name)(\s*)$/$1.'__RISE_R2A '.($2||'').$3.$4/sxe;
+	$cond				=~ s/^(\s*)(\[.*?\])$/$1 __RISE_R2A $2/sx;
 
 	$block 				=~ s/\{(.*)\}/$1/gsx;
 	$block				= '{ '.$name.''.$block.'}' if &block_brace;
 
-	$for 				= '<for_each>...(...'.$cond.'...)...'.$block;
-	$for 				= '{ <kw_local> <variable> <name>; '.$for.'}' if &variable;
+	$for 				= '<for_each><sps1>('.$cond.')<sps4>'.$block;
+	$for 				= '{ <kw_local> <variable><sps2><name><sps3>; '.$for.'}' if &variable;
 	return $for;
 }
 
