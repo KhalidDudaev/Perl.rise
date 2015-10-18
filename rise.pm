@@ -22,7 +22,7 @@ use rise::syntax;
 #use lib qw | ../bin/ |;
 
 #use parent 'Exporter';
-our @EXPORT = qw/conf run compile __obj__/;
+our @EXPORT = qw/conf run compile compile_list __obj__/;
 #our @EXPORT_OK = { framework => qw/class run app jump/};
 
 
@@ -53,7 +53,7 @@ sub import {
 	__init();
 
 	run ($conf->{run})			if $conf->{run};
-	compile($conf->{compile})	if $conf->{compile};
+	compile_list($conf->{compile})	if $conf->{compile};
 
 	no strict 'refs';
 	foreach (@EXPORT) {
@@ -100,7 +100,7 @@ sub __confs_load {
 sub run {
 	my ($this, $appname_source)				= __class_ref(@_);
 
-	my $file_dest				= compile([$appname_source]);
+	my $file_dest				= compile_list([$appname_source]);
 
 	__message_box("run $appname_source ...");
 	my $time_start_run = time;
@@ -115,17 +115,23 @@ sub run {
 
 }
 
-sub compile { #print "#### COMPILE ####\n";
+sub compile_list { #print "#### COMPILE ####\n";
 	my ($this, $appname_source)				= __class_ref(@_);
 	my $assembly = '';
 	my $info;
 	my @app_stack = @$appname_source;
 
+	my($path_current)			= $0 =~ m/^(.*?)\w+(?:\.\w+)*$/sx;
+	my $path_source				= $this->{source}{fpath}	|| $path_current;
+	my $path_dest					= $this->{dest}{fpath}		|| $path_current;
+	my $fname_source;
+	my $fname_dest;
+
 	my $time_start_compile = time;
 
 	#if (__truefile($appname_source)){
 	# __message_box("compilation ". dump($appname_source)." ...");
-	#	$assembly = __assembly( $appname_source );
+	#	$assembly = compile( $appname_source );
 	#	$info = $assembly->{info};
 	#	__message ("$info\n") if $info ;
 	#}
@@ -138,9 +144,12 @@ sub compile { #print "#### COMPILE ####\n";
 		# print $_;
 		if (__truefile($_)){
 
+			$fname_source			= $path_source	. $_ . $this->{source}{fext};
+			$fname_dest				= $path_dest		. $_ . $this->{dest}{fext};
+
 			__message_box("compilation $_ ...");
-			#$info = __assembly($_)->{info};
-			$assembly = __assembly($_);
+			#$info = compile($_)->{info};
+			$assembly = compile($fname_source, $fname_dest);
 			$info = $assembly->{info};
 			__message ("$info\n") if $info;
 		}
@@ -153,24 +162,23 @@ sub compile { #print "#### COMPILE ####\n";
 	return $assembly;
 }
 
-sub __assembly { #print "#### ASSEMBLY ####\n";
-	my ($this, $appname_source) 				= __class_ref(@_);
+sub compile { #print "#### ASSEMBLY ####\n";
+	my ($this, $fname_source, $fname_dest) 				= __class_ref(@_);
 
 	my $code_dest;
 	my $code_source;
 	my $info;
-	my($path_current)			= $0 =~ m/^(.*?)\w+(?:\.\w+)*$/sx;
-	my $path_source				= $this->{source}{fpath}	|| $path_current;
-	my $path_dest					= $this->{dest}{fpath}		|| $path_current;
+	# my($path_current)			= $0 =~ m/^(.*?)\w+(?:\.\w+)*$/sx;
+	# my $path_source				= $this->{source}{fpath}	|| $path_current;
+	# my $path_dest					= $this->{dest}{fpath}		|| $path_current;
 	my $fext							= $this->{source}{fext};
 
-	my $fname_source			= $path_source	. $appname_source . $this->{source}{fext};
-	my $fname_dest				= $path_dest		. $appname_source . $this->{dest}{fext};
+	# $fname_source					= $path_source	. $appname_source . $this->{source}{fext};
+	# $fname_dest				||= $path_dest		. $appname_source . $this->{dest}{fext};
 
 	if (!$fname_dest){
-		$fname_dest				= $fname_source;
-		$fname_dest				=~ s/(\w+)$fext/$1/sx;
-		$fname_dest				= $fname_dest . $this->{dest}{fext};
+		($fname_dest)				= $fname_source =~ m/(.*?)$fext$/sx;
+		$fname_dest					.= $this->{dest}{fext};
 	}
 
 	# print $fname_source;
