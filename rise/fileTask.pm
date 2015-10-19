@@ -32,11 +32,11 @@ sub import { no strict 'refs';
 sub task {
   # say "#############################";
   my $tname       = shift;
-  # my $args        = shift;
-  my $flist       = shift;
-  my $dest        = shift;
-  my $aref        = shift || \&task_action;
-  $acs->MakeTask($tname, $flist, $aref);
+  my $args        = shift;
+  # my $flist       = $args->[0];
+  # my $dest        = $args->[1];
+  # my $aref        = $args->[2] || \&task_action;
+  $acs->MakeTask($tname, $args, $aref);
 }
 
 sub start {
