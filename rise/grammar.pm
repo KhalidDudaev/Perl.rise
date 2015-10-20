@@ -253,8 +253,8 @@ sub parse {
 			$rule			= '\b'.$rule if $rule !~ m/^\(\?\<\w+\>[^\\b]\W+/;
 			#$rule			= qr/$rule/o;
 
-      $source =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse, \$passed)/gmsxe if $source ne $last_sourse;
-			# while ($source =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse, \$passed)/gmsxe && $source ne $last_sourse){};
+            # $source =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse, \$passed)/gmsxe if $source ne $last_sourse;
+			while ($source =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse, \$passed)/gmsxe && $source ne $last_sourse){};
 
       #$source = __parse_helper($rule_name, $rule, $source, \$last_sourse, \$passed);
 

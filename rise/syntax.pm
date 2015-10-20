@@ -120,7 +120,7 @@ sub confirm {
 		'_foreach',
         '_foreach_var',
 		'_for',
-        # '_for_foreach_array',
+        '_for_foreach_array',
 		'_while',
 		'_regex_match',
 		'_regex_replace',
@@ -202,8 +202,8 @@ sub confirm {
 		#'_optimize5',
 
 		'_including',
-		'_optimize9'
-
+		'_optimize9',
+        '_unwrap_header_code',
 
 	];
 
@@ -629,7 +629,8 @@ sub confirm {
 
     token op_sort_blockless         => q/\bsort\b(?!\s*\{)/;
     token op_array_block            => q/\b(?:map|grep|sort)\b/;
-    token op_array_hash             => q/\b(?:keys|values|each|map|grep|join|reverse|pop|push|shift|unshift|size|splice)\b (?! \s+ [\@\%] )/;
+    token op_array_hash             => q/\b(?:keys|values|each|map|grep|join|reverse|pop|push|shift|unshift|size|splice)\b/;
+    # token op_array_hash             => q/\b(?:keys|values|each|map|grep|join|reverse|pop|push|shift|unshift|size|splice)\b (?! \s+ [\@\%] )/;
 
     token op_ahref_expr			    => q/\b(?:keys|values|each|reverse|pop|shift|size)\b/;
 
@@ -660,6 +661,8 @@ sub confirm {
 	token sigil_S					=> q/\$/;
 	token paren_L					=> q/\(/;
 	token paren_R					=> q/\)/;
+    token wrap_code                 => q/%%%WRAP_CODE_.*?%%%/;
+    token wrap_header_code          => q/%%%WRAP_HEADER_CODE_.*?%%%/;
 
 	################################################## rules ####################################################
 	#rule _									=> q/<all>/;
@@ -726,6 +729,7 @@ sub confirm {
     rule _op_sort_blockless					=> q/<op_sort_blockless>/;
     rule _op_array_block					=> q/<op_array_block> \{/;
     rule _op_array_hash 					=> q/<op_array_hash>/;
+    # rule _op_array_hash 					=> q/<op_array_hash>(NOT: (OR:\@\%))/;
 
     # rule _op_ahref_expr 					=> q/<op_ahref_expr> [<paren_L>]/;
 
@@ -748,6 +752,11 @@ sub confirm {
 	rule _optimize9							=> q/<regex_pattern_block>/;
 	rule _including							=> q/<including>/;
 	rule _unwrap_code						=> q/<all>/;
+	rule _unwrap_header_code				=> q/<all>/;
+	# rule _unwrap_code						=> q/<wrap_code>/;
+	# rule _unwrap_header_code				=> q/<wrap_header_code>/;
+	# rule _unwrap_code						=> q/WRAP_CODE_<name>/;
+	# rule _unwrap_header_code				=> q/%%%WRAP_HEADER_CODE_<name>%%%/;
 	rule _commentC							=> q/<comment_C>/;
 
 	############################# post rules ########################################
@@ -798,6 +807,7 @@ sub confirm {
 	action _variable_boost_post				=> \&_syntax_variable_boost_post;
 
 	action _unwrap_code						=> \&_syntax_unwrap_code;
+	action _unwrap_header_code				=> \&_syntax_unwrap_header_code;
 
 	action _op_regex						=> \&_syntax_op_regex;
 	# action _op_scalar						=> \&_syntax_op_scalar;
@@ -835,7 +845,7 @@ sub confirm {
 	#print dump(order);
 	#print rule '_regex_match';
 	#print "\n";
-	#print rule '_regex_replace';
+	# print rule '_op_array_hash';
 
 }
 
@@ -933,21 +943,35 @@ sub _syntax_including {
 }
 
 sub _syntax_unwrap_code {
-
 	my $all				= &all;
-	#my $including		= &including_class_code;
-	#my $tk_including_class_code = token 'including_class_code';
-
-
-
 	my $res				= '';
 	1 while $all =~ s/%%%WRAP_CODE_(\w+(?:::\w+)*)%%%/var('wrap_code')->{$1}/gsxe;
-
-	#print "############ #############\n";
-
-	#$res				= var('excluding_class_code')->{$including} if $including;
 	return $all;
 }
+
+sub _syntax_unwrap_header_code {
+	my $all				= &all;
+	my $res				= '';
+	1 while $all =~ s/%%%WRAP_HEADER_CODE_(\w+(?:::\w+)*)%%%/var('wrap_header_code')->{$1}/gsxe;
+	return $all;
+}
+
+# sub _syntax_unwrap_code {
+# 	my $wrap				= &wrap_code;
+# 	$wrap =~ s/%%%WRAP_CODE_(\w+(?:::\w+)*)%%%/var('wrap_code')->{$1}/gsxe;
+# 	return $wrap;
+# }
+#
+# sub _syntax_unwrap_header_code {
+#     my $wrap				= &wrap_header_code;
+# 	$wrap =~ s/%%%WRAP_HEADER_CODE_(\w+(?:::\w+)*)%%%/var('wrap_header_code')->{$1}/gsxe;
+# 	return $wrap;
+# }
+
+# sub _syntax_unwrap_code { var('wrap_code')->{&name} }
+#
+# sub _syntax_unwrap_header_code { var('wrap_header_code')->{&name} }
+
 #-------------------------------------------------------------------------------------< inject | using | inherits | implements
 sub _syntax_inject {
 	my ($self, $rule_name, $confs)			= @_;
@@ -1959,10 +1983,11 @@ sub __object_header {
 	my $name			= shift;
     my $confs           = shift;
     my $parent_class	= $confs->{parent} || 'main';
+    my $res;
 
 	my $header			= {
 		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
-		class		=> " BEGIN { no strict 'refs'; *{'".$name."::'.\$_} = \\&{'".$parent_class."::EXPORTED::'.\$_} for keys \%".$parent_class."::EXPORTED::; }; sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
+		class		=> " BEGIN { no strict 'refs'; *{'".$name."::'.\$_} = \\&{'".$parent_class."::IMPORT::'.\$_} for keys \%".$parent_class."::IMPORT::; }; sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
 		abstract	=> "",
 		interface	=> " __PACKAGE__->interface_join;"
 	};
@@ -1970,7 +1995,7 @@ sub __object_header {
     if (exists var('exports')->{$name}) {
         # $header->{class}	.= ' sub import { no strict "refs"; my $self	= caller(0); *{$self . "::$_"} = \&$_ for (split /\s+/,"'.var('exports')->{$name}.'"); }';
         # $header->{class}	.= ' sub import { no strict "refs"; my $self	= caller(0); *{$self . "::$_"} = \&$_ for (qw/'.var('exports')->{$name}.'/); }';
-        $header->{class}	.= ' { no strict "refs"; my $__CALLER_CLASS__	= (caller(0))[0]; for (qw/'.var('exports')->{$name}.'/){ *{$__CALLER_CLASS__ . "::$_"} = \&$_; *{$__CALLER_CLASS__ . "::EXPORTED::$_"} = \&$_; }}';
+        $header->{class}	.= ' { no strict "refs"; my $__CALLER_CLASS__	= (caller(0))[0]; for (qw/'.var('exports')->{$name}.'/){ *{$__CALLER_CLASS__ . "::$_"} = \&$_; *{$__CALLER_CLASS__ . "::IMPORT::$_"} = \&$_; }}';
     }
 
 	if ($self->{debug}) {
@@ -1978,7 +2003,10 @@ sub __object_header {
 		$header->{abstract} .= " __PACKAGE__->interface_join;";
 	}
 
-	return $header->{$obj_type};
+    var('wrap_header_code')->{$name} = $header->{$obj_type};
+    $res = '%%%WRAP_HEADER_CODE_' . $name . '%%%';
+
+	return $res;
 }
 
 #-------------------------------------------------------------------------------------
