@@ -51,7 +51,7 @@ sub import { no strict "refs";
 
 	if (exists &{$self."::__EXPORT__"}){
 		if (scalar @_ == 0) {
-			$self->export(&{$self."::__EXPORT__"}->{':all'});
+			$self->export(&{$self."::__EXPORT__"}->{':import'});
 		}
 
 		if ($_[0] && $_[0] ne ':noimport') {

@@ -1377,11 +1377,27 @@ sub _syntax_function {
 
 	#return 0;
 
-    if ($accmod eq 'export'){
-        $accmod = 'public';
-        var('exports')->{$parent_class} .= ' '.$name;
-		var('exports')->{$parent_class} =~ s/^\s+//;
-		var('exports')->{$parent_class.'::'.$name} .= var('exports')->{$parent_class}; # for recursion caller
+    # if ($accmod eq 'export'){
+    #     $accmod = 'public';
+    #     var('exports')->{$parent_class} .= ' '.$name;
+	# 	var('exports')->{$parent_class} =~ s/^\s+//;
+	# 	var('exports')->{$parent_class.'::'.$name} .= var('exports')->{$parent_class}; # for recursion caller
+    # }
+
+    if ($accmod =~ s/export//sx){
+        # var('exports')->{$parent_class} = {};
+        my @export_tags                 = $accmod =~ m/\:\w+/gsx;
+
+        push @export_tags, ':import' if !$accmod;
+
+        $accmod                         = 'public';
+
+        foreach my $t ($name, ':all', ':function', @export_tags){ no strict 'refs';
+            var('exports')->{$parent_class}{$t} .= ' '.$name;
+    		var('exports')->{$parent_class}{$t} =~ s/^\s+//;
+    		var('exports')->{$parent_class.'::'.$name}{$t} .= var('exports')->{$parent_class}{$t}; # for recursion caller
+        }
+        # print dump var('exports')->{$parent_class};
     }
 
 	$accmod = __accessmod($self, 'code_'.$accmod, $parent_class, $name);
@@ -1612,12 +1628,20 @@ sub _syntax_variable {
 	var('members')->{$parent_class} .= ' '.$members_var if $members_var !~ /$members_list/;  # if $accmod ne 'local';
 	var('members')->{$parent_class} =~ s/^\s+//;
 
-    if ($accmod =~ m/export/sx){
-        $accmod = 'public';
+    if ($accmod =~ s/export//sx){
+        # var('exports')->{$parent_class} = {};
+        my @export_tags                 = $accmod =~ m/\:\w+/gsx;
 
-        var('exports')->{$parent_class} .= ' '.$name;
-		var('exports')->{$parent_class} =~ s/^\s+//;
-		var('exports')->{$parent_class.'::'.$name} .= var('exports')->{$parent_class}; # for recursion caller
+        push @export_tags, ':import' if !$accmod;
+
+        $accmod                         = 'public';
+
+        foreach my $t ($name, ':all', ':var', @export_tags){ no strict 'refs';
+            var('exports')->{$parent_class}{$t} .= ' '.$name;
+    		var('exports')->{$parent_class}{$t} =~ s/^\s+//;
+    		var('exports')->{$parent_class.'::'.$name}{$t} .= var('exports')->{$parent_class}{$t}; # for recursion caller
+        }
+        # print dump var('exports')->{$parent_class};
     }
 
 	$accmod = __accessmod($self, 'var_'.$accmod, $parent_class, $name);
@@ -1780,11 +1804,27 @@ sub _syntax_constant {
 	var('members')->{$parent_class} .= ' '.$accmod.'-const-'.$name if $accmod ne 'local';
 	var('members')->{$parent_class} =~ s/^\s+//;
 
-    if ($accmod eq 'export'){
-        $accmod = 'public';
-        var('exports')->{$parent_class} .= ' '.$name;
-		var('exports')->{$parent_class} =~ s/^\s+//;
-		var('exports')->{$parent_class.'::'.$name} .= var('exports')->{$parent_class}; # for recursion caller
+    # if ($accmod eq 'export'){
+    #     $accmod = 'public';
+    #     var('exports')->{$parent_class} .= ' '.$name;
+	# 	var('exports')->{$parent_class} =~ s/^\s+//;
+	# 	var('exports')->{$parent_class.'::'.$name} .= var('exports')->{$parent_class}; # for recursion caller
+    # }
+
+    if ($accmod =~ s/export//sx){
+        # var('exports')->{$parent_class} = {};
+        my @export_tags                 = $accmod =~ m/\:\w+/gsx;
+
+        push @export_tags, ':import' if !$accmod;
+        
+        $accmod                         = 'public';
+
+        foreach my $t ($name, ':all', ':const', @export_tags){ no strict 'refs';
+            var('exports')->{$parent_class}{$t} .= ' '.$name;
+    		var('exports')->{$parent_class}{$t} =~ s/^\s+//;
+    		var('exports')->{$parent_class.'::'.$name}{$t} .= var('exports')->{$parent_class}{$t}; # for recursion caller
+        }
+        # print dump var('exports')->{$parent_class};
     }
 
 	$accmod				= __accessmod($self, 'var_'.$accmod, $parent_class, $name);
@@ -1842,6 +1882,7 @@ sub _syntax_class {
 	return '' if !&name;
 	my ($self, $rule_name, $confs)			= @_;
 	$confs->{accessmod}						= &accessmod_class || var 'accessmod';
+    # var('exports')->{&name} = {};
 	return __object($self, 'class', $rule_name, $confs);
 }
 
@@ -1994,10 +2035,17 @@ sub __object_header {
 	};
 
     if (exists var('exports')->{$name}) {
+        my $exports         = dump(var('exports')->{$name});
+
+        $exports            =~ s/\s*\"\s*/\"/gsx;
+        $exports            =~ s/[\r\n]+//gsx;
+        $exports            =~ s/\=\>\"(.*?)\"/=>[qw\/$1\/]/gsx;
         # $header->{class}	.= ' sub import { no strict "refs"; my $self	= caller(0); *{$self . "::$_"} = \&$_ for (split /\s+/,"'.var('exports')->{$name}.'"); }';
         # $header->{class}	.= ' sub import { no strict "refs"; my $self	= caller(0); *{$self . "::$_"} = \&$_ for (qw/'.var('exports')->{$name}.'/); }';
-        $header->{class}	.= ' { no strict "refs"; my $__CALLER_CLASS__	= (caller(0))[0]; for (qw/'.var('exports')->{$name}.'/){ *{$__CALLER_CLASS__ . "::$_"} = \&$_; *{$__CALLER_CLASS__ . "::IMPORT::$_"} = \&$_; }}';
-        # $header->{class}	.= ' sub __EXPORT__ {{}}';
+        # $header->{class}	.= ' { no strict "refs"; my $__CALLER_CLASS__	= (caller(0))[0]; for (qw/'.var('exports')->{$name}.'/){ *{$__CALLER_CLASS__ . "::$_"} = \&$_; *{$__CALLER_CLASS__ . "::IMPORT::$_"} = \&$_; }}';
+
+        $header->{class}	.= ' sub __EXPORT__ { '.$exports.' }';
+        print dump var('exports')->{$name};
     }
 
 	if ($self->{debug}) {
