@@ -39,21 +39,50 @@ sub new {
 # 	return bless $args, $class;
 # }
 
-sub import {
-	my $self	= shift;
-	#autobox::Core->import;
-	$self->__RISE_COMMANDS;
+# sub import {
+# 	my $self	= shift;
+# 	#autobox::Core->import;
+# 	$self->__RISE_COMMANDS;
+# }
+
+sub import { no strict "refs";
+	my $caller              = (caller(0))[0];
+	my $self                = shift;
+
+	if (exists &{$self."::__EXPORT__"}){
+		if (scalar @_ == 0) {
+			$self->export(&{$self."::__EXPORT__"}->{':all'});
+		}
+
+		if ($_[0] && $_[0] ne ':noimport') {
+			for (@_){
+				$self->export(&{$self."::__EXPORT__"}->{$_});
+			}
+		}
+	}
+
+	__IMPORT__($caller, @_) if exists &__IMPORT__;
 }
 
-sub self { args('self', @_) }
-sub args {
-	my $index				= shift;
-	my @args				= @_;
-	return $args[0] if $index eq 'self';
-	return $args[$index + 1];
-}
+# sub self { args('self', @_) }
+# sub args {
+# 	my $index				= shift;
+# 	my @args				= @_;
+# 	return $args[0] if $index eq 'self';
+# 	return $args[$index + 1];
+# }
 
 sub obj_type {'CLASS'}
+
+sub export { no strict "refs";
+	my $__CALLER_CLASS__	= (caller(1))[0];
+	my $self                = shift;
+	my $exports				= shift;
+	for (@$exports){
+		*{$__CALLER_CLASS__ . "::$_"} = \&{"$self::$_"};
+		*{$__CALLER_CLASS__ . "::IMPORT::$_"} = \&{"$self::$_"};
+	}
+}
 
 sub interface_confirm {
 	no strict 'refs';

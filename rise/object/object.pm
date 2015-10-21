@@ -30,7 +30,7 @@ my $VARS		= {};
 
 sub obj {
 	my $self	= shift;
-	my $caller	= caller(0);
+	my $caller	= caller(1);
 	return { self => $self, caller => $caller };
 }
 

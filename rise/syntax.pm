@@ -399,7 +399,7 @@ sub confirm {
 	token number					=> q/digit+/;
 	#token letter					=> q/(?!nletter+|digit+)?\w/;
 	#token letter					=> q/[^\W\d]\w/;
-	#token letter					=> q/[_a-zA-Z]/;
+	#token letter					=> q/[_a-ZA-Z]/;
 	token letter					=> q/\w/;
 	token digit						=> q/\d/;
 	token nletter					=> q/\W/;
@@ -443,7 +443,7 @@ sub confirm {
 	token for_each					=> q/\b(?:foreach|for)\b/;
 
 	token accessmod_class			=> q/private|protected|public/;
-	token accessmod					=> q/local|export|private|protected|public/;
+	token accessmod					=> q/local|export(?::\w+)*|private|protected|public/;
 	token class_type				=> q/namespace|class|abstract|interface/;
 	#token function					=> q/function/;
 	token name_ops					=> q/class_type|function|variable|constant|using|inherits|implements|new/;
@@ -1612,8 +1612,9 @@ sub _syntax_variable {
 	var('members')->{$parent_class} .= ' '.$members_var if $members_var !~ /$members_list/;  # if $accmod ne 'local';
 	var('members')->{$parent_class} =~ s/^\s+//;
 
-    if ($accmod eq 'export'){
+    if ($accmod =~ m/export/sx){
         $accmod = 'public';
+
         var('exports')->{$parent_class} .= ' '.$name;
 		var('exports')->{$parent_class} =~ s/^\s+//;
 		var('exports')->{$parent_class.'::'.$name} .= var('exports')->{$parent_class}; # for recursion caller
@@ -1996,6 +1997,7 @@ sub __object_header {
         # $header->{class}	.= ' sub import { no strict "refs"; my $self	= caller(0); *{$self . "::$_"} = \&$_ for (split /\s+/,"'.var('exports')->{$name}.'"); }';
         # $header->{class}	.= ' sub import { no strict "refs"; my $self	= caller(0); *{$self . "::$_"} = \&$_ for (qw/'.var('exports')->{$name}.'/); }';
         $header->{class}	.= ' { no strict "refs"; my $__CALLER_CLASS__	= (caller(0))[0]; for (qw/'.var('exports')->{$name}.'/){ *{$__CALLER_CLASS__ . "::$_"} = \&$_; *{$__CALLER_CLASS__ . "::IMPORT::$_"} = \&$_; }}';
+        # $header->{class}	.= ' sub __EXPORT__ {{}}';
     }
 
 	if ($self->{debug}) {
