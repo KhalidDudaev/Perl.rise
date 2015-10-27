@@ -21,19 +21,26 @@ our $VERSION 	= '0.01';
 sub obj_type {'THREAD'};
 
 sub join {
+	# print "\nTHREAD JOIN\n";
     my $self    = shift;
     my $tid     = shift;
     my $caller  = caller(0);
     # my $thread  = $self;
     my $thread  = $caller . '::THREAD::' . $self;
+    # my $thread_res  = $caller . '::THREADRESULT::' . $self;
     my $info    = [];
 
     # $thread     =~ s/^(.*?)(::\w+)$/$1::THREAD$2/sx;
-    { no strict; no warnings; $thread = *$thread; }
-    $thread        = [$thread->[$tid - 1]] if $tid;
-    foreach (@$thread){
-        $info->[$_->tid] = $_->join if !$tid;
-        $info = $_->join if $tid;
+
+	{ no strict; no warnings;
+		$thread = *$thread;
+		# $thread_res = *$thread_res;
+	}
+
+	return $thread->[$tid]->join if $tid;
+    foreach (@{$thread}[1..$#$thread]){
+        $info->[$_->tid] = $_->join;
+		# $$thread_res->[$_->tid] = $info->[$_->tid];
     }
     return $info;
 }
@@ -48,10 +55,10 @@ sub detach {
 
     # $thread     =~ s/^(.*?)(::\w+)$/$1::THREAD$2/sx;
     { no strict; no warnings; $thread = *$thread; }
-    $thread        = [$thread->[$tid - 1]] if $tid;
-    foreach (@$thread){
-        $info->[$_->tid] = $_->detach if !$tid;
-        $info = $_->detach if $tid;
+    # $thread        = [$thread->[$tid - 1]] if $tid;
+	return $thread->[$tid]->detach if $tid;
+    foreach (@{$thread}[1..$#$thread]){
+        $info->[$_->tid] = $_->detach;
     }
     return $info;
 }
@@ -66,10 +73,9 @@ sub tid {
 
     # $thread     =~ s/^(.*?)(::\w+)$/$1::THREAD$2/sx;
     { no strict; no warnings; $thread = *$thread; }
-    $thread        = [$thread->[$tid - 1]] if $tid;
-    foreach (@$thread){
+	return $thread->[$tid]->tid if $tid;
+    foreach (@{$thread}[1..$#$thread]){
         $info->[$_->tid] = $_->tid;
-        $info = $_->tid if $tid;
     }
     return $info;
 }
@@ -84,10 +90,9 @@ sub is_running {
 
     # $thread     =~ s/^(.*?)(::\w+)$/$1::THREAD$2/sx;
     { no strict; no warnings; $thread = *$thread; }
-    $thread        = [$thread->[$tid - 1]] if $tid;
-    foreach (@$thread){
+	return $thread->[$tid]->is_running if $tid;
+    foreach (@{$thread}[1..$#$thread]){
         $info->[$_->tid] = $_->is_running;
-        $info = $_->is_running if $tid;
     }
     return $info;
 }
@@ -102,10 +107,9 @@ sub is_joinable {
 
     # $thread     =~ s/^(.*?)(::\w+)$/$1::THREAD$2/sx;
     { no strict; no warnings; $thread = *$thread; }
-    $thread        = [$thread->[$tid - 1]] if $tid;
-    foreach (@$thread){
+	return $thread->[$tid]->is_joinable if $tid;
+    foreach (@{$thread}[1..$#$thread]){
         $info->[$_->tid] = $_->is_joinable;
-        $info = $_->is_joinable if $tid;
     }
     return $info;
 }
@@ -120,10 +124,9 @@ sub is_detached {
 
     # $thread     =~ s/^(.*?)(::\w+)$/$1::THREAD$2/sx;
     { no strict; no warnings; $thread = *$thread; }
-    $thread        = [$thread->[$tid - 1]] if $tid;
-    foreach (@$thread){
+	return $thread->[$tid]->is_detached if $tid;
+    foreach (@{$thread}[1..$#$thread]){
         $info->[$_->tid] = $_->is_detached;
-        $info = $_->is_detached if $tid;
     }
     return $info;
 }

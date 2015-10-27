@@ -1251,6 +1251,8 @@ sub _syntax_function {
 	my $fn_name			= &name;
 	my ($s1,$s2,$s3,$s4) = (&sps1,&sps2,&sps3,&sps4);
 	my $anon_code		= '';
+	my $anon_code_open	= '';
+	my $anon_code_close	= '';
 	my $arguments		= '';
 	my $self_args		= &kw_self;
 	#my $tk_accmod		= token 'accessmod';
@@ -1281,9 +1283,13 @@ sub _syntax_function {
 
 	if (!$name){
 		var('anon_fn_count')++;
-		$name			= var('anon_code_pref').sprintf("%05d", var('anon_fn_count'));
-		$fn_name		= $name;
-		$anon_code		= '\&'.$fn_name.'; ' ;
+		$name			  = var('anon_code_pref').sprintf("%05d", var('anon_fn_count'));
+		$fn_name		  = $name;
+		# $anon_code		  = '\&'.$fn_name.'; ' ;
+		$anon_code		  = 'return &'.$fn_name.'; ' ;
+		$anon_code_open   = 'sub { ';
+		$anon_code_close  = '}';
+
 		$self_args		= '';
 	}
 
@@ -1376,8 +1382,8 @@ sub _syntax_function {
     var('wrap_header_code')->{$name} = $header;
     $header = '%%%WRAP_HEADER_CODE_' . $name . '%%%';
 
-	$res				= "${anon_code}{ package ${name}; ${header} sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}";
-	#$res				= "${anon_code}{ package ${name}; use rise::core::function_new; sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}";
+	$res				= "${anon_code_open}${anon_code}{ package ${name}; ${header} sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
+	#$res				= "${anon_code_open}${anon_code}{ package ${name}; use rise::core::function_new; sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
 
 	#$res 				= parse($self, $res, &grammar, [@{var 'parser_code'}], { parent => $parent_class });
 	var('wrap_code')->{$name} = $res;
@@ -1454,6 +1460,8 @@ sub _syntax_thread {
 	my $fn_name			= &name;
 	my ($s1,$s2,$s3,$s4) = (&sps1,&sps2,&sps3,&sps4);
 	my $anon_code		= '';
+    my $anon_code_open	= '';
+    my $anon_code_close	= '';
 	my $arguments		= '';
 	my $self_args		= &kw_self;
 	#my $tk_accmod		= token 'accessmod';
@@ -1482,11 +1490,15 @@ sub _syntax_thread {
 
 	}
 
-	if (!$name){
+    if (!$name){
 		var('anon_fn_count')++;
-		$name			= var('anon_code_pref').sprintf("%05d", var('anon_fn_count'));
-		$fn_name		= $name;
-		$anon_code		= '\&'.$fn_name.'; ' ;
+		$name			  = var('anon_code_pref').sprintf("%05d", var('anon_fn_count'));
+		$fn_name		  = $name;
+		# $anon_code		  = '\&'.$fn_name.'; ' ;
+		$anon_code		  = 'return &'.$fn_name.'; ' ;
+		$anon_code_open   = 'sub { ';
+		$anon_code_close  = '}';
+
 		$self_args		= '';
 	}
 
@@ -1575,15 +1587,18 @@ sub _syntax_thread {
 	#var('wrap_code')->{$name} = $block;
 	#$block = '%%%WRAP_CODE_' . $name . '%%%';
 
-    $header             = "my \$thr;${s1}{ no strict; no warnings; \$thr = \\\@{'${parent_class}::THREAD::${fn_name}'}; } push \@{\$thr}, threads->create";
+    # $header             = "my \$thr;${s1}{ no strict; no warnings; \$thr = \\\@{'${parent_class}::THREAD::${fn_name}'}; } push \@{\$thr}, threads->create";
+    $header             = "my \$thr;${s1} \$thr = threads->create";
     var('wrap_header_code')->{$name} = $header;
     $header = '%%%WRAP_HEADER_CODE_' . $name . '%%%';
 
     # print "\n#### ${parent_class}::THREAD::${fn_name} ####\n";
 
-    $block              = $header . ' ( sub {'. $arguments . $s4 . $block . '}, @_ ); return $thr->[0] if scalar @$thr == 1; return $thr;';
+    # $block              = $header . ' ( sub {'. $arguments . $s4 . $block . '}, @_ ); return $thr->[0] if scalar @$thr == 1; return $thr;';
+    # $block              = $header . ' ( sub {'. $arguments . $s4 . $block . '}, @_ ); { no strict; no warnings; push \@{'.${parent_class}.'::THREAD::'.${fn_name}.'}, $thr;} return $thr;';
+    $block              = $header . ' ( sub {'. $arguments . $s4 . $block . '}, @_ ); { no strict; no warnings; @{'.${parent_class}.'::THREAD::'.${fn_name}.'}[$thr->tid] = $thr; } return $thr;';
 
-	$res				= "${anon_code}{ package ${name}; use threads; use rise::core::extends 'rise::object::thread', '${parent_class}'; use rise::core::thread; BEGIN { __PACKAGE__->__RISE_COMMANDS } sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${block}}}";
+	$res				= "${anon_code_open}${anon_code}{ package ${name}; use threads; use rise::core::extends 'rise::object::thread', '${parent_class}'; use rise::core::thread; BEGIN { __PACKAGE__->__RISE_COMMANDS } sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${block}}}${anon_code_close}";
 
 	#$res 				= parse($self, $res, &grammar, [@{var 'parser_code'}], { parent => $parent_class });
 	var('wrap_code')->{$name} = $res;

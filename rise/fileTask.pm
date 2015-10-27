@@ -33,6 +33,7 @@ sub task {
   # say "#############################";
   my $tname       = shift;
   my $args        = shift;
+  my $aref        = shift || \&task_action;
   # my $flist       = $args->[0];
   # my $dest        = $args->[1];
   # my $aref        = $args->[2] || \&task_action;

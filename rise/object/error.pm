@@ -47,6 +47,8 @@ my $ERROR		= {
 	# ARRAY_HASH				=> [ [ 0, 1 ], '"ERROR ARRAY OR HASH:\nNot ARRAY value \"$name\" at\n-> line $line in $file"' ],
 	ARRAY_HASH				=> [ [ 0, 1 ], '"ERROR ARRAY OR HASH OP: \"$name\"\nNot ARRAY or HASH value or error expression at\n-> line $line in $file"' ],
 	SCALAR					=> [ [ 0, 1 ], '"ERROR SCALAR OP: \"$name\"\nNot SCALAR value or error expression at\n-> line $line in $file"' ],
+	PRINT					=> [ [ 0, 1 ], '"ERROR PRINT OP: Use of uninitialized value print at\n-> line $line in $file"' ],
+
 
 };
 #my $conf						= {
