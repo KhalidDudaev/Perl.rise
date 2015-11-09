@@ -1,4 +1,4 @@
-package rise::core::thread;
+package rise::core::object::thread::thread;
 use strict;
 use warnings;
 use vars qw($VERSION);
@@ -20,8 +20,8 @@ sub import { no strict;
     # print "\n########### $obj #############\n";
 
 	*{$obj} = \&{"$obj::$fn_name"};
-    # *{$fn_name . '::' . $_} = \&{'rise::object::thread::' . $_} foreach @methods;
-    *{$fn_name . '::'} = *{'rise::object::thread::'}
+    # *{$fn_name . '::' . $_} = \&{'rise::core::object::thread::' . $_} foreach @methods;
+    *{$fn_name . '::'} = *{'rise::core::object::thread::'}
 }
 
 1;

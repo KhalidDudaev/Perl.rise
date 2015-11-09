@@ -1,11 +1,11 @@
-package rise::object::function;
+package rise::core::object::function;
 use strict;
 use warnings;
 use utf8;
 
 use parent qw/
-	rise::object::object
-	rise::object::variable
+	rise::core::object::object
+	rise::core::object::variable
 /;
 
 our $VERSION 	= '0.01';

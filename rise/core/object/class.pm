@@ -1,4 +1,4 @@
-package rise::object::class;
+package rise::core::object::class;
 use strict;
 use warnings;
 use utf8;
@@ -12,14 +12,14 @@ use utf8;
 #use rise::core::attribute;
 
 use parent qw/
-	rise::object::object
-	rise::object::variable
+	rise::core::object::object
+	rise::core::object::variable
 /;
 
 our $VERSION 	= '0.01';
 
 my $ENV_CLASS		= {
-	this_class		=> 'rise::object::class',
+	this_class		=> 'rise::core::object::class',
 	caller_class	=> 'CALLER',
 	caller_code		=> 'CODE',
 	caller_data		=> 'DATA'

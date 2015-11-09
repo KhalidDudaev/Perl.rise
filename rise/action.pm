@@ -174,12 +174,12 @@ sub _syntax_function {
 	#$accmod				= $accmod . '("' . $name . '", "' . $parent_name .'");' if $accmod ne '';
 
 	#return "$anon_code<kw_public> prepared_<kw_class> $name _extends_ $parent_name { use function; sub this { '$parent_name' } sub code $attr { $accmod $block}}";
-	#return "${anon_code}{ package ${parent_name}::CODE::${fn_name}; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub this { '$parent_name' }...sub...code...${attr}...{ ${accmod}${block}}}";
+	#return "${anon_code}{ package ${parent_name}::CODE::${fn_name}; use strict; use warnings; use rise::core::ops::extends 'rise::core::object::function', '$parent_name'; use rise::core::object::function::function; sub this { '$parent_name' }...sub...code...${attr}...{ ${accmod}${block}}}";
 	
-	#return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub this { '$parent_name' }...sub...code...${attr}...{${accmod}${block}}}";
-	#return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub <kw_self> { '$parent_name' }...sub...code...${attr}...{ ${accmod} ${block}}}";
-	return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function;...sub...code...${attr}...{ ${accmod} ${block}}}";
-	#return "${anon_code}{ package <name>; my \$__caller__ = '<name>'; use strict; use warnings; use rise::core::extends 'rise::object::function', '$parent_name'; use rise::core::function; sub this { '$parent_name' }...sub...code...${attr}...{${accmod}${block}}}";
+	#return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::ops::extends 'rise::core::object::function', '$parent_name'; use rise::core::object::function::function; sub this { '$parent_name' }...sub...code...${attr}...{${accmod}${block}}}";
+	#return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::ops::extends 'rise::core::object::function', '$parent_name'; use rise::core::object::function::function; sub <kw_self> { '$parent_name' }...sub...code...${attr}...{ ${accmod} ${block}}}";
+	return "${anon_code}{ package <name>; use strict; use warnings; use rise::core::ops::extends 'rise::core::object::function', '$parent_name'; use rise::core::object::function::function;...sub...code...${attr}...{ ${accmod} ${block}}}";
+	#return "${anon_code}{ package <name>; my \$__caller__ = '<name>'; use strict; use warnings; use rise::core::ops::extends 'rise::core::object::function', '$parent_name'; use rise::core::object::function::function; sub this { '$parent_name' }...sub...code...${attr}...{${accmod}${block}}}";
 }
 
 sub _syntax_prepare_function_args {
@@ -383,7 +383,7 @@ sub _syntax_prepare_interface {
 	#	$list_extends			=~ s/\s*\,\s*/','/gsx if $list_extends;
 	#	$list_extends			= "'$list_extends'" if $list_extends;
 	#	$list_extends			||= '';
-	#	$extends				= "use rise::core::implements $list_extends;" if $list_extends;
+	#	$extends				= "use rise::core::ops::implements $list_extends;" if $list_extends;
 		
 	$block 				=~ s/\{(.*)\}/$1/gsx;
 			 
@@ -428,7 +428,7 @@ sub _syntax_interface {
 	my $tk_name_list	= $self->token('name_list');
 	my ($parent_class)	= $name =~ m/(\w+(?:::\w+)*)::\w+/gsx; 
 	my $parent_name		= $parent_class || 'main';
-	my $base_class		= "'rise::object::interface'";
+	my $base_class		= "'rise::core::object::interface'";
 	
 	$parent_class		= ",'$parent_class'" if $parent_class;
 	$parent_class 		||= '';
@@ -443,9 +443,9 @@ sub _syntax_interface {
 		
 	$list_extends				= list_extends($extends);
 	
-	#$extends				= " use rise::core::implements $list_extends;" if $list_extends;
+	#$extends				= " use rise::core::ops::implements $list_extends;" if $list_extends;
 	
-	$extends				= "use rise::core::extends $base_class$parent_class$list_extends;";
+	$extends				= "use rise::core::ops::extends $base_class$parent_class$list_extends;";
 		
 	$block 				=~ s/\{(.*)\}/$1/gsx;
 			 
@@ -456,7 +456,7 @@ sub _syntax_interface {
 		
 			 
 	
-	#return "{ package <name>;...use rise::core::extends 'rise::object::interface'$parent_class;$extends${accmod}...sub interface...{$block}}";
+	#return "{ package <name>;...use rise::core::ops::extends 'rise::core::object::interface'$parent_class;$extends${accmod}...sub interface...{$block}}";
 	return "{ package <name>; use strict; use warnings;...$extends...$accmod... __PACKAGE__->interface_join; $block}";
 }
 
@@ -512,7 +512,7 @@ sub _syntax_abstract {
 	my $tk_name_list	= $self->token('name_list');
 	my ($parent_class)	= $name =~ m/(\w+(?:::\w+)*)::\w+/gsx;
 	my $parent_name		= $parent_class || 'main';
-	my $base_class		= "'rise::object::abstract'";
+	my $base_class		= "'rise::core::object::abstract'";
 	my $comma			= '';
 	
 	$parent_class		= ",'$parent_class'" if $parent_class;
@@ -527,10 +527,10 @@ sub _syntax_abstract {
 	#	$list_extends			= "'$list_extends'" if $list_extends;
 	#	$list_extends			||= '';
 	#	$comma					= ',' if $list_extends;
-	#	#$extends				= " use rise::core::implements $list_extends;" if $list_extends;
+	#	#$extends				= " use rise::core::ops::implements $list_extends;" if $list_extends;
 	$list_extends				= list_extends($extends);
 		
-	$extends				= "use rise::core::extends $base_class$parent_class$list_extends;";
+	$extends				= "use rise::core::ops::extends $base_class$parent_class$list_extends;";
 		
 	$block 				=~ s/\{(.*)\}/$1/gsx;
 			 
@@ -554,7 +554,7 @@ sub _syntax_prepare_class {
 	
 	$comma		= ',' if $args_attr =~ s/\_$kw_extends\_\s*($tk_name_list)/$1/gsx;
 	
-	$extends			= 'rise::object::class';
+	$extends			= 'rise::core::object::class';
 	$extends			.= ", $parent_name" if $parent_name;
 	$extends			.= $comma;
 
@@ -572,7 +572,7 @@ sub _syntax_object {
 	my $args_attr		= &content;
 	my $list_extends	= '';
 	my $list_implements	= '';
-	my $base_class		= "'rise::object::$object'";
+	my $base_class		= "'rise::core::object::$object'";
 	#my $class_ext		= '';
 	#my $class_iface		= '';
 	my $extends			= '';
@@ -600,7 +600,7 @@ sub _syntax_object {
 
 	$list_extends		= list_extends($args_attr);
 
-	$extends			= "use rise::core::extends $base_class$parent_class$list_extends;";
+	$extends			= "use rise::core::ops::extends $base_class$parent_class$list_extends;";
 	
 	#return "{ package <name>; use strict; use warnings;...${extends}...${accmod}...__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".($self->var('members')->{$name}||'')."'}...";
 	return "{ package <name>; use strict; use warnings;...${extends}...${accmod}..." . __object_header($object, $name || '');
@@ -627,7 +627,7 @@ sub _syntax_class {
 	my $args_attr		= &content;
 	my $list_extends	= '';
 	my $list_implements	= '';
-	my $base_class		= "'rise::object::class'";
+	my $base_class		= "'rise::core::object::class'";
 	#my $class_ext		= '';
 	#my $class_iface		= '';
 	my $extends			= '';
@@ -651,7 +651,7 @@ sub _syntax_class {
 	$accmod				= eval $accmod if $accmod ne '';
 	#$accmod				= $accmod . '("' . $name . '", "' . $parent_name .'");' if $accmod ne '';
 	
-	#$base_class		= "'rise::object::class'" if &_class_type_ eq '_base_';
+	#$base_class		= "'rise::core::object::class'" if &_class_type_ eq '_base_';
 	
 	#($list_implements)		= $args_attr =~ m/\_implements\_\s*($tk_name_list)/gsx;
 	#	$list_implements		=~ s/\s*\,\s*/','/gsx if $list_implements;
@@ -660,7 +660,7 @@ sub _syntax_class {
 		
 	#$list_implements			= list_extends($args_attr);
 		
-		#$implements				= " use rise::core::implements  $list_implements;" if $list_implements ne '';
+		#$implements				= " use rise::core::ops::implements  $list_implements;" if $list_implements ne '';
 		#$implements				.= ' __PACKAGE__->interface_confirm if %IMPORT_INTERFACELIST;' if $list_implements ne ''; # && &_class_type_ eq ('_class_'||'_base_');
 		#$implements				.= ' __PACKAGE__->interface_confirm;' if $list_implements ne ''; # && &_class_type_ eq ('_class_'||'_base_');
 		#$implements				.= ' __PACKAGE__->interface_confirm("'.($self->var('members')->{$name}||'').'");' if $list_implements ne ''; # && &_class_type_ eq ('_class_'||'_base_');
@@ -668,7 +668,7 @@ sub _syntax_class {
 		#
 		#$implement_list			= $interface_list;
 		#$implement_list			=~ s/\,/','/gsx;
-		#$implements				= "; use rise::core::implements '" . $implement_list . "'" if $interface_list ne '';
+		#$implements				= "; use rise::core::ops::implements '" . $implement_list . "'" if $interface_list ne '';
 		#$implements				.= '; __PACKAGE__->interface_confirm if %IMPORT_INTERFACELIST' if $interface_list ne '' && $tp eq 'class';
 
 	#($list_extends)			= $args_attr =~ m/\_extends\_\s*($tk_name_list)/gsx;
@@ -679,10 +679,10 @@ sub _syntax_class {
 	$list_extends				= list_extends($args_attr);
 		
 		#$comma					= ',' if $list_extends;
-		$extends				= "use rise::core::extends $base_class$parent_class$list_extends;";
+		$extends				= "use rise::core::ops::extends $base_class$parent_class$list_extends;";
 	
 	#if (&_class_type_ eq '_base_' || $extends_list ne '') {
-	#	$extends			= " use rise::core::extends $parent_class $extends_list;";
+	#	$extends			= " use rise::core::ops::extends $parent_class $extends_list;";
 	#}
 
 	#$extends			.= "$parent_class$extends_list";
@@ -692,8 +692,8 @@ sub _syntax_class {
 	
 	
 	
-	#$extends				= "use rise::core::extends '" . $parent_list . "'$class_ext";
-	#$$implements			= "use rise::core::implements  '"
+	#$extends				= "use rise::core::ops::extends '" . $parent_list . "'$class_ext";
+	#$$implements			= "use rise::core::ops::implements  '"
 	
 	#return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' }...";
 	#return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".($self->var('members')->{$name}||'')."'}...";
@@ -724,7 +724,7 @@ sub _syntax_class_OFF {
 	#$accmod				= ' _'.uc($accmod).'_CLASS_;';
 	$accmod				= $self->var($accmod.'_class');
 	
-	#$parent_class		= "'rise::object::class'" if &_class_type_ eq '_base_';
+	#$parent_class		= "'rise::core::object::class'" if &_class_type_ eq '_base_';
 	
 	($list_extends)			= $args_attr =~ m/\_extends\_\s*($tk_name_list)/gsx;
 		$list_extends			=~ s/\s*\,\s*/','/gsx if $list_extends;
@@ -732,26 +732,26 @@ sub _syntax_class_OFF {
 		$list_extends			||= '';
 		#$comma					= ',' if $list_extends;
 		#$list_extends			= $parent_class . $comma . $list_extends;
-		$extends				= " use rise::core::extends $list_extends;";
+		$extends				= " use rise::core::ops::extends $list_extends;";
 		
 	($list_implements)		= $args_attr =~ m/\_implements\_\s*($tk_name_list)/gsx;
 		$list_implements		=~ s/\s*\,\s*/','/gsx if $list_implements;
 		$list_implements		= "'$list_implements'" if $list_implements;
 		$list_implements		||= '';
 		
-		$implements				= " use rise::core::implements  $list_implements;" if $list_implements ne '';
+		$implements				= " use rise::core::ops::implements  $list_implements;" if $list_implements ne '';
 		$implements				.= ' __PACKAGE__->interface_confirm if %IMPORT_INTERFACELIST;' if $list_implements ne ''; # && &_class_type_ eq ('_class_'||'_base_');
 
 		
 		#
 		#$implement_list			= $interface_list;
 		#$implement_list			=~ s/\,/','/gsx;
-		#$implements				= "; use rise::core::implements '" . $implement_list . "'" if $interface_list ne '';
+		#$implements				= "; use rise::core::ops::implements '" . $implement_list . "'" if $interface_list ne '';
 		#$implements				.= '; __PACKAGE__->interface_confirm if %IMPORT_INTERFACELIST' if $interface_list ne '' && $tp eq 'class';
 
 	
 	#if (&_class_type_ eq '_base_' || $extends_list ne '') {
-	#	$extends			= " use rise::core::extends $parent_class $extends_list;";
+	#	$extends			= " use rise::core::ops::extends $parent_class $extends_list;";
 	#}
 
 	#$extends			.= "$parent_class$extends_list";
@@ -761,8 +761,8 @@ sub _syntax_class_OFF {
 	
 	
 	
-	#$extends				= "use rise::core::extends '" . $parent_list . "'$class_ext";
-	#$$implements			= "use rise::core::implements  '"
+	#$extends				= "use rise::core::ops::extends '" . $parent_list . "'$class_ext";
+	#$$implements			= "use rise::core::ops::implements  '"
 	
 	return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub <kw_self> { '<name>' } sub __OBJLIST__ {'".($self->var('members')->{$name}||'')."'}...";
 	

@@ -1,17 +1,17 @@
-package rise::object::variable;
+package rise::core::object::variable;
 use strict;
 use warnings;
 use utf8;
 
 use parent qw/
-	rise::object::object
+	rise::core::object::object
 /;
 
-use rise::object::variable::type;
+use rise::core::object::variable::type;
 
 our $VERSION 	= '0.01';
 
-my $vt = new rise::object::variable::type;
+my $vt = new rise::core::object::variable::type;
 
 
 

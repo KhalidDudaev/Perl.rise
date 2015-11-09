@@ -1,4 +1,4 @@
-package rise::object::thread;
+package rise::core::object::thread;
 use strict;
 use warnings;
 use utf8;
@@ -6,8 +6,8 @@ use utf8;
 use Data::Dump 'dump';
 
 use parent qw/
-	rise::object::object
-	rise::object::variable
+	rise::core::object::object
+	rise::core::object::variable
 /;
 
 our $VERSION 	= '0.01';

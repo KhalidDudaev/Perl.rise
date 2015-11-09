@@ -1,11 +1,11 @@
-package rise::core::commands;
+package rise::core::ops::commands;
 
 use strict;
 use warnings;
 use utf8;
 
 use parent qw/
-	rise::object::error
+	rise::core::object::error
 /;
 
 use Data::Dump 'dump';

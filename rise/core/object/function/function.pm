@@ -1,4 +1,4 @@
-package rise::core::function;
+package rise::core::object::function::function;
 use strict;
 use warnings;
 use vars qw($VERSION);

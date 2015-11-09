@@ -1,9 +1,9 @@
-package rise::object::variable_new;
+package rise::core::object::variable_new;
 use strict;
 use warnings;
 use utf8;
 
-use parent 'rise::object::object', 'rise::object::error';
+use parent 'rise::core::object::object', 'rise::core::object::error';
 
 our $VERSION 	= '0.01';
 
@@ -28,7 +28,7 @@ my $type_regex;
 my $__VALUE__;
 
 my $ENV_CLASS		= {
-	this_class		=> 'rise::object::variable_new',
+	this_class		=> 'rise::core::object::variable_new',
 	caller_class	=> 'CALLER',
 	caller_code		=> 'CODE',
 	caller_data		=> 'DATA'
@@ -98,7 +98,7 @@ sub var { no strict;
 #	my $parent = $class_name;
 #	$parent			=~ s/(?:(.*?)::)\w+$/$1/;
 #	
-#	#push (@{$obj}, 'rise::object::variable');
+#	#push (@{$obj}, 'rise::core::object::variable');
 #	push (@{$class_name.'::ISA'}, $parent) if $parent ne 'main'; 
 #	
 #	#print ">>>>>>>> parent: $parent | self: $self | obj: $obj | class: $class_name | name: $var_name <<<<<<<<<\n";

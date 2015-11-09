@@ -1,9 +1,9 @@
-package rise::object::interface;
+package rise::core::object::interface;
 use strict;
 use warnings;
 use utf8;
 
-use parent 'rise::object::object';
+use parent 'rise::core::object::object';
 
 our $VERSION			= '0.01';
 my $VARS				= {};

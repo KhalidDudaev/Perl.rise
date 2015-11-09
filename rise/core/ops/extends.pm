@@ -1,4 +1,4 @@
-package rise::core::extends;
+package rise::core::ops::extends;
 use strict;
 use vars qw($VERSION);
 

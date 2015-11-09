@@ -1,11 +1,11 @@
-package rise::object::variable::type;
+package rise::core::object::variable::type;
 
 use strict;
 use warnings;
 use utf8;
 
 use parent qw/
-	rise::object::object
+	rise::core::object::object
 /;
 
 #use Data::Dump 'dump';

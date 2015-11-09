@@ -1,8 +1,8 @@
-package rise::core::variable_new;
+package rise::core::object::variable::variable_new;
 use strict;
 use vars qw($VERSION);
 
-use parent 'rise::object::object', 'rise::object::class', 'rise::object::error', 'rise::object::variable';
+use parent 'rise::core::object::object', 'rise::core::object::class', 'rise::core::object::error', 'rise::core::object::variable';
 
 $VERSION = '0.001';
 
@@ -49,8 +49,8 @@ sub import { no strict; no warnings;
 	
 	#$__VALUE__->{$obj} = $ref;
 	
-	push @{$obj.'::ISA'}, ('rise::object::variable', 'rise::core::variable_new');
-	#push (@{$obj}, 'rise::object::variable');
+	push @{$obj.'::ISA'}, ('rise::core::object::variable', 'rise::core::object::variable::variable_new');
+	#push (@{$obj}, 'rise::core::object::variable');
 	push (@{$class_name.'::ISA'}, $parent) if $parent && $parent ne 'main'; 
 	
 	#print ">>>>>>>> parent: $parent | self: $self | obj: $obj | class: $class_name | name: $var_name | accmod: $accessmod <<<<<<<<<\n";

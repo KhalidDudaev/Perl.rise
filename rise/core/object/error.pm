@@ -1,4 +1,4 @@
-package rise::object::error;
+package rise::core::object::error;
 use strict;
 use warnings;
 use utf8;

@@ -1,9 +1,9 @@
-package rise::core::variable_next;
+package rise::core::object::variable::variable_next;
 use strict;
 use vars qw($VERSION);
 $VERSION = '0.001';
 
-use parent 'rise::object::object', 'rise::object::error', 'rise::object::variable';
+use parent 'rise::core::object::object', 'rise::core::object::error', 'rise::core::object::variable';
  
 #sub import { no strict;
 #    my $child		= caller(0);

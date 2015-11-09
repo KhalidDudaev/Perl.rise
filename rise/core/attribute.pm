@@ -10,7 +10,7 @@ use Attribute::Handlers;
 
 #use Sub::Name;
 
-use parent 'rise::object::error';
+use parent 'rise::core::object::error';
 
 use Data::Dump 'dump';
 

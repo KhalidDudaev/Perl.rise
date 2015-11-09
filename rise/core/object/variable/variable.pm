@@ -1,9 +1,9 @@
-package rise::core::variable;
+package rise::core::object::variable::variable;
 
 use strict;
 use vars qw($VERSION);
 
-use parent 'rise::object::object', 'rise::object::class', 'rise::object::error', 'rise::object::variable';
+use parent 'rise::core::object::object', 'rise::core::object::class', 'rise::core::object::error', 'rise::core::object::variable';
 
 $VERSION = '0.001';
 
@@ -23,7 +23,7 @@ sub import { no strict; no warnings;
 	my $parent = $class_name;
 	$parent			=~ s/(?:(.*?)::)\w+$/$1/;
 
-	#push @{$obj.'::ISA'}, ('rise::object::variable', 'rise::core::variable', $parent);
+	#push @{$obj.'::ISA'}, ('rise::core::object::variable', 'rise::core::object::variable::variable', $parent);
 	push (@{$class_name.'::ISA'}, $parent) if $parent && $parent ne 'main'; 
 	
 	$var_name		=~ s/\_LOCAL\d+$//sx;	
@@ -137,7 +137,7 @@ sub protected {
 #	#print ">>>>>>>> parent: $parent | self: $self | obj: $obj | class: $class_name | name: $var_name <<<<<<<<<\n";
 #	
 #	
-#	push @{$obj.'::ISA'}, 'rise::object::variable';
+#	push @{$obj.'::ISA'}, 'rise::core::object::variable';
 #	*{$obj} = \&{$obj.'::value'};
 #	#goto &$obj;
 #	

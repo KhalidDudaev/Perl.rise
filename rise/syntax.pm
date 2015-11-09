@@ -43,7 +43,7 @@ sub confirm {
 	%$conf						= (%$conf, %$self);
 	#print dump($conf)."\n";
 
-	var('env')						= '$rise::object::object::renv';
+	var('env')						= '$rise::core::object::object::renv';
 	var('app_stack')				= [];
 	#var('parse_token_sign')			= '-';
 	var('accessmod_class')			= $self->{accmod_class} || 'private';
@@ -1378,12 +1378,12 @@ sub _syntax_function {
 	#var('wrap_code')->{$name} = $block;
 	#$block = '%%%WRAP_CODE_' . $name . '%%%';
 
-    $header             = "use rise::core::extends 'rise::object::function', '${parent_class}'; use rise::core::function; BEGIN { __PACKAGE__->__RISE_COMMANDS }";
+    $header             = "use rise::core::ops::extends 'rise::core::object::function', '${parent_class}'; use rise::core::object::function::function; BEGIN { __PACKAGE__->__RISE_COMMANDS }";
     var('wrap_header_code')->{$name} = $header;
     $header = '%%%WRAP_HEADER_CODE_' . $name . '%%%';
 
 	$res				= "${anon_code_open}${anon_code}{ package ${name}; ${header} sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
-	#$res				= "${anon_code_open}${anon_code}{ package ${name}; use rise::core::function_new; sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
+	#$res				= "${anon_code_open}${anon_code}{ package ${name}; use rise::core::object::function::function_new; sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
 
 	#$res 				= parse($self, $res, &grammar, [@{var 'parser_code'}], { parent => $parent_class });
 	var('wrap_code')->{$name} = $res;
@@ -1598,7 +1598,7 @@ sub _syntax_thread {
     # $block              = $header . ' ( sub {'. $arguments . $s4 . $block . '}, @_ ); { no strict; no warnings; push \@{'.${parent_class}.'::THREAD::'.${fn_name}.'}, $thr;} return $thr;';
     $block              = $header . ' ( sub {'. $arguments . $s4 . $block . '}, @_ ); { no strict; no warnings; @{'.${parent_class}.'::THREAD::'.${fn_name}.'}[$thr->tid] = $thr; } return $thr;';
 
-	$res				= "${anon_code_open}${anon_code}{ package ${name}; use threads; use rise::core::extends 'rise::object::thread', '${parent_class}'; use rise::core::thread; BEGIN { __PACKAGE__->__RISE_COMMANDS } sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${block}}}${anon_code_close}";
+	$res				= "${anon_code_open}${anon_code}{ package ${name}; use threads; use rise::core::ops::extends 'rise::core::object::thread', '${parent_class}'; use rise::core::object::thread::thread; BEGIN { __PACKAGE__->__RISE_COMMANDS } sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${block}}}${anon_code_close}";
 
 	#$res 				= parse($self, $res, &grammar, [@{var 'parser_code'}], { parent => $parent_class });
 	var('wrap_code')->{$name} = $res;
@@ -1855,8 +1855,8 @@ sub _syntax_variable_NEW {
 	#return "my \$$name; $local_var { no warnings; sub $name ():lvalue { \$$name } } $op_end";
 	#return "my \$$name; { no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { $accmod\$$name };}$op_end";
 	#return "my \$$name; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name };$op_end";
-	return $local_var."my \$$name; { package $obj_name_local; no warnings; use rise::core::variable \\\$$name, '$accmod'; }$op_end";
-	#return "my \$$name; { package $obj_name; no warnings; use rise::core::variable \\\$$name, '$accmod'; }$op_end"
+	return $local_var."my \$$name; { package $obj_name_local; no warnings; use rise::core::object::variable::variable \\\$$name, '$accmod'; }$op_end";
+	#return "my \$$name; { package $obj_name; no warnings; use rise::core::object::variable::variable \\\$$name, '$accmod'; }$op_end"
 }
 
 sub _syntax_variable_boost2_OFF {
@@ -2081,7 +2081,7 @@ sub __object {
 
 	my ($sps1,$sps2,$sps3,$sps4) = (&sps1,&sps2,&sps3,&sps4);
 
-	my $base_class		= "'rise::object::$object'";
+	my $base_class		= "'rise::core::object::$object'";
 	my $parent_class	= $confs->{parent} || '';
 
 	my $list_extends	= '';
@@ -2102,7 +2102,7 @@ sub __object {
 	}
 
 	$list_extends		.= __list_extends($self, $args_attr);
-	$extends			= "use rise::core::extends ${base_class}${list_extends}; ";
+	$extends			= "use rise::core::ops::extends ${base_class}${list_extends}; ";
 
 	$accmod				= var($accmod.'_'.$object);
 	$accmod				= eval $accmod if $accmod;

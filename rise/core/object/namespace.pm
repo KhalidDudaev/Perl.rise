@@ -1,4 +1,4 @@
-package rise::object::namespace;
+package rise::core::object::namespace;
 use strict;
 use warnings;
 use utf8;

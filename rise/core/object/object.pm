@@ -1,19 +1,19 @@
-package rise::object::object;
+package rise::core::object::object;
 use strict;
 use warnings;
 use utf8;
 
 use parent qw/
-	rise::object::error
-	rise::core::commands
+	rise::core::object::error
+	rise::core::ops::commands
 /;
 
 our $VERSION = '0.01';
 
-# our $caller = 'rise::object::object';
+# our $caller = 'rise::core::object::object';
 
 my $ENV_CLASS		= {
-	this_class		=> 'rise::object::object',
+	this_class		=> 'rise::core::object::object',
 	caller_class	=> 'CALLER',
 	caller_code		=> 'CODE',
 	caller_data		=> 'DATA'
