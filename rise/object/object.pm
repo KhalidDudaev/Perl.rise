@@ -10,7 +10,7 @@ use parent qw/
 
 our $VERSION = '0.01';
 
-our $caller = 'rise::object::object';
+# our $caller = 'rise::object::object';
 
 my $ENV_CLASS		= {
 	this_class		=> 'rise::object::object',

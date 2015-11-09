@@ -1,0 +1,868 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	0	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+rise::action	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^package rise::action;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^use warnings;$/;"	use	line:4
+v5.008	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^use v5.008;$/;"	use	line:5
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^use utf8;$/;"	use	line:6
+lib '../lib/rise/'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^use lib '..\/lib\/rise\/';$/;"	use	line:13
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^our $VERSION = '0.000';$/;"	our	line:17
+conf	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^our $conf							= {};$/;"	our	line:18
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub new {$/;"	subroutine	line:25
+_syntax_commentC	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_commentC {$/;"	subroutine	line:32
+_syntax_excluding	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_excluding {$/;"	subroutine	line:39
+_syntax_including	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_including {$/;"	subroutine	line:45
+_syntax_inject	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_inject {$/;"	subroutine	line:55
+_syntax_using	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_using {$/;"	subroutine	line:63
+_syntax_inherits	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_inherits {$/;"	subroutine	line:69
+_syntax_implements	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_implements {$/;"	subroutine	line:75
+_syntax_prepare_foreach	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_foreach {$/;"	subroutine	line:82
+_syntax_prepare_for	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_for { my $self	= shift; "{ <kw_local> <variable> <name>; <for_each>...(...<name>...<CONDITION>...)...{<STATEMENT>}}" }$/;"	subroutine	line:89
+_syntax_prepare_while	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_while { my $self	= shift; "{ <kw_local> <variable> <name>; <while>...(...<name>...<CONDITION>...)...{<STATEMENT>}}" }$/;"	subroutine	line:91
+_syntax_function_defs	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_function_defs { my $self	= shift; "sub <name><args_attr><endop>" }$/;"	subroutine	line:94
+_syntax_function_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_function_list {$/;"	subroutine	line:96
+_syntax_function_list_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_function_list_post { my $self	= shift; '<kw_function>' }$/;"	subroutine	line:107
+_syntax_func2method	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_func2method { my $self	= shift; '<func_all>(__PACKAGE__, ' }$/;"	subroutine	line:109
+_syntax_func2method_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_func2method_post { my $self	= shift; '__PACKAGE__)' }$/;"	subroutine	line:110
+_syntax_prepare_function	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_function {$/;"	subroutine	line:112
+_syntax_function	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_function {$/;"	subroutine	line:145
+_syntax_prepare_function_args	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_function_args {$/;"	subroutine	line:185
+_syntax_prepare_function_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_function_post {$/;"	subroutine	line:206
+_syntax_prepare_variable_unnamedblock	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_variable_unnamedblock {$/;"	subroutine	line:215
+_syntax_prepare_variable_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_variable_list {$/;"	subroutine	line:231
+_syntax_var_boost1	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_var_boost1 {$/;"	subroutine	line:243
+_syntax_var_boost2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_var_boost2		{ my $self	= shift; '$<var_all>' }$/;"	subroutine	line:257
+_syntax_var_boost_post1	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_var_boost_post1	{ my $self	= shift; '<kw_variable> ' }$/;"	subroutine	line:259
+_syntax_var_boost_post2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_var_boost_post2	{ my $self	= shift; '->' }$/;"	subroutine	line:261
+_syntax_prepare_variable	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_variable {$/;"	subroutine	line:263
+_syntax_variable	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_variable {$/;"	subroutine	line:269
+_syntax_variable_boost	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_variable_boost {$/;"	subroutine	line:306
+_syntax_constant	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_constant {$/;"	subroutine	line:318
+_syntax_prepare_name_namespace	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_name_namespace {$/;"	subroutine	line:342
+_syntax_prepare_namespace	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_namespace {$/;"	subroutine	line:348
+_syntax_namespace	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_namespace {$/;"	subroutine	line:355
+_syntax_prepare_interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_interface {$/;"	subroutine	line:362
+_syntax_prepare_interface_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_interface_post {my $self	= shift; '<kw_interface>'}$/;"	subroutine	line:410
+_syntax_interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_interface {$/;"	subroutine	line:412
+_syntax_prepare_abstract	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_abstract {$/;"	subroutine	line:465
+_syntax_prepare_abstract_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_abstract_post {my $self	= shift; '<kw_abstract>'}$/;"	subroutine	line:494
+_syntax_abstract	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_abstract {$/;"	subroutine	line:496
+_syntax_prepare_class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_class {$/;"	subroutine	line:542
+_syntax_object	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_object {$/;"	subroutine	line:566
+__object_header	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub __object_header {$/;"	subroutine	line:609
+_syntax_class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_class {$/;"	subroutine	line:621
+_syntax_class_OFF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_class_OFF {$/;"	subroutine	line:706
+_syntax_prepare_class_helper	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_class_helper {$/;"	subroutine	line:774
+_syntax_prepare_name_object	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_name_object {$/;"	subroutine	line:819
+_syntax_prepare_name_object_helper	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_prepare_name_object_helper {$/;"	subroutine	line:841
+_syntax_op_dot	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_op_dot {my $self	= shift; '->'}$/;"	subroutine	line:893
+_syntax_optimise4	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_optimise4 { my $self	= shift; ';' }$/;"	subroutine	line:895
+_syntax_optimise5	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_optimise5 { my $self	= shift; ' ' }$/;"	subroutine	line:896
+_syntax_optimise6	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\action.pm	/^sub _syntax_optimise6 { my $self	= shift; '' }$/;"	subroutine	line:897
+Term::ReadKey	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask\FileMonitor.pm	/^use Term::ReadKey;$/;"	use	line:1
+rise::object::class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask\FileMonitor.pm	/^{ package rise::BSTask::FileMonitor; use strict; use warnings; use rise::core::extends 'rise::object::class';   sub super { $rise::BSTask::FileMonitor::ISA[1] } my $self = 'rise::BSTask::FileMonitor'; sub self { $self }; BEGIN { __PACKAGE__->__RISE_COMMANDS } __PACKAGE__->interface_confirm; sub __OBJLIST__ {'public-function-MakeTask public-function-tasks public-function-start private-function-Monitor private-function-RKey private-function-RMode private-var-monitor'}$/;"	extends	line:3
+END	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask\FileMonitor.pm	/^  END:$/;"	label	line:58
+rise::BSTask	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask.pm	/^package rise::BSTask;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask.pm	/^use warnings;$/;"	use	line:3
+feature 'say'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask.pm	/^use feature 'say';$/;"	use	line:4
+c	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask.pm	/^  c:\/_DATA_EXT\/_data\/works\/Development\/_PERL\/_lib\/$/;"	label	line:6
+c	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask.pm	/^  c:\/_DATA_EXT\/_data\/works\/Development\/_PERL\/_apps\/_acs\/$/;"	label	line:7
+rise	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask.pm	/^use rise;$/;"	use	line:10
+rise::BSTask::FileMonitor	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask.pm	/^use rise::BSTask::FileMonitor;$/;"	use	line:11
+import	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask.pm	/^sub import { no strict 'refs';$/;"	subroutine	line:27
+task	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask.pm	/^sub task {$/;"	subroutine	line:32
+start	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask.pm	/^sub start {$/;"	subroutine	line:42
+task_action	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask.pm	/^sub task_action {$/;"	subroutine	line:46
+tall	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\BSTask.pm	/^sub tall {$/;"	subroutine	line:52
+rise::Compile	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^package rise::Compile;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^use warnings;$/;"	use	line:4
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^use utf8;$/;"	use	line:5
+rise::grammar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^use rise::grammar;$/;"	use	line:13
+rise::syntaxNew	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^use rise::syntaxNew;$/;"	use	line:14
+rise::file	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^use rise::file;$/;"	use	line:15
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^our $VERSION = '0.000';$/;"	our	line:17
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^sub new {$/;"	subroutine	line:35
+rise::core::attribute	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^package rise::core::attribute;$/;"	package	line:1
+5.006	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^use 5.006;$/;"	use	line:3
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^use strict;$/;"	use	line:4
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^use warnings;$/;"	use	line:5
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^our $VERSION = '0.03';$/;"	our	line:7
+Attribute::Handlers	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^use Attribute::Handlers;$/;"	use	line:9
+rise::object::error	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^use parent 'rise::object::error';$/;"	extends	line:13
+parent 'rise::object::error'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^use parent 'rise::object::error';$/;"	use	line:13
+Data::Dump 'dump'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^use Data::Dump 'dump';$/;"	use	line:15
+UNIVERSAL	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^sub UNIVERSAL::PRIVATE_VAR : ATTR(CODE) { #no strict 'refs';$/;"	subroutine	line:20
+pkg	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^	pkg:\\t$class$/;"	label	line:32
+smbl	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^	smbl:\\t$symbol$/;"	label	line:33
+name	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^	name:\\t$name$/;"	label	line:34
+ref	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^	ref:\\t$referent$/;"	label	line:35
+attr	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^	attr:\\t$attr$/;"	label	line:36
+data	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^	data:\\t".($data->[0]||'')."$/;"	label	line:37
+phase	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^	phase:\\t$phase$/;"	label	line:38
+UNIVERSAL	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^sub UNIVERSAL::PROTECTED_VAR : ATTR(CODE) {$/;"	subroutine	line:72
+smbl	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^	smbl:\\t$symbol$/;"	label	line:77
+name	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^	name:\\t$name$/;"	label	line:78
+ref	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^	ref:\\t$referent$/;"	label	line:79
+attr	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^	attr:\\t$attr$/;"	label	line:80
+data	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^	data:\\t".($data||'')."$/;"	label	line:81
+phase	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^	phase:\\t$phase \\n";$/;"	label	line:82
+Carp	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^            require Carp;$/;"	require	line:88
+UNIVERSAL	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^sub UNIVERSAL::PUBLIC_VAR : ATTR(CODE) {$/;"	subroutine	line:95
+UNIVERSAL	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^sub UNIVERSAL::PRIVATE_CODE : ATTR(CODE) {$/;"	subroutine	line:100
+UNIVERSAL	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^sub UNIVERSAL::PROTECTED_CODE : ATTR(CODE) { $/;"	subroutine	line:145
+UNIVERSAL	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\attribute.pm	/^sub UNIVERSAL::PUBLIC_CODE : ATTR(CODE) {$/;"	subroutine	line:163
+rise::core::commands	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^package rise::core::commands;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^use warnings;$/;"	use	line:4
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^use utf8;$/;"	use	line:5
+Data::Dump 'dump'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^use Data::Dump 'dump';$/;"	use	line:11
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^our $VERSION = '0.000';$/;"	our	line:15
+constant FIVETEN => ($] >= 5.010)	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^use constant FIVETEN => ($] >= 5.010);$/;"	use	line:16
+FIVETEN	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^use constant FIVETEN => ($] >= 5.010);$/;"	constant	line:16
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub new {$/;"	subroutine	line:75
+__RISE_COMMANDS	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_COMMANDS { no strict 'refs';$/;"	subroutine	line:82
+_	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub _ (){ $_; };$/;"	subroutine	line:88
+a	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub a (){ $a; };$/;"	subroutine	line:89
+b	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub b (){ $b; };$/;"	subroutine	line:90
+true	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub true { !!1; };$/;"	subroutine	line:91
+false	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub false { !!0; };$/;"	subroutine	line:92
+line	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub line (;$){$/;"	subroutine	line:95
+say	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub say { local $\\ = ""; print @_ , "\\n"; };$/;"	subroutine	line:105
+msg	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub msg (;$$){$/;"	subroutine	line:107
+clone	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub clone {$/;"	subroutine	line:119
+__RISE_KEYS	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_KEYS ($){$/;"	subroutine	line:168
+__RISE_VALUES	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_VALUES ($){$/;"	subroutine	line:176
+__RISE_EACH	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_EACH ($){$/;"	subroutine	line:184
+__RISE_GREP_BLOCK	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_GREP_BLOCK (&$){$/;"	subroutine	line:256
+__RISE_MAP_BLOCK	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_MAP_BLOCK (&$){$/;"	subroutine	line:264
+__RISE_GREP	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_GREP ($$){$/;"	subroutine	line:272
+__RISE_MAP	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_MAP ($$){$/;"	subroutine	line:280
+__RISE_JOIN	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_JOIN ($$){$/;"	subroutine	line:288
+__RISE_REVERSE	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_REVERSE ($){$/;"	subroutine	line:295
+__RISE_SORT_BLOCK	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_SORT_BLOCK (&$){$/;"	subroutine	line:305
+__RISE_POP	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_POP ($){$/;"	subroutine	line:313
+__RISE_PUSH	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_PUSH ($$){$/;"	subroutine	line:319
+__RISE_SHIFT	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_SHIFT ($){$/;"	subroutine	line:327
+__RISE_UNSHIFT	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_UNSHIFT ($$){$/;"	subroutine	line:333
+__RISE_SIZE	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_SIZE ($){$/;"	subroutine	line:341
+__RISE_SPLICE	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_SPLICE {$/;"	subroutine	line:347
+__RISE_A2R	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^	sub __RISE_A2R (@){ wantarray ? @_ : \\@_ }$/;"	subroutine	line:370
+__RISE_H2R	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^	sub __RISE_H2R (%){+{@_}}$/;"	subroutine	line:372
+__RISE_R2A	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^	sub __RISE_R2A ($){@{$_[0]}}$/;"	subroutine	line:373
+__RISE_R2H	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^	sub __RISE_R2H ($){%{$_[0]}}$/;"	subroutine	line:375
+__RISE_2R	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_2R { no strict;$/;"	subroutine	line:389
+__RISE_R2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub __RISE_R2 { no strict;$/;"	subroutine	line:394
+test	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\commands.pm	/^sub test {$/;"	subroutine	line:405
+rise::core::extends	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\extends.pm	/^package rise::core::extends;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\extends.pm	/^use strict;$/;"	use	line:2
+vars qw($VERSION)	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\extends.pm	/^use vars qw($VERSION);$/;"	use	line:3
+import	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\extends.pm	/^sub import {$/;"	subroutine	line:9
+rise::core::implements	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\implements.pm	/^package rise::core::implements;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\implements.pm	/^use strict;$/;"	use	line:2
+vars qw($VERSION)	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\implements.pm	/^use vars qw($VERSION);$/;"	use	line:3
+import	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\implements.pm	/^sub import {$/;"	subroutine	line:9
+interface_join	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\implements.pm	/^sub interface_join {$/;"	subroutine	line:41
+rise::object::abstract	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\abstract.pm	/^package rise::object::abstract;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\abstract.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\abstract.pm	/^use warnings;$/;"	use	line:3
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\abstract.pm	/^use utf8;$/;"	use	line:4
+parent 'rise::object::object', 'rise::object::error', 'rise::object::function', 'rise::object::variable', 'rise::core::commands'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\abstract.pm	/^use parent 'rise::object::object', 'rise::object::error', 'rise::object::function', 'rise::object::variable', 'rise::core::commands';$/;"	use	line:9
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\abstract.pm	/^our $VERSION			= '0.01';$/;"	our	line:11
+obj_type	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\abstract.pm	/^sub obj_type {'ABSTRACT'};$/;"	subroutine	line:25
+interface_join	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\abstract.pm	/^sub interface_join {$/;"	subroutine	line:27
+set_interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\abstract.pm	/^sub set_interface {$/;"	subroutine	line:107
+protected_abstract	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\abstract.pm	/^sub protected_abstract {$/;"	subroutine	line:134
+private_abstract	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\abstract.pm	/^sub private_abstract { shift->__error('abstract_priv') }$/;"	subroutine	line:142
+public_abstract	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\abstract.pm	/^sub public_abstract { shift->__error('abstract_publ') }$/;"	subroutine	line:143
+DESTROY	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\abstract.pm	/^sub DESTROY {}$/;"	subroutine	line:145
+rise::object::class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\class.pm	/^package rise::object::class;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\class.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\class.pm	/^use warnings;$/;"	use	line:3
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\class.pm	/^use utf8;$/;"	use	line:4
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\class.pm	/^our $VERSION 	= '0.01';$/;"	our	line:19
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\class.pm	/^sub new {$/;"	subroutine	line:28
+import	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\class.pm	/^sub import { no strict "refs";$/;"	subroutine	line:48
+obj_type	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\class.pm	/^sub obj_type {'CLASS'}$/;"	subroutine	line:75
+export	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\class.pm	/^sub export { no strict "refs";$/;"	subroutine	line:77
+interface_confirm	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\class.pm	/^sub interface_confirm {$/;"	subroutine	line:87
+private_class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\class.pm	/^sub private_class {$/;"	subroutine	line:119
+protected_class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\class.pm	/^sub protected_class {$/;"	subroutine	line:139
+public_class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\class.pm	/^sub public_class {}$/;"	subroutine	line:149
+extends_error	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\class.pm	/^sub extends_error {$/;"	subroutine	line:151
+DESTROY	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\class.pm	/^sub DESTROY {}$/;"	subroutine	line:155
+rise::object::error	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\error.pm	/^package rise::object::error;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\error.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\error.pm	/^use warnings;$/;"	use	line:3
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\error.pm	/^use utf8;$/;"	use	line:4
+Carp	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\error.pm	/^use Carp;$/;"	use	line:6
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\error.pm	/^our $VERSION = '0.01';$/;"	our	line:8
+__error	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\error.pm	/^sub __error {$/;"	subroutine	line:109
+__RISE_ERR	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\error.pm	/^sub __RISE_ERR {$/;"	subroutine	line:134
+DESTROY	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\error.pm	/^sub DESTROY {}$/;"	subroutine	line:204
+rise::core::fndef	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function\fndef.pm	/^package rise::core::fndef;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function\fndef.pm	/^use strict;$/;"	use	line:2
+vars qw($VERSION)	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function\fndef.pm	/^use vars qw($VERSION);$/;"	use	line:3
+import	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function\fndef.pm	/^sub import {$/;"	subroutine	line:6
+rise::core::function	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function\function.pm	/^package rise::core::function;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function\function.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function\function.pm	/^use warnings;$/;"	use	line:3
+vars qw($VERSION)	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function\function.pm	/^use vars qw($VERSION);$/;"	use	line:4
+import	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function\function.pm	/^sub import { no strict;$/;"	subroutine	line:7
+rise::core::function_new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function\function_new.pm	/^package rise::core::function_new;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function\function_new.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function\function_new.pm	/^use warnings;$/;"	use	line:3
+vars qw($VERSION)	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function\function_new.pm	/^use vars qw($VERSION);$/;"	use	line:4
+import	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function\function_new.pm	/^sub import { no strict 'refs';$/;"	subroutine	line:9
+rise::object::function	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function.pm	/^package rise::object::function;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function.pm	/^use warnings;$/;"	use	line:3
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function.pm	/^use utf8;$/;"	use	line:4
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function.pm	/^our $VERSION 	= '0.01';$/;"	our	line:11
+obj_type	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function.pm	/^sub obj_type {'FUNCTION'};$/;"	subroutine	line:19
+DESTROY	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\function.pm	/^sub DESTROY {}$/;"	subroutine	line:21
+rise::object::interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\interface.pm	/^package rise::object::interface;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\interface.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\interface.pm	/^use warnings;$/;"	use	line:3
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\interface.pm	/^use utf8;$/;"	use	line:4
+parent 'rise::object::object', 'rise::object::error'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\interface.pm	/^use parent 'rise::object::object', 'rise::object::error';$/;"	use	line:9
+obj_type	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\interface.pm	/^sub obj_type {'INTERFACE'};$/;"	subroutine	line:18
+interface_join	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\interface.pm	/^sub interface_join {$/;"	subroutine	line:20
+set_interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\interface.pm	/^sub set_interface {$/;"	subroutine	line:76
+interface_compare	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\interface.pm	/^sub interface_compare {$/;"	subroutine	line:89
+protected_interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\interface.pm	/^sub protected_interface {$/;"	subroutine	line:120
+private_interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\interface.pm	/^sub private_interface { shift->__error('interface_priv') }$/;"	subroutine	line:128
+public_interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\interface.pm	/^sub public_interface { shift->__error('interface_publ') }$/;"	subroutine	line:129
+DESTROY	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\interface.pm	/^sub DESTROY {}$/;"	subroutine	line:131
+rise::object::namespace	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\namespace.pm	/^package rise::object::namespace;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\namespace.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\namespace.pm	/^use warnings;$/;"	use	line:3
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\namespace.pm	/^use utf8;$/;"	use	line:4
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\namespace.pm	/^our $VERSION = '0.01';$/;"	our	line:6
+import	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\namespace.pm	/^sub import {$/;"	subroutine	line:8
+DESTROY	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\namespace.pm	/^sub DESTROY {}$/;"	subroutine	line:13
+rise::object::object	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\object.pm	/^package rise::object::object;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\object.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\object.pm	/^use warnings;$/;"	use	line:3
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\object.pm	/^use utf8;$/;"	use	line:4
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\object.pm	/^our $VERSION = '0.01';$/;"	our	line:11
+caller	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\object.pm	/^our $caller = 'rise::object::object';$/;"	our	line:13
+obj	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\object.pm	/^sub obj {$/;"	subroutine	line:31
+__RISE_ENV	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\object.pm	/^sub __RISE_ENV { shift->new }$/;"	subroutine	line:37
+DESTROY	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\object.pm	/^sub DESTROY {}$/;"	subroutine	line:39
+rise::core::thread	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread\thread.pm	/^package rise::core::thread;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread\thread.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread\thread.pm	/^use warnings;$/;"	use	line:3
+vars qw($VERSION)	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread\thread.pm	/^use vars qw($VERSION);$/;"	use	line:4
+Data::Dump 'dump'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread\thread.pm	/^use Data::Dump 'dump';$/;"	use	line:7
+import	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread\thread.pm	/^sub import { no strict;$/;"	subroutine	line:13
+rise::object::thread	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread.pm	/^package rise::object::thread;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread.pm	/^use warnings;$/;"	use	line:3
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread.pm	/^use utf8;$/;"	use	line:4
+Data::Dump 'dump'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread.pm	/^use Data::Dump 'dump';$/;"	use	line:6
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread.pm	/^our $VERSION 	= '0.01';$/;"	our	line:13
+obj_type	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread.pm	/^sub obj_type {'THREAD'};$/;"	subroutine	line:21
+join	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread.pm	/^sub join {$/;"	subroutine	line:23
+detach	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread.pm	/^sub detach {$/;"	subroutine	line:48
+tid	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread.pm	/^sub tid {$/;"	subroutine	line:66
+is_running	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread.pm	/^sub is_running {$/;"	subroutine	line:83
+is_joinable	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread.pm	/^sub is_joinable {$/;"	subroutine	line:100
+is_detached	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread.pm	/^sub is_detached {$/;"	subroutine	line:117
+DESTROY	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\thread.pm	/^sub DESTROY {}$/;"	subroutine	line:136
+rise::object::variable::type	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\type.pm	/^package rise::object::variable::type;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\type.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\type.pm	/^use warnings;$/;"	use	line:4
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\type.pm	/^use utf8;$/;"	use	line:5
+Variable::Magic qw/wizard cast/	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\type.pm	/^use Variable::Magic qw\/wizard cast\/;$/;"	use	line:12
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\type.pm	/^our $VERSION = '0.000';$/;"	our	line:14
+type	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\type.pm	/^sub type { no strict 'refs';$/;"	subroutine	line:21
+type_regs	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\type.pm	/^sub type_regs {$/;"	subroutine	line:32
+type_cast	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\type.pm	/^sub type_cast { no strict 'refs';$/;"	subroutine	line:41
+rise::core::variable	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable.pm	/^package rise::core::variable;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable.pm	/^use strict;$/;"	use	line:3
+vars qw($VERSION)	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable.pm	/^use vars qw($VERSION);$/;"	use	line:4
+parent 'rise::object::object', 'rise::object::class', 'rise::object::error', 'rise::object::variable'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable.pm	/^use parent 'rise::object::object', 'rise::object::class', 'rise::object::error', 'rise::object::variable';$/;"	use	line:6
+__VALUE__	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable.pm	/^sub __VALUE__ {$__VALUE__}$/;"	subroutine	line:14
+import	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable.pm	/^sub import { no strict; no warnings;$/;"	subroutine	line:16
+val	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable.pm	/^sub val {$/;"	subroutine	line:46
+VARIABLE	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable.pm	/^sub VARIABLE { no strict 'refs';$/;"	subroutine	line:52
+CONSTANT	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable.pm	/^sub CONSTANT {$/;"	subroutine	line:74
+private	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable.pm	/^sub private {$/;"	subroutine	line:92
+protected	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable.pm	/^sub protected {$/;"	subroutine	line:99
+rise::core::variable_new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable_new.pm	/^package rise::core::variable_new;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable_new.pm	/^use strict;$/;"	use	line:2
+vars qw($VERSION)	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable_new.pm	/^use vars qw($VERSION);$/;"	use	line:3
+parent 'rise::object::object', 'rise::object::class', 'rise::object::error', 'rise::object::variable'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable_new.pm	/^use parent 'rise::object::object', 'rise::object::class', 'rise::object::error', 'rise::object::variable';$/;"	use	line:5
+import	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable_new.pm	/^sub import { no strict; no warnings;$/;"	subroutine	line:36
+val	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable_new.pm	/^sub val { #no strict 'refs';$/;"	subroutine	line:85
+VARIABLE	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable_new.pm	/^sub VARIABLE { no strict 'refs';$/;"	subroutine	line:92
+CONSTANT	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable_new.pm	/^sub CONSTANT {$/;"	subroutine	line:117
+private	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable_new.pm	/^sub private {$/;"	subroutine	line:154
+protected	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable_new.pm	/^sub protected {$/;"	subroutine	line:161
+rise::core::variable_next	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable_next.pm	/^package rise::core::variable_next;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable_next.pm	/^use strict;$/;"	use	line:2
+vars qw($VERSION)	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable_next.pm	/^use vars qw($VERSION);$/;"	use	line:3
+parent 'rise::object::object', 'rise::object::error', 'rise::object::variable'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable_next.pm	/^use parent 'rise::object::object', 'rise::object::error', 'rise::object::variable';$/;"	use	line:6
+import	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable\variable_next.pm	/^sub import { no strict;$/;"	subroutine	line:21
+rise::object::variable	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable.pm	/^package rise::object::variable;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable.pm	/^use warnings;$/;"	use	line:3
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable.pm	/^use utf8;$/;"	use	line:4
+rise::object::variable::type	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable.pm	/^use rise::object::variable::type;$/;"	use	line:10
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable.pm	/^our $VERSION 	= '0.01';$/;"	our	line:12
+__RISE_CAST	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable.pm	/^sub __RISE_CAST {$/;"	subroutine	line:28
+obj_type	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable.pm	/^sub obj_type {'variable'};$/;"	subroutine	line:41
+DESTROY	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable.pm	/^sub DESTROY {}$/;"	subroutine	line:44
+rise::object::variable_new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^package rise::object::variable_new;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^use warnings;$/;"	use	line:3
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^use utf8;$/;"	use	line:4
+parent 'rise::object::object', 'rise::object::error'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^use parent 'rise::object::object', 'rise::object::error';$/;"	use	line:6
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^our $VERSION 	= '0.01';$/;"	our	line:8
+var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^sub var { no strict;$/;"	subroutine	line:44
+value	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^sub value() :lvalue { no strict; $access{$accessmod}->($class_name,$var_name);$/;"	subroutine	line:119
+access	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^sub access {$/;"	subroutine	line:123
+obj_type	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^sub obj_type {'variable'};$/;"	subroutine	line:127
+var_init	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^sub var_init { $obj_type = ref \\$_[0] }$/;"	subroutine	line:130
+type	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^sub type { no strict;$/;"	subroutine	line:131
+private_var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^sub private_var {$/;"	subroutine	line:173
+protected_var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^sub protected_var {$/;"	subroutine	line:180
+public_var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^sub public_var {}$/;"	subroutine	line:187
+DESTROY	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\variable_new.pm	/^sub DESTROY {}$/;"	subroutine	line:189
+rise::object::interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\_interface.pm	/^package rise::object::interface;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\_interface.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\_interface.pm	/^use warnings;$/;"	use	line:3
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\_interface.pm	/^use utf8;$/;"	use	line:4
+rise::object::object	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\_interface.pm	/^use parent 'rise::object::object';$/;"	extends	line:6
+parent 'rise::object::object'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\_interface.pm	/^use parent 'rise::object::object';$/;"	use	line:6
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\_interface.pm	/^our $VERSION			= '0.01';$/;"	our	line:8
+interface_confirm	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\_interface.pm	/^sub interface_confirm {$/;"	subroutine	line:22
+interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\_interface.pm	/^sub interface {$/;"	subroutine	line:46
+off_interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\_interface.pm	/^sub off_interface {$/;"	subroutine	line:70
+add	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\_interface.pm	/^sub add {$/;"	subroutine	line:94
+protected_interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\_interface.pm	/^sub protected_interface {$/;"	subroutine	line:104
+DESTROY	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\core\object\_interface.pm	/^sub DESTROY {}$/;"	subroutine	line:120
+rise::file	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\file.pm	/^package rise::file;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\file.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\file.pm	/^use warnings;$/;"	use	line:4
+FileHandle	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\file.pm	/^use FileHandle;$/;"	use	line:6
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\file.pm	/^sub new {$/;"	subroutine	line:20
+file	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\file.pm	/^sub file {$/;"	subroutine	line:27
+_error	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\file.pm	/^sub _error {$/;"	subroutine	line:40
+read	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\file.pm	/^sub read {$/;"	subroutine	line:51
+write	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\file.pm	/^sub write {$/;"	subroutine	line:57
+append	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\file.pm	/^sub append {$/;"	subroutine	line:64
+_action	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\file.pm	/^sub _action {{$/;"	subroutine	line:71
+Term::ReadKey	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileMonitor.pm	/^use Term::ReadKey;$/;"	use	line:1
+rise::object::class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileMonitor.pm	/^{ package rise::fileMonitor; use strict; use warnings; use rise::core::extends 'rise::object::class';   sub super { $rise::fileMonitor::ISA[1] } my $self = 'rise::fileMonitor'; sub self { $self }; BEGIN { __PACKAGE__->__RISE_COMMANDS } __PACKAGE__->interface_confirm; sub __OBJLIST__ {'public-function-MakeTask public-function-tasks public-function-start private-function-Monitor private-function-RKey private-function-RMode private-var-monitor'}$/;"	extends	line:3
+END	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileMonitor.pm	/^  END:$/;"	label	line:58
+rise::fileTask	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^package rise::fileTask;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^use strict;$/;"	use	line:2
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^use warnings;$/;"	use	line:3
+feature 'say'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^use feature 'say';$/;"	use	line:4
+c	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^  c:\/_DATA_EXT\/_data\/works\/Development\/_PERL\/_lib\/$/;"	label	line:6
+c	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^  c:\/_DATA_EXT\/_data\/works\/Development\/_PERL\/_apps\/_acs\/$/;"	label	line:7
+rise	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^use rise;$/;"	use	line:10
+rise::fileMonitor	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^use rise::fileMonitor;$/;"	use	line:11
+import	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^sub import { no strict 'refs';$/;"	subroutine	line:27
+task	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^sub task {$/;"	subroutine	line:32
+start	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^sub start {$/;"	subroutine	line:43
+task_action	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^sub task_action {$/;"	subroutine	line:47
+tall	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^sub tall {$/;"	subroutine	line:53
+rise::grammar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^package rise::grammar;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^use warnings;$/;"	use	line:4
+5.008	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^use 5.008;$/;"	use	line:5
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^use utf8;$/;"	use	line:6
+Data::Dump 'dump'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^use Data::Dump 'dump';$/;"	use	line:8
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^our $VERSION = '0.100';$/;"	our	line:10
+Exporter	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^use parent 'Exporter';$/;"	extends	line:12
+parent 'Exporter'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^use parent 'Exporter';$/;"	use	line:12
+EXPORT	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^our @EXPORT;$/;"	our	line:14
+EXPORT_OK	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^our @EXPORT_OK 		= qw\/$/;"	our	line:16
+EXPORT_TAGS	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^our %EXPORT_TAGS 	= ( simple => [@EXPORT_OK] );$/;"	our	line:32
+syntax_class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^our $syntax_class;$/;"	our	line:51
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub new {$/;"	subroutine	line:65
+grammar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub grammar :lvalue	{ $GRAMMAR }$/;"	subroutine	line:78
+order	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub order :lvalue	{ grammar->{ORDER} }$/;"	subroutine	line:79
+action_array	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub action_array	{ keys(%{grammar->{ACTION}}) }$/;"	subroutine	line:80
+action_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub action_list	{ __arr2list( &action_array ) }$/;"	subroutine	line:81
+rule_array	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub rule_array	{ keys(%{grammar->{RULE}}) }$/;"	subroutine	line:82
+rule_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub rule_list	{ __arr2list( &rule_array ) }$/;"	subroutine	line:83
+token_array	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub token_array	{ keys(%{grammar->{TOKEN}}) }$/;"	subroutine	line:84
+token_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub token_list	{ __arr2list( &token_array ) }$/;"	subroutine	line:85
+keyword_array	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub keyword_array	{ values(%{grammar->{KEYWORD}}) }$/;"	subroutine	line:86
+keyword_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub keyword_list	{ __arr2list( &keyword_array ) }$/;"	subroutine	line:87
+ra	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub ra			{ grammar->{RULE_LAST_VAR}{RA}[$_] }$/;"	subroutine	line:88
+var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub var :lvalue {$/;"	subroutine	line:90
+keyword	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub keyword {$/;"	subroutine	line:97
+token	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub token {$/;"	subroutine	line:116
+off_token	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub off_token {$/;"	subroutine	line:131
+rule	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub rule {$/;"	subroutine	line:146
+action	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub action {$/;"	subroutine	line:173
+parse	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub parse {$/;"	subroutine	line:196
+__parse_helper	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub __parse_helper {$/;"	subroutine	line:300
+__parse	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub __parse {$/;"	subroutine	line:310
+compile_RBNF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub compile_RBNF {$/;"	subroutine	line:330
+gettok	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub gettok {$/;"	subroutine	line:355
+rule_last_var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub rule_last_var :lvalue {$/;"	subroutine	line:362
+__arr2list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub __arr2list { return '\\b' . join ('\\b|\\b', @_) . '\\b' }$/;"	subroutine	line:370
+__rule	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub __rule {$/;"	subroutine	line:378
+off__rule	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub off__rule {$/;"	subroutine	line:392
+off__token	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub off__token {$/;"	subroutine	line:398
+__action	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub __action {$/;"	subroutine	line:412
+__compile_RBNF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub __compile_RBNF {$/;"	subroutine	line:444
+__save_rule_last_var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub __save_rule_last_var {$/;"	subroutine	line:457
+__precompile_rule	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub __precompile_rule {$/;"	subroutine	line:480
+__error	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub __error {$/;"	subroutine	line:548
+__class_ref	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub __class_ref {$/;"	subroutine	line:563
+rise::grammar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^package rise::grammar;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^use warnings;$/;"	use	line:4
+5.008	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^use 5.008;$/;"	use	line:5
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^use utf8;$/;"	use	line:6
+Data::Dump 'dump'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^use Data::Dump 'dump';$/;"	use	line:8
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^our $VERSION = '0.100';$/;"	our	line:10
+Exporter	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^use parent 'Exporter';$/;"	extends	line:12
+parent 'Exporter'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^use parent 'Exporter';$/;"	use	line:12
+EXPORT	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^our @EXPORT;$/;"	our	line:14
+EXPORT_OK	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^our @EXPORT_OK 		= qw\/$/;"	our	line:16
+EXPORT_TAGS	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^our %EXPORT_TAGS 	= ( simple => [@EXPORT_OK] );$/;"	our	line:31
+syntax_class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^our $syntax_class;$/;"	our	line:48
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub new {$/;"	subroutine	line:52
+grammar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub grammar :lvalue	{ $GRAMMAR }$/;"	subroutine	line:59
+order	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub order :lvalue	{ grammar->{ORDER} }$/;"	subroutine	line:60
+action_array	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub action_array	{ keys(%{grammar->{ACTION}}) }$/;"	subroutine	line:61
+action_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub action_list	{ __arr2list( &action_array ) }$/;"	subroutine	line:62
+rule_array	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub rule_array	{ keys(%{grammar->{RULE}}) }$/;"	subroutine	line:63
+rule_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub rule_list	{ __arr2list( &rule_array ) }$/;"	subroutine	line:64
+token_array	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub token_array	{ keys(%{grammar->{TOKEN}}) }$/;"	subroutine	line:65
+token_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub token_list	{ __arr2list( &token_array ) }$/;"	subroutine	line:66
+keyword_array	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub keyword_array	{ keys(%{grammar->{KEYWORD}}) }$/;"	subroutine	line:67
+keyword_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub keyword_list	{ __arr2list( &keyword_array ) }$/;"	subroutine	line:68
+ra	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub ra			{ grammar->{RULE_LAST_VAR}{RA}[$_] }$/;"	subroutine	line:69
+var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub var :lvalue {$/;"	subroutine	line:71
+keyword	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub keyword {$/;"	subroutine	line:78
+token	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub token {$/;"	subroutine	line:97
+off_token	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub off_token {$/;"	subroutine	line:112
+rule	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub rule {$/;"	subroutine	line:127
+action	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub action {$/;"	subroutine	line:154
+parse	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub parse {$/;"	subroutine	line:177
+__parse_helper	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub __parse_helper {$/;"	subroutine	line:271
+__parse	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub __parse {$/;"	subroutine	line:281
+compile_RBNF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub compile_RBNF {$/;"	subroutine	line:294
+gettok	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub gettok {$/;"	subroutine	line:319
+rule_last_var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub rule_last_var :lvalue {$/;"	subroutine	line:326
+__arr2list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub __arr2list { return '\\b' . join ('\\b|\\b', @_) . '\\b' }$/;"	subroutine	line:334
+__rule	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub __rule {$/;"	subroutine	line:342
+off__rule	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub off__rule {$/;"	subroutine	line:356
+off__token	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub off__token {$/;"	subroutine	line:362
+__action	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub __action {$/;"	subroutine	line:376
+__compile_RBNF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub __compile_RBNF {$/;"	subroutine	line:403
+__save_rule_last_var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub __save_rule_last_var {$/;"	subroutine	line:416
+__precompile_rule	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub __precompile_rule {$/;"	subroutine	line:439
+__error	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub __error {$/;"	subroutine	line:465
+__class_ref	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub __class_ref {$/;"	subroutine	line:473
+rise::grammar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^package rise::grammar;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^use warnings;$/;"	use	line:4
+5.008	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^use 5.008;$/;"	use	line:5
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^use utf8;$/;"	use	line:6
+Data::Dump 'dump'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^use Data::Dump 'dump';$/;"	use	line:8
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^our $VERSION = '0.100';$/;"	our	line:10
+Exporter	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^use parent 'Exporter';$/;"	extends	line:12
+parent 'Exporter'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^use parent 'Exporter';$/;"	use	line:12
+EXPORT	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^our @EXPORT;$/;"	our	line:14
+EXPORT_OK	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^our @EXPORT_OK 		= qw\/$/;"	our	line:16
+EXPORT_TAGS	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^our %EXPORT_TAGS 	= ( simple => [@EXPORT_OK] );$/;"	our	line:31
+syntax_class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^our $syntax_class;$/;"	our	line:48
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub new {$/;"	subroutine	line:52
+grammar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub grammar :lvalue	{ $GRAMMAR }$/;"	subroutine	line:59
+order	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub order :lvalue	{ grammar->{ORDER} }$/;"	subroutine	line:60
+action_array	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub action_array	{ keys(%{grammar->{ACTION}}) }$/;"	subroutine	line:61
+action_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub action_list	{ __arr2list( &action_array ) }$/;"	subroutine	line:62
+rule_array	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub rule_array	{ keys(%{grammar->{RULE}}) }$/;"	subroutine	line:63
+rule_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub rule_list	{ __arr2list( &rule_array ) }$/;"	subroutine	line:64
+token_array	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub token_array	{ keys(%{grammar->{TOKEN}}) }$/;"	subroutine	line:65
+token_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub token_list	{ __arr2list( &token_array ) }$/;"	subroutine	line:66
+keyword_array	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub keyword_array	{ values(%{grammar->{KEYWORD}}) }$/;"	subroutine	line:67
+keyword_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub keyword_list	{ __arr2list( &keyword_array ) }$/;"	subroutine	line:68
+ra	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub ra			{ grammar->{RULE_LAST_VAR}{RA}[$_] }$/;"	subroutine	line:69
+var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub var :lvalue {$/;"	subroutine	line:71
+keyword	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub keyword {$/;"	subroutine	line:78
+token	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub token {$/;"	subroutine	line:97
+off_token	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub off_token {$/;"	subroutine	line:112
+rule	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub rule {$/;"	subroutine	line:127
+action	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub action {$/;"	subroutine	line:154
+parse	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub parse {$/;"	subroutine	line:177
+__parse_helper	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub __parse_helper {$/;"	subroutine	line:271
+__parse	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub __parse {$/;"	subroutine	line:281
+compile_RBNF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub compile_RBNF {$/;"	subroutine	line:297
+gettok	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub gettok {$/;"	subroutine	line:322
+rule_last_var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub rule_last_var :lvalue {$/;"	subroutine	line:329
+__arr2list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub __arr2list { return '\\b' . join ('\\b|\\b', @_) . '\\b' }$/;"	subroutine	line:337
+__rule	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub __rule {$/;"	subroutine	line:345
+off__rule	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub off__rule {$/;"	subroutine	line:359
+off__token	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub off__token {$/;"	subroutine	line:365
+__action	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub __action {$/;"	subroutine	line:379
+__compile_RBNF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub __compile_RBNF {$/;"	subroutine	line:410
+__save_rule_last_var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub __save_rule_last_var {$/;"	subroutine	line:423
+__precompile_rule	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub __precompile_rule {$/;"	subroutine	line:446
+__error	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub __error {$/;"	subroutine	line:472
+__class_ref	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^sub __class_ref {$/;"	subroutine	line:480
+rise::parser	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\parser.pm	/^package rise::parser;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\parser.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\parser.pm	/^use warnings;$/;"	use	line:4
+5.008	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\parser.pm	/^use 5.008;$/;"	use	line:5
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\parser.pm	/^use utf8;$/;"	use	line:6
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\parser.pm	/^our $VERSION = '0.100';$/;"	our	line:8
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\parser.pm	/^sub new {$/;"	subroutine	line:12
+parse	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\parser.pm	/^sub parse {$/;"	subroutine	line:19
+_class_ref	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\parser.pm	/^sub _class_ref {$/;"	subroutine	line:34
+rise::syntax::class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\abstract.pm	/^package rise::syntax::class;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\abstract.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\abstract.pm	/^use warnings;$/;"	use	line:4
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\abstract.pm	/^use utf8;$/;"	use	line:5
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\abstract.pm	/^our $VERSION = '0.000';$/;"	our	line:6
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\abstract.pm	/^sub new {$/;"	subroutine	line:10
+test	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\abstract.pm	/^sub test {$/;"	subroutine	line:16
+rise::syntax::class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\class.pm	/^package rise::syntax::class;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\class.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\class.pm	/^use warnings;$/;"	use	line:4
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\class.pm	/^use utf8;$/;"	use	line:5
+rise::syntax::function	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\class.pm	/^use rise::syntax::function;$/;"	use	line:7
+rise::syntax::variable	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\class.pm	/^use rise::syntax::variable;$/;"	use	line:8
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\class.pm	/^our $VERSION = '0.000';$/;"	our	line:10
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\class.pm	/^sub new {$/;"	subroutine	line:14
+class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\class.pm	/^sub class {$/;"	subroutine	line:21
+function	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\class.pm	/^sub function {$/;"	subroutine	line:28
+test	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\class.pm	/^sub test {$/;"	subroutine	line:32
+rise::syntax::class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\function.pm	/^package rise::syntax::class;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\function.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\function.pm	/^use warnings;$/;"	use	line:4
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\function.pm	/^use utf8;$/;"	use	line:5
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\function.pm	/^our $VERSION = '0.000';$/;"	our	line:6
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\function.pm	/^sub new {$/;"	subroutine	line:10
+test	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\function.pm	/^sub test {$/;"	subroutine	line:16
+rise::syntax::class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\interface.pm	/^package rise::syntax::class;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\interface.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\interface.pm	/^use warnings;$/;"	use	line:4
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\interface.pm	/^use utf8;$/;"	use	line:5
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\interface.pm	/^our $VERSION = '0.000';$/;"	our	line:6
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\interface.pm	/^sub new {$/;"	subroutine	line:10
+test	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\interface.pm	/^sub test {$/;"	subroutine	line:16
+rise::syntax::namespace	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\namespace.pm	/^package rise::syntax::namespace;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\namespace.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\namespace.pm	/^use warnings;$/;"	use	line:4
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\namespace.pm	/^use utf8;$/;"	use	line:5
+rise::syntax::class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\namespace.pm	/^use rise::syntax::class;$/;"	use	line:7
+rise::syntax::abstract	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\namespace.pm	/^use rise::syntax::abstract;$/;"	use	line:8
+rise::syntax::interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\namespace.pm	/^use rise::syntax::interface;$/;"	use	line:9
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\namespace.pm	/^our $VERSION = '0.000';$/;"	our	line:11
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\namespace.pm	/^sub new {$/;"	subroutine	line:15
+test	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax\namespace.pm	/^sub test {$/;"	subroutine	line:21
+rise::syntax	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^package rise::syntax;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^use warnings;$/;"	use	line:4
+v5.008	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^use v5.008;$/;"	use	line:5
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^use utf8;$/;"	use	line:6
+Data::Dump 'dump'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^use Data::Dump 'dump';$/;"	use	line:8
+Clone 'clone'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^use Clone 'clone';$/;"	use	line:9
+lib '../lib/rise/'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^use lib '..\/lib\/rise\/';$/;"	use	line:11
+rise::grammar qw/:simple/	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^use rise::grammar qw\/:simple\/;$/;"	use	line:13
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^our $VERSION = '0.000';$/;"	our	line:16
+conf	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^our $conf							= {};$/;"	our	line:17
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub new {$/;"	subroutine	line:25
+confirm	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub confirm {$/;"	subroutine	line:40
+syntax	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub syntax { grammar }$/;"	subroutine	line:875
+__add_stack	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub __add_stack {$/;"	subroutine	line:881
+parse_parser_list_iter	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub parse_parser_list_iter {$/;"	subroutine	line:888
+parse_parser_if	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub parse_parser_if {$/;"	subroutine	line:900
+_syntax_commentC	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_commentC {$/;"	subroutine	line:942
+_syntax_excluding	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_excluding {$/;"	subroutine	line:948
+_syntax_including	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_including {$/;"	subroutine	line:958
+_syntax_unwrap_code	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_unwrap_code {$/;"	subroutine	line:966
+_syntax_unwrap_header_code	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_unwrap_header_code {$/;"	subroutine	line:973
+_syntax_inject	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_inject {$/;"	subroutine	line:997
+_syntax_using	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_using {$/;"	subroutine	line:1005
+_syntax_inherits	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_inherits {$/;"	subroutine	line:1010
+_syntax_implements	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_implements {$/;"	subroutine	line:1015
+_syntax_foreach	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_foreach {$/;"	subroutine	line:1021
+_syntax_foreach_var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_foreach_var {$/;"	subroutine	line:1046
+_syntax_for	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_for { "{ <kw_local> <variable> <name>; <for_each>...(...<name>...<condition>...)...<block_brace>}" }$/;"	subroutine	line:1075
+_syntax_for_foreach_array	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_for_foreach_array { "<for_each>...( __RISE_R2A ...<ret_arr_ops>" }$/;"	subroutine	line:1077
+_syntax_for_foreach	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_for_foreach {$/;"	subroutine	line:1079
+_syntax_while	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_while {$/;"	subroutine	line:1124
+_syntax_regex_match	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_regex_match {$/;"	subroutine	line:1142
+_syntax_regex_replace	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_regex_replace {$/;"	subroutine	line:1158
+_syntax_function_defs	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_function_defs {$/;"	subroutine	line:1182
+_syntax_function_method	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_function_method {$/;"	subroutine	line:1189
+_syntax_function_method_post1	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub  _syntax_function_method_post1 {''}$/;"	subroutine	line:1237
+_syntax_function_method_post2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub  _syntax_function_method_post2 {'__PACKAGE__)'}$/;"	subroutine	line:1238
+_syntax_function	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_function {$/;"	subroutine	line:1240
+_syntax_thread_method	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_thread_method {$/;"	subroutine	line:1398
+_syntax_thread_method_post1	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub  _syntax_thread_method_post1 {''}$/;"	subroutine	line:1446
+_syntax_thread_method_post2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub  _syntax_thread_method_post2 {'__PACKAGE__)'}$/;"	subroutine	line:1447
+_syntax_thread	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_thread {$/;"	subroutine	line:1449
+_syntax_nonamedblock	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_nonamedblock {$/;"	subroutine	line:1611
+_syntax_variable_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_variable_list {$/;"	subroutine	line:1627
+_syntax_boost_var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_boost_var {$/;"	subroutine	line:1646
+_syntax_variable_boost1	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_variable_boost1 {$/;"	subroutine	line:1667
+_syntax_var_boost2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_var_boost2		{ '$<var_all>' }$/;"	subroutine	line:1712
+_syntax_variable_boost3	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_variable_boost3		{ '<kw_variable> ' }$/;"	subroutine	line:1714
+_syntax_var_boost_post1	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_var_boost_post1	{ '<kw_variable> ' }$/;"	subroutine	line:1716
+_syntax_var_boost_post2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_var_boost_post2	{ '->' }$/;"	subroutine	line:1718
+_syntax_prepare_variable	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_prepare_variable {$/;"	subroutine	line:1720
+_syntax_variable	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_variable {$/;"	subroutine	line:1725
+__accessmod	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub __accessmod {$/;"	subroutine	line:1787
+_syntax_variable_NEW	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_variable_NEW {$/;"	subroutine	line:1812
+_syntax_variable_boost2_OFF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_variable_boost2_OFF {$/;"	subroutine	line:1862
+_syntax_variable_boost2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_variable_boost2 {$/;"	subroutine	line:1873
+_syntax_variable_boost_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_variable_boost_post {''}$/;"	subroutine	line:1907
+_syntax_constant	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_constant {$/;"	subroutine	line:1909
+_syntax_namespace	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_namespace {$/;"	subroutine	line:1965
+_syntax_class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_class {$/;"	subroutine	line:1996
+__list_extends	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub __list_extends {$/;"	subroutine	line:2004
+_syntax_interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_interface {$/;"	subroutine	line:2043
+_syntax_interface_set	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_interface_set {$/;"	subroutine	line:2049
+_syntax_abstract	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_abstract {$/;"	subroutine	line:2062
+__object	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub __object {$/;"	subroutine	line:2070
+__object_header	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub __object_header {$/;"	subroutine	line:2137
+_syntax_op_regex	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_op_regex { "__RISE_A2R <sigils><self_name><sps1><op_regex>" }$/;"	subroutine	line:2179
+_syntax_op_scalar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_op_scalar { "__RISE_A2R <op_scalar><sps1><string>," }$/;"	subroutine	line:2180
+_syntax_op_array	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_op_array {$/;"	subroutine	line:2182
+_syntax_op_sort_blockless	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_op_sort_blockless { "sort {}" }$/;"	subroutine	line:2187
+_syntax_op_array_block	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_op_array_block {$/;"	subroutine	line:2189
+_syntax_op_array_hash	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_op_array_hash { return '__RISE_' . uc &op_array_hash }$/;"	subroutine	line:2197
+_syntax_op_ahref_expr	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_op_ahref_expr {$/;"	subroutine	line:2199
+_syntax_op_array1	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_op_array1 {$/;"	subroutine	line:2204
+_syntax_op_array2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_op_array2  { "__RISE_A2R <op_array2>...<block_brace> __RISE_R2A" }$/;"	subroutine	line:2209
+_syntax_op_array21	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_op_array21 { "__RISE_A2R <op_array2>...<string>, __RISE_R2A" }$/;"	subroutine	line:2210
+_syntax_op_array3	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_op_array3  { "<op_array3>...<string>, __RISE_R2A" }$/;"	subroutine	line:2211
+_syntax_op_hash	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_op_hash {$/;"	subroutine	line:2213
+_syntax_op_reverse	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_op_reverse { '__RISE_2R <op_reverse>...<paren_L>...__RISE_R2 ' }$/;"	subroutine	line:2226
+_syntax_op_array3_OFF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_op_array3_OFF {$/;"	subroutine	line:2229
+_syntax_context	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_context {"\\$_"}$/;"	subroutine	line:2274
+_syntax_comma_quarter	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_comma_quarter {$/;"	subroutine	line:2276
+__name2name	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub  __name2name {$/;"	subroutine	line:2283
+_syntax_op_dot	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_op_dot {'->'}$/;"	subroutine	line:2289
+_syntax_optimize4	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_optimize4 { ';' }$/;"	subroutine	line:2291
+_syntax_optimize5	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_optimize5 { ' ' }$/;"	subroutine	line:2292
+_syntax_optimize6	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_optimize6 { '' }$/;"	subroutine	line:2293
+_syntax_optimize7	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_optimize7 { '<sps1>' }$/;"	subroutine	line:2294
+_syntax_optimize8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_optimize8 { '' }$/;"	subroutine	line:2295
+_syntax_optimize9	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub _syntax_optimize9 {$/;"	subroutine	line:2296
+rise::syntaxNew	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^package rise::syntaxNew;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^use warnings;$/;"	use	line:4
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^use utf8;$/;"	use	line:5
+rise::grammar qw/:simple/	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^use rise::grammar qw\/:simple\/;$/;"	use	line:7
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^our $VERSION = '0.000';$/;"	our	line:9
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^sub new {$/;"	subroutine	line:13
+syntax	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^sub syntax { &grammar };$/;"	subroutine	line:130
+parse_exl_content	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^sub parse_exl_content {$/;"	subroutine	line:132
+parse_function	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^sub parse_function {$/;"	subroutine	line:136
+parse_variable_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^sub parse_variable_list {$/;"	subroutine	line:156
+parse_variable	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^sub parse_variable {$/;"	subroutine	line:160
+parse_constant	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^sub parse_constant {$/;"	subroutine	line:173
+parse_parser_var_boost	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^sub parse_parser_var_boost {$/;"	subroutine	line:177
+parse_parser_variable	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^sub parse_parser_variable {'<tk_variable>'}$/;"	subroutine	line:184
+parse_parser_list_iter	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^sub parse_parser_list_iter {$/;"	subroutine	line:186
+parse_parser_if	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^sub parse_parser_if {$/;"	subroutine	line:196
+rise::syntax	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^package rise::syntax;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^use warnings;$/;"	use	line:4
+v5.008	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^use v5.008;$/;"	use	line:5
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^use utf8;$/;"	use	line:6
+Data::Dump 'dump'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^use Data::Dump 'dump';$/;"	use	line:8
+Clone 'clone'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^use Clone 'clone';$/;"	use	line:9
+lib '../lib/rise/'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^use lib '..\/lib\/rise\/';$/;"	use	line:11
+rise::grammar qw/:simple/	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^use rise::grammar qw\/:simple\/;$/;"	use	line:13
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^our $VERSION = '0.000';$/;"	our	line:16
+conf	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^our $conf							= {};$/;"	our	line:17
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub new {$/;"	subroutine	line:25
+confirm	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub confirm {$/;"	subroutine	line:40
+syntax	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub syntax { grammar }$/;"	subroutine	line:630
+__add_stack	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub __add_stack {$/;"	subroutine	line:636
+parse_parser_list_iter	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub parse_parser_list_iter {$/;"	subroutine	line:643
+parse_parser_if	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub parse_parser_if {$/;"	subroutine	line:655
+_syntax_commentC	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_commentC {$/;"	subroutine	line:697
+_syntax_excluding	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_excluding {$/;"	subroutine	line:703
+_syntax_including	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_including {$/;"	subroutine	line:709
+_syntax_unwrap_code	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_unwrap_code {$/;"	subroutine	line:717
+_syntax_inject	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_inject {$/;"	subroutine	line:734
+_syntax_using	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_using {$/;"	subroutine	line:742
+_syntax_inherits	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_inherits {$/;"	subroutine	line:747
+_syntax_implements	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_implements {$/;"	subroutine	line:752
+_syntax_foreach	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_foreach {$/;"	subroutine	line:758
+_syntax_for	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_for { "{ <kw_local> <variable> <name>; <for_each>...(...<name>...<condition>...)...<block_brace>}" }$/;"	subroutine	line:783
+_syntax_for_foreach	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_for_foreach {$/;"	subroutine	line:785
+_syntax_while	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_while { "{ <kw_local> <variable> <name>; <while>...(...<name>...<condition>...)...<block_brace>}" }$/;"	subroutine	line:830
+_syntax_function_defs	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_function_defs {$/;"	subroutine	line:839
+_syntax_function_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_function_list {$/;"	subroutine	line:846
+_syntax_anon_function_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_anon_function_list {$/;"	subroutine	line:859
+_syntax_function_list_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_function_list_post { '<kw_function>' }$/;"	subroutine	line:872
+_syntax_function_method_OFF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_function_method_OFF {$/;"	subroutine	line:874
+_syntax_function_method	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_function_method {$/;"	subroutine	line:907
+_syntax_function_method_post1	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub  _syntax_function_method_post1 {''}$/;"	subroutine	line:955
+_syntax_function_method_post2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub  _syntax_function_method_post2 {'__PACKAGE__)'}$/;"	subroutine	line:956
+_syntax_anon_func2method	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_anon_func2method { '<anon_func_all>.(__PACKAGE__, ' }$/;"	subroutine	line:958
+_syntax_func2method_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_func2method_post { '__PACKAGE__)' }$/;"	subroutine	line:960
+_syntax_prepare_function	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_prepare_function {$/;"	subroutine	line:962
+_syntax_function	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_function {$/;"	subroutine	line:1001
+_syntax_prepare_function_args	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_prepare_function_args {$/;"	subroutine	line:1123
+_syntax_prepare_function_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_prepare_function_post {$/;"	subroutine	line:1143
+_syntax_nonamedblock	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_nonamedblock {$/;"	subroutine	line:1151
+_syntax_variable_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_variable_list {$/;"	subroutine	line:1167
+_syntax_boost_var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_boost_var {$/;"	subroutine	line:1186
+_syntax_variable_boost1	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_variable_boost1 {$/;"	subroutine	line:1207
+_syntax_var_boost2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_var_boost2		{ '$<var_all>' }$/;"	subroutine	line:1252
+_syntax_variable_boost3	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_variable_boost3		{ '<kw_variable> ' }$/;"	subroutine	line:1254
+_syntax_var_boost_post1	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_var_boost_post1	{ '<kw_variable> ' }$/;"	subroutine	line:1256
+_syntax_var_boost_post2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_var_boost_post2	{ '->' }$/;"	subroutine	line:1258
+_syntax_prepare_variable	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_prepare_variable {$/;"	subroutine	line:1260
+_syntax_variable	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_variable {$/;"	subroutine	line:1265
+__accessmod	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub __accessmod {$/;"	subroutine	line:1313
+_syntax_variable_NEW	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_variable_NEW {$/;"	subroutine	line:1338
+_syntax_variable_boost2_OFF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_variable_boost2_OFF {$/;"	subroutine	line:1388
+_syntax_variable_boost2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_variable_boost2 {$/;"	subroutine	line:1399
+_syntax_variable_boost2_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_variable_boost2_post {''}$/;"	subroutine	line:1433
+_syntax_constant	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_constant {$/;"	subroutine	line:1435
+_syntax_prepare_name_namespace	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_prepare_name_namespace {$/;"	subroutine	line:1468
+_syntax_prepare_namespace	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_prepare_namespace {$/;"	subroutine	line:1473
+_syntax_namespace	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_namespace {$/;"	subroutine	line:1479
+_syntax_prepare_class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_prepare_class {$/;"	subroutine	line:1510
+_syntax_class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_class {$/;"	subroutine	line:1533
+_syntax_class_OFF2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_class_OFF2 {$/;"	subroutine	line:1540
+_syntax_class_OFF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_class_OFF {$/;"	subroutine	line:1594
+_syntax_prepare_class_helper	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_prepare_class_helper {$/;"	subroutine	line:1661
+__list_extends	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub __list_extends {$/;"	subroutine	line:1705
+_syntax_prepare_interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_prepare_interface {$/;"	subroutine	line:1744
+_syntax_prepare_interface_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_prepare_interface_post {'<kw_interface>'}$/;"	subroutine	line:1792
+_syntax_interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_interface {$/;"	subroutine	line:1794
+_syntax_interface_set	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_interface_set {$/;"	subroutine	line:1800
+_syntax_prepare_abstract	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_prepare_abstract {$/;"	subroutine	line:1813
+_syntax_prepare_abstract_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_prepare_abstract_post {'<kw_abstract>'}$/;"	subroutine	line:1842
+_syntax_abstract	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_abstract {$/;"	subroutine	line:1844
+__object	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub __object {$/;"	subroutine	line:1852
+__object_OFF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub __object_OFF {$/;"	subroutine	line:1918
+_syntax_object	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_object {$/;"	subroutine	line:1976
+__object_header	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub __object_header {$/;"	subroutine	line:2018
+_syntax_prepare_name_object	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_prepare_name_object {$/;"	subroutine	line:2036
+_syntax_prepare_name_object_helper	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_prepare_name_object_helper {$/;"	subroutine	line:2061
+_syntax_op_math	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_op_math { "__RISE_A2R <sigils><self_name><sps1><op_math>" }$/;"	subroutine	line:2112
+_syntax_op_scalar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_op_scalar { "__RISE_A2R <op_scalar><sps1><string>," }$/;"	subroutine	line:2113
+_syntax_op_array1	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_op_array1 {$/;"	subroutine	line:2115
+_syntax_op_array2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_op_array2  { "__RISE_A2R <op_array2><sps1><block_brace> __RISE_R2A" }$/;"	subroutine	line:2120
+_syntax_op_array21	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_op_array21 { "__RISE_A2R <op_array2><sps1><string>, __RISE_R2A" }$/;"	subroutine	line:2121
+_syntax_op_array3	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_op_array3  { "<op_array3><sps1><string>, __RISE_R2A" }$/;"	subroutine	line:2122
+_syntax_op_hash	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_op_hash {$/;"	subroutine	line:2124
+_syntax_op_reverse	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_op_reverse { '__RISE_2R <op_reverse> __RISE_R2' }$/;"	subroutine	line:2132
+_syntax_op_array3_OFF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_op_array3_OFF {$/;"	subroutine	line:2135
+_syntax_comma_quarter	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_comma_quarter {$/;"	subroutine	line:2180
+__name2name	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub  __name2name {$/;"	subroutine	line:2187
+_syntax_op_dot	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_op_dot {'->'}$/;"	subroutine	line:2193
+_syntax_optimize4	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_optimize4 { ';' }$/;"	subroutine	line:2195
+_syntax_optimize5	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_optimize5 { ' ' }$/;"	subroutine	line:2196
+_syntax_optimize6	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_optimize6 { '' }$/;"	subroutine	line:2197
+_syntax_optimize7	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub _syntax_optimize7 { '<sps1>' }$/;"	subroutine	line:2198
+rise::syntax	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^package rise::syntax;$/;"	package	line:1
+strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^use strict;$/;"	use	line:3
+warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^use warnings;$/;"	use	line:4
+v5.008	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^use v5.008;$/;"	use	line:5
+utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^use utf8;$/;"	use	line:6
+Data::Dump 'dump'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^use Data::Dump 'dump';$/;"	use	line:8
+Clone 'clone'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^use Clone 'clone';$/;"	use	line:9
+lib '../lib/rise/'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^use lib '..\/lib\/rise\/';$/;"	use	line:11
+rise::grammar qw/:simple/	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^use rise::grammar qw\/:simple\/;$/;"	use	line:13
+VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^our $VERSION = '0.000';$/;"	our	line:16
+conf	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^our $conf							= {};$/;"	our	line:17
+new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub new {$/;"	subroutine	line:25
+confirm	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub confirm {$/;"	subroutine	line:40
+syntax	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub syntax { grammar }$/;"	subroutine	line:614
+__add_stack	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub __add_stack {$/;"	subroutine	line:620
+parse_parser_list_iter	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub parse_parser_list_iter {$/;"	subroutine	line:627
+parse_parser_if	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub parse_parser_if {$/;"	subroutine	line:639
+_syntax_commentC	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_commentC {$/;"	subroutine	line:681
+_syntax_excluding	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_excluding {$/;"	subroutine	line:687
+_syntax_including	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_including {$/;"	subroutine	line:693
+_syntax_unwrap_code	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_unwrap_code {$/;"	subroutine	line:701
+_syntax_inject	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_inject {$/;"	subroutine	line:718
+_syntax_using	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_using {$/;"	subroutine	line:726
+_syntax_inherits	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_inherits {$/;"	subroutine	line:731
+_syntax_implements	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_implements {$/;"	subroutine	line:736
+_syntax_foreach	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_foreach {$/;"	subroutine	line:742
+_syntax_for	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_for { "{ <kw_local> <variable> <name>; <for_each>...(...<name>...<condition>...)...<block_brace>}" }$/;"	subroutine	line:767
+_syntax_for_foreach	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_for_foreach {$/;"	subroutine	line:769
+_syntax_while	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_while { "{ <kw_local> <variable> <name>; <while>...(...<name>...<condition>...)...<block_brace>}" }$/;"	subroutine	line:814
+_syntax_function_defs	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_function_defs {$/;"	subroutine	line:823
+_syntax_function_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_function_list {$/;"	subroutine	line:830
+_syntax_anon_function_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_anon_function_list {$/;"	subroutine	line:843
+_syntax_function_list_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_function_list_post { '<kw_function>' }$/;"	subroutine	line:856
+_syntax_function_method_OFF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_function_method_OFF {$/;"	subroutine	line:858
+_syntax_function_method	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_function_method {$/;"	subroutine	line:891
+_syntax_function_method_post1	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub  _syntax_function_method_post1 {''}$/;"	subroutine	line:936
+_syntax_function_method_post2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub  _syntax_function_method_post2 {'__PACKAGE__)'}$/;"	subroutine	line:937
+_syntax_anon_func2method	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_anon_func2method { '<anon_func_all>.(__PACKAGE__, ' }$/;"	subroutine	line:939
+_syntax_func2method_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_func2method_post { '__PACKAGE__)' }$/;"	subroutine	line:941
+_syntax_prepare_function	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_prepare_function {$/;"	subroutine	line:943
+_syntax_function	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_function {$/;"	subroutine	line:982
+_syntax_prepare_function_args	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_prepare_function_args {$/;"	subroutine	line:1103
+_syntax_prepare_function_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_prepare_function_post {$/;"	subroutine	line:1123
+_syntax_nonamedblock	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_nonamedblock {$/;"	subroutine	line:1131
+_syntax_variable_list	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_variable_list {$/;"	subroutine	line:1147
+_syntax_boost_var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_boost_var {$/;"	subroutine	line:1166
+_syntax_var_boost1	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_var_boost1 {$/;"	subroutine	line:1187
+_syntax_var_boost2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_var_boost2		{ '$<var_all>' }$/;"	subroutine	line:1241
+_syntax_var_boost3	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_var_boost3		{ '<kw_variable> ' }$/;"	subroutine	line:1243
+_syntax_var_boost_post1	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_var_boost_post1	{ '<kw_variable> ' }$/;"	subroutine	line:1245
+_syntax_var_boost_post2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_var_boost_post2	{ '->' }$/;"	subroutine	line:1247
+_syntax_prepare_variable	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_prepare_variable {$/;"	subroutine	line:1249
+_syntax_variable	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_variable {$/;"	subroutine	line:1254
+__accessmod	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub __accessmod {$/;"	subroutine	line:1302
+_syntax_variable_NEW	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_variable_NEW {$/;"	subroutine	line:1327
+_syntax_variable_boost_OFF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_variable_boost_OFF {$/;"	subroutine	line:1377
+_syntax_variable_boost	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_variable_boost {$/;"	subroutine	line:1388
+_syntax_variable_boost_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_variable_boost_post {''}$/;"	subroutine	line:1448
+_syntax_constant	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_constant {$/;"	subroutine	line:1450
+_syntax_prepare_name_namespace	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_prepare_name_namespace {$/;"	subroutine	line:1483
+_syntax_prepare_namespace	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_prepare_namespace {$/;"	subroutine	line:1488
+_syntax_namespace	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_namespace {$/;"	subroutine	line:1494
+_syntax_prepare_class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_prepare_class {$/;"	subroutine	line:1525
+_syntax_class	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_class {$/;"	subroutine	line:1548
+_syntax_class_OFF2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_class_OFF2 {$/;"	subroutine	line:1555
+_syntax_class_OFF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_class_OFF {$/;"	subroutine	line:1609
+_syntax_prepare_class_helper	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_prepare_class_helper {$/;"	subroutine	line:1676
+__list_extends	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub __list_extends {$/;"	subroutine	line:1720
+_syntax_prepare_interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_prepare_interface {$/;"	subroutine	line:1759
+_syntax_prepare_interface_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_prepare_interface_post {'<kw_interface>'}$/;"	subroutine	line:1807
+_syntax_interface	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_interface {$/;"	subroutine	line:1809
+_syntax_interface_set	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_interface_set {$/;"	subroutine	line:1815
+_syntax_prepare_abstract	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_prepare_abstract {$/;"	subroutine	line:1828
+_syntax_prepare_abstract_post	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_prepare_abstract_post {'<kw_abstract>'}$/;"	subroutine	line:1857
+_syntax_abstract	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_abstract {$/;"	subroutine	line:1859
+__object	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub __object {$/;"	subroutine	line:1867
+__object_OFF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub __object_OFF {$/;"	subroutine	line:1933
+_syntax_object	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_object {$/;"	subroutine	line:1991
+__object_header	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub __object_header {$/;"	subroutine	line:2033
+_syntax_prepare_name_object	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_prepare_name_object {$/;"	subroutine	line:2051
+_syntax_prepare_name_object_helper	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_prepare_name_object_helper {$/;"	subroutine	line:2076
+_syntax_op_array1	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_op_array1 {$/;"	subroutine	line:2127
+_syntax_op_array2	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_op_array2 {$/;"	subroutine	line:2140
+_syntax_op_array3	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_op_array3 {$/;"	subroutine	line:2171
+_syntax_op_hash	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_op_hash {$/;"	subroutine	line:2185
+_syntax_op_reverse	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_op_reverse {'__RISE_2R <op_reverse> __RISE_R2'}$/;"	subroutine	line:2199
+_syntax_op_array3_OFF	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_op_array3_OFF {$/;"	subroutine	line:2202
+_syntax_comma_quarter	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_comma_quarter {$/;"	subroutine	line:2247
+__name2name	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub  __name2name {$/;"	subroutine	line:2254
+_syntax_op_dot	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_op_dot {'->'}$/;"	subroutine	line:2260
+_syntax_optimize4	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_optimize4 { ';' }$/;"	subroutine	line:2262
+_syntax_optimize5	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_optimize5 { ' ' }$/;"	subroutine	line:2263
+_syntax_optimize6	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_optimize6 { '' }$/;"	subroutine	line:2264
+_syntax_optimize7	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub _syntax_optimize7 { '<sps1>' }$/;"	subroutine	line:2265
