@@ -1,4 +1,4 @@
-package rise::fileTask;
+package rise::lib::fileTask;
 use strict;
 use warnings;
 use feature 'say';
@@ -8,7 +8,7 @@ use lib qw|
 |;
 
 use rise;
-use rise::fileMonitor;
+use rise::lib::fileMonitor;
 
 my $r       = new rise ({
   debug  => 1,
@@ -16,7 +16,7 @@ my $r       = new rise ({
 });
 
 
-my $acs = new rise::fileMonitor;
+my $acs = new rise::lib::fileMonitor;
 
 my @export_list = qw/
   task
@@ -47,7 +47,7 @@ sub start {
 sub task_action {
   my $fname = shift;
   $fname =~ s/\.(?:puma|class)$//sx;
-  $r->compile_list([$fname]);
+  $r->compile($fname->[0],$fname->[1]);
 }
 
 sub tall {

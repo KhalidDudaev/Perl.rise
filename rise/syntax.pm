@@ -546,27 +546,34 @@ sub confirm {
 	#	)
 	#/;
 
-	token qregex_m					=> q/(?<REGEX_MATH>\bm\b)\s*
-		(?:REGEXNOMATH
-			|in_paren
-			|in_brace
-			|in_square
-			|in_angle
-			|in_slash
-		)
-	/;
+	token qregex_m					=> q/(?<REGEX_MATH>\bm\b)\s*(?:REGEXNOMATH
+		|in_paren
+		|in_brace
+		|in_square
+		|in_angle
+		|in_slash
+	)/;
 
-	token qregex_s					=> q/\bs\b\s*
-		(?:REGEXNOMATH
-			|in_paren \s* in_paren
-			|in_brace \s* in_brace
-			|in_square \s* in_square
-			|in_angle \s* in_angle
-			|in_slash_regex
-		)
-	/;
+	token qregex_s					=> q/\bs\b\s*(?:REGEXNOMATH
+		|in_paren \s* in_paren
+		|in_brace \s* in_brace
+		|in_square \s* in_square
+		|in_angle \s* in_angle
+		|in_slash_regex
+	)/;
 
-	token qtext						=> q/qvar\s*(?:in_paren|in_brace|in_square|in_angle|in_slash|in_char)/;
+	token qtext					   => q/qvar\s*(?:NOMATH
+        |in_paren
+        |in_brace
+        |in_square
+        |in_angle
+        |in_slash
+        |textqq
+        |textqw
+        |textqa
+        |in_char
+    )/;
+
 	token qvar						=> q/\bq[qwr]?\b/;
 	token qquote					=> q/qvar/;
 
@@ -1378,7 +1385,8 @@ sub _syntax_function {
 	#var('wrap_code')->{$name} = $block;
 	#$block = '%%%WRAP_CODE_' . $name . '%%%';
 
-    $header             = "use rise::core::ops::extends 'rise::core::object::function', '${parent_class}'; use rise::core::object::function::function; BEGIN { __PACKAGE__->__RISE_COMMANDS }";
+    $header             = "use rise::core::ops::extends 'rise::core::object::function', '${parent_class}'; use rise::core::object::function::helper; BEGIN { __PACKAGE__->__RISE_COMMANDS }";
+    # $header             = "use rise::core::object::funcdecl;";
     var('wrap_header_code')->{$name} = $header;
     $header = '%%%WRAP_HEADER_CODE_' . $name . '%%%';
 

@@ -12,7 +12,7 @@ our $VERSION = '0.001';
 # $\ = "\n";
 
 #use dialect::Parents;
-use rise::file;
+use rise::lib::fs::file;
 use rise::grammar;
 use rise::syntax;
 #use dialect::syntax_pmd;
@@ -76,7 +76,7 @@ sub __init {
 
 	# print dump $conf;
 	#$parser						= new dialect::Parser ({ info => $conf->{info} });
-	$file						= new rise::file;
+	$file						= new rise::lib::fs::file;
 	$grammar					= new rise::grammar $conf;
 	$syntax						= new rise::syntax $conf;
 
@@ -95,6 +95,30 @@ sub __confs_load {
     (my $this, @_) 				= __class_ref(@_);
     my $fname       			= shift;
     return require $fname . '.confs';
+}
+
+sub __line (;$){
+	my $args		= shift;
+	my $char		= $args->{char} || '#';
+	my $title		= $args->{title} || '';
+	my $length		= $args->{length} || 75;
+
+	$title			= $char x 3 . '[ ' . $title . ' ]' if $title;
+	return $title . $char x ($length - length($title));
+}
+
+sub say { local $\ = ""; print @_ , "\n"; };
+
+sub __msg_box (;$$){
+	my $text		= shift || 'NO TEXT';
+	my $title		= shift || 'NO TITLE';
+
+	# $title			= '### ' . $title . ' ';
+	# $title			= $title . line('#', 80 - length($title));
+
+	say __line { title => $title };
+	say $text;
+	say __line;
 }
 
 sub run {
@@ -121,11 +145,15 @@ sub compile_list { #print "#### COMPILE ####\n";
 	my $info;
 	my @app_stack = @$appname_source;
 
-	my($path_current)			= $0 =~ m/^(.*?)\w+(?:\.\w+)*$/sx;
-	my $path_source				= $this->{source}{fpath}	|| $path_current;
-	my $path_dest					= $this->{dest}{fpath}		|| $path_current;
+	# my($path_current)				= $0 =~ m/^(.*?)\w+(?:\.\w+)*$/sx;
+	# my $path_source					= $this->{source}{fpath}	|| $path_current;
+	# my $path_dest					= $this->{dest}{fpath}		|| $path_current;
 	my $fname_source;
 	my $fname_dest;
+
+	# $fname_source					= $path_source	. $fname_source if $fname_source !~ m/[\\\/]/;
+	# $fname_dest						= $path_dest	. $fname_dest if $fname_dest !~ m/[\\\/]/;
+
 
 	my $time_start_compile = time;
 
@@ -144,14 +172,14 @@ sub compile_list { #print "#### COMPILE ####\n";
 		# print $_;
 		if (__truefile($_)){
 
-			$fname_source			= $path_source	. $_ . $this->{source}{fext};
-			$fname_dest				= $path_dest		. $_ . $this->{dest}{fext};
+			$fname_source			= $_ . $this->{source}{fext};
+			$fname_dest				= $_ . $this->{dest}{fext};
 
-			__message_box("compilation $_ ...");
+			# __message_box("compilation $_ ...");
 			#$info = compile($_)->{info};
 			$assembly = compile($fname_source, $fname_dest);
 			$info = $assembly->{info};
-			__message ("$info\n") if $info;
+			# __message ("$info\n") if $info;
 		}
 	}
 
@@ -165,16 +193,21 @@ sub compile_list { #print "#### COMPILE ####\n";
 sub compile { #print "#### ASSEMBLY ####\n";
 	my ($this, $fname_source, $fname_dest) 				= __class_ref(@_);
 
+
+	my $title					= $fname_source;
 	my $code_dest;
 	my $code_source;
 	my $info;
-	# my($path_current)			= $0 =~ m/^(.*?)\w+(?:\.\w+)*$/sx;
-	# my $path_source				= $this->{source}{fpath}	|| $path_current;
-	# my $path_dest					= $this->{dest}{fpath}		|| $path_current;
-	my $fext							= $this->{source}{fext};
+	my($path_current)			= $0 =~ m/^(.*?)\w+(?:\.\w+)*$/sx;
 
-	# $fname_source					= $path_source	. $appname_source . $this->{source}{fext};
-	# $fname_dest				||= $path_dest		. $appname_source . $this->{dest}{fext};
+	my $path_source				= $this->{source}{fpath}	|| $path_current;
+	my $path_dest				= $this->{dest}{fpath}		|| $path_current;
+	my $fext					= $this->{source}{fext};
+
+	# $fname_source					= $path_source	. $fname_source if $fname_source !~ m/[\\\/]/;
+	# $fname_dest						= $path_dest	. $fname_dest if $fname_dest !~ m/[\\\/]/;
+
+	# say "$fname_source ...";
 
 	if (!$fname_dest){
 		($fname_dest)				= $fname_source =~ m/(.*?)$fext$/sx;
@@ -190,7 +223,11 @@ sub compile { #print "#### ASSEMBLY ####\n";
 		$code_dest .= "\n1;";
 		__file('write', $fname_dest, $code_dest);
 	}
-	#print "$info";
+
+	$info =~ s/\n$//gsx;
+	__msg_box ($info,'compilation ' . $title ) if $this->{info};
+	say 'compilation ' . $title . '...OK' if !$this->{info};
+
 	return {code => $code_dest, fname => $fname_dest, info => $info};
 }
 
@@ -225,6 +262,8 @@ sub __class_ref {
 	$this						||= $conf;
 	return $this, @_;
 }
+
+
 #########################################################################
 
 exit if $conf->{end};

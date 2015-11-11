@@ -1,8 +1,9 @@
-package rise::file;
+package rise::lib::fs::file;
 
 use strict;
 use warnings;
 
+# use Cwd 'abs_path';
 use FileHandle;
 
 my $cenv   					= {};
@@ -12,6 +13,8 @@ my $command 				=	{
 	'write'					=> '>',
 	'append'				=> '>>'
 };
+
+
 
 #file('asdasd')->write($data);
 #file('asdasd')->read;
@@ -25,13 +28,16 @@ sub new {
 }
 
 sub file {
-	my $self  				= shift;
-    my ($cmd, $fname, $data) = @_;
+	my $self					= shift;
+    my ($cmd, $fname, $data)	= @_;
+	my($path_current)			= $0 =~ m/^(.*?)\w+(?:\.\w+)*$/sx;
+
+	$fname = $path_current . $fname if $fname !~ m/^(?:\w+\:|[\W]+)/gsx;
 
 	$data = join('',<$data>) if ref $data eq 'Fh';
 
-    #$fh->open($command->{$cmd}.$fname) || die "cannot open $fname";
-	$fh->open($command->{$cmd}.$fname) || die "cannot open $fname"; #_error ($fname)
+    $fh->open($command->{$cmd}.$fname) || die "cannot open $fname";
+	# $fh->open($command->{$cmd}.$fname) || die _error ($fname)
     $fh->binmode();
 
 	return _action()->{$cmd}->($data);

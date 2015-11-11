@@ -20,6 +20,7 @@ my $atr; # = $vt->__RISE_ENV->{VARIABLE}{TYPE}{anytype_rule} || '';
 { no warnings;
 	$vt->type_regs ('type'		=> [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'type')		unless ${$_[0]} eq $atr || ${$_[0]} =~ m/^$atr/sx }]);
 	$vt->type_regs ('number'	=> [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'number')	unless ref $_[0] eq 'SCALAR' && ${$_[0]} + 0; }]);
+	$vt->type_regs ('string'	=> [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'string')	unless ref $_[0] eq 'SCALAR' && ${$_[0]} =~ m/\D+/; }]);
 	$vt->type_regs ('array'		=> [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'array')	unless ref ${$_[0]} eq 'ARRAY'	}]);
 	$vt->type_regs ('hash'		=> [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'hash')		unless ref ${$_[0]} eq 'HASH' }]);
 }

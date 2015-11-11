@@ -1,4 +1,4 @@
-package rise::BSTask;
+package rise::lib::BSTask;
 use strict;
 use warnings;
 use feature 'say';

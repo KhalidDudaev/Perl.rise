@@ -14,11 +14,9 @@ our $VERSION 	= '0.01';
 #	code_priv				=> [ [ 1, 2 ], '"FUNCTION ERROR: Can\'t access function \"$func\" from \"$parent\" at $file line $line\n"' ],
 #	code_prot				=> [ [ 1, 2 ], '"FUNCTION ERROR: Function \"$func\" from \"$parent\" only inheritable at $file line $line\n"' ],
 #};
-#
 
-sub obj_type {'FUNCTION'};
+sub obj_type {'FUNCTION'}
 
 sub DESTROY {}
 
 1;
-
