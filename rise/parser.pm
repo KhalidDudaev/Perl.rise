@@ -24,7 +24,7 @@ sub parse {
 		$parser->{info} ||= 'PARSER RETURN';
 		my $cnt = 22 - length $parser->{info};
 		print " " x $cnt, $parser->{info}, " | ";
-		#1 while $sourse =~ s/$parser->{extractor}/&{$parser->{injector}}/gsxe;	# мутирует синтаксис в perl код ( компилируем Perl код)
+		# 1 while $sourse =~ s/$parser->{extractor}/&{$parser->{injector}}/gsxe;	# мутирует синтаксис в perl код ( компилируем Perl код)
 		$sourse =~ s/$parser->{extractor}/&{$parser->{injector}}/gsxe;	# мутирует синтаксис в perl код ( компилируем Perl код)
 		print "\n";
 	}

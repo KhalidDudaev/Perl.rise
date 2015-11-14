@@ -253,8 +253,8 @@ sub parse {
 			$rule			= '\b'.$rule if $rule !~ m/^\(\?\<\w+\>[^\\b]\W+/;
 			#$rule			= qr/$rule/o;
 
-            # $source =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse, \$passed)/gmsxe if $source ne $last_sourse;
-			while ($source =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse, \$passed)/gmsxe && $source ne $last_sourse){};
+            $source =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse, \$passed)/gmsxe if $source ne $last_sourse;
+			# while ($source =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse, \$passed)/gmsxe && $source ne $last_sourse){};
 
       #$source = __parse_helper($rule_name, $rule, $source, \$last_sourse, \$passed);
 
@@ -381,31 +381,18 @@ sub __rule {
 	$syntax_class = $self;
 
 	{no strict; no warnings;
-		*{$self.'::'.$token}		= sub { grammar->{RULE_LAST_VAR}{$token} || '' };
+		*{$self.'::'.$token}		= sub {
+            return grammar->{RULE_LAST_VAR}{$token} || '';
+            # my $res     = '';
+            # $res = grammar->{RULE_LAST_VAR}{$token} if grammar->{RULE_LAST_VAR}{$token};
+            # $res = '0' if grammar->{RULE_LAST_VAR}{$token} == 0;
+            # return $res;
+        };
+
 		*{$self.'::tk_'.$token}		= sub { grammar->{RULE}{$token} };
 	}
 
 	grammar->{RULE}{$token} = $rule;
-	return $rule;
-}
-
-sub off__rule {
-	my ($self, $token, $rule) 		= @_;
-	grammar->{RULE}{$token} = $rule;
-	return $rule;
-}
-
-sub off__token {
-	my ($self, $token, $rule) 		= @_;
-
-	$syntax_class = $self;
-
-	{no strict;
-		*{$self.'::'.$token}		= sub { grammar->{RULE_LAST_VAR}{$token} || '' };
-		*{$self.'::tk_'.$token}		= sub { grammar->{TOKEN}{$token} };
-	}
-
-	grammar->{TOKEN}{$token} = $rule;
 	return $rule;
 }
 
@@ -461,7 +448,7 @@ sub __save_rule_last_var {
 	grammar->{RULE_LAST_VAR}{SPS}	= [];
 
 	map {
-		grammar->{RULE_LAST_VAR}{$_} = $+{$_} if $+{$_};
+		grammar->{RULE_LAST_VAR}{$_} = $+{$_} if defined $+{$_};
 	}&rule_array;
 
 	{no strict; no warnings;

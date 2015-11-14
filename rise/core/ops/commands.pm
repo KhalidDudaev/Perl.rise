@@ -17,7 +17,7 @@ use constant FIVETEN => ($] >= 5.010);
 
 my $cenv					= {};
 my @export_list 			= qw/
-
+	dump
 	line
 	say
 	msg
@@ -51,6 +51,8 @@ my @export_list 			= qw/
 	__RISE_KEYS
 	__RISE_VALUES
 	__RISE_EACH
+
+	__RISE_MATCH
 /;
 	#m
 	#nm
@@ -363,12 +365,26 @@ sub __RISE_SPLICE {
 # 	return split $filter, $data;
 # }
 
+########## REGEX ######################################################
+sub __RISE_MATCH (@) {
+    # my @m   = @_;
+    return !!0 if !$_[0];
+	return @_ if wantarray;
+    return [@_];
+}
 ##########################################################################################
 
+sub __RISE_A2R (@){ wantarray ? @_ : \@_ }
+# sub __RISE_A2R (@){
+# 	return !!0 if !$_[0];;
+# 	if (@_){
+# 		return @_ if wantarray;
+# 		return [@_];
+# 	}
+# }
+# sub __RISE_A2R (@){ \@_ }
 
 { no strict 'refs';
-	sub __RISE_A2R (@){ wantarray ? @_ : \@_ }
-	# sub __RISE_A2R (@){ \@_ }
 	sub __RISE_H2R (%){+{@_}}
 	sub __RISE_R2A ($){@{$_[0]}}
 	# sub __RISE_R2A ($){ wantarray ? @{$_[0]} : $_[0] }
