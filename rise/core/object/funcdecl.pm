@@ -10,6 +10,8 @@ sub import { no strict 'refs';
 	my $obj					= caller(0);
 	my ($parent, $fn_name)	= $obj =~ /(?:(\w+(?:::\w+)*)::)?(\w+)$/;
 
+	# $fn_name = 'code';
+
 	########################################################################
 		push @{$obj.'::ISA'}, $parent, 'rise::core::object::object';
 		strict		->import;
