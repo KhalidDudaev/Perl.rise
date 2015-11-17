@@ -269,7 +269,7 @@ sub __RISE_MAP_BLOCK (&$){
 	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'map') unless ref $code eq 'CODE' && ref $array eq 'ARRAY';
 	# my $res = [ map { &$code } @$array ];
 	return [ map { &$code } @$array ];
-	# wantarray ? return @$res : return $res;
+	# return wantarray ? @$res : $res;
 }
 
 sub __RISE_GREP ($$){
@@ -393,8 +393,12 @@ sub __RISE_A2R (@){ wantarray ? @_ : \@_ }
 
 { no strict 'refs';
 	sub __RISE_H2R (%){+{@_}}
-	sub __RISE_R2A ($){@{$_[0]}}
 	# sub __RISE_R2A ($){ wantarray ? @{$_[0]} : $_[0] }
+	sub __RISE_R2A ($){@{$_[0]}}
+	# sub __RISE_R2A ($){
+	# 	my $arr = \+shift;
+	# 	return @$$arr;
+	# }
 	sub __RISE_R2H ($){%{$_[0]}}
 }
 

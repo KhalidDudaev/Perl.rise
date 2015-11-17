@@ -1026,12 +1026,17 @@ sub _syntax_foreach_arr {
 	my $tk_self_name	= token 'self_name';
 	my $tk_sigils		= token 'sigils';
     my $ret_arr_ops     = token 'ret_arr_ops';
-    my ($name)          = $cond =~ m/^\(\s*__RISE_R2A\s+$tk_sigils?($tk_self_name)/sx;
+    # my ($name)          = $cond =~ m/^\(\s*\@\s+$tk_sigils?($tk_self_name)/sx;
+    my ($name)          = $cond =~ m/^\(\s*\@\s*\{\(\s*$tk_sigils?($tk_self_name)/sx;
+
+    # print ".$name.\n";
 
 
     # $name                           ||= '';
     $members_list		            = join ('\b|\b', $members_list =~ /\b\w+\-(?:const|var|function|thread)\-(\w+)\b/gsx);
-    $cond                           =~ s/__RISE_R2A//sx if $name && $members_list && $name !~ m/$ret_arr_ops/sx && $name !~ m/\b(?:$members_list)\b/sx;
+    # $cond                           =~ s/\@//sx if $name && $members_list && $name !~ m/$ret_arr_ops/sx && $name !~ m/\b(?:$members_list)\b/sx;
+    $cond                           =~ s/^\(\s*\@\s*\{\((.*?)\)\}\s*\)$/($1)/sx if $name && $members_list && $name !~ m/$ret_arr_ops/sx && $name !~ m/\b(?:$members_list)\b/sx;
+    # $cond                           =~ s/\@\s*($ret_arr_ops)/__RISE_R2A $1/gsx;
 
     # print $name . "\n" if $name;
     # print $cond ."\n";
@@ -1041,7 +1046,7 @@ sub _syntax_foreach_arr {
 
     # $cond               = __for_arr($parent_class, $cond);
     # $cond 				= parse($self, $cond, &grammar, [@{var 'parser_variable'}], { parent => $parent_class });
-    # $block 				= parse($self, $block, &grammar, [@{var 'parser_loops'}], { parent => $parent_class });
+    $block 				= parse($self, $block, &grammar, [@{var 'parser_loops'}], { parent => $parent_class });
 
 	return "$for_each...$cond...$block";
 }
@@ -1067,15 +1072,16 @@ sub __for_arr {
 	my $tk_sigils		            = token 'sigils';
     # my $members_list                = var('members')->{$parent_class} || '';
     # my ($sps,$sigil,$name)          = $cond =~ m/^\((\s*)($tk_sigils)?($tk_self_name)/sx;
-    my $R2A                         = '__RISE_R2A';
+    my $R2A                         = '@ ';
+    # my $R2A                         = '';
 
     # $name                           ||= '';
     # $members_list		            = join ('\b|\b', $members_list =~ /\b\w+\-(?:const|var|function|thread)\-(\w+)\b/gsx);
     # $R2A                            = '__RISE_R2A' if $members_list && $name =~ m/\b(?:$members_list)\b/gsx;
 
     $cond                           =~ s/\((.*)\)/$1/sx;
-    $cond                           =~ s/^(\s*)($tk_sigils)?($tk_self_name)/$1.$R2A.' '.($2||'').$3/sxe;
-	$cond                           =~ s/^(\s*)(\[.*?\])$/$1 $R2A $2/sx;
+    $cond                           =~ s/^(\s*)($tk_sigils)?($tk_self_name.*?)$/$1.$R2A.'{('.($2||'').$3.')}'/sxe;
+	$cond                           =~ s/^(\s*)(\[.*?\])$/$1 $R2A\{\($2\)\}/sx;
 
     # print "$R2A - $name\n";
     # print $parent_class ."\n";
@@ -1083,6 +1089,7 @@ sub __for_arr {
     # print $members_list ."\n";
 
     return $cond;
+    # return '@{'.$cond.'}';
 }
 
 # sub __for_arr {
@@ -1713,8 +1720,8 @@ sub __object_header {
     my $res;
 
 	my $header			= {
-		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
-		class		=> " BEGIN { no strict 'refs'; *{'".$name."::'.\$_} = \\&{'".$parent_class."::IMPORT::'.\$_} for keys \%".$parent_class."::IMPORT::; }; sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
+		class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
+		# class		=> " BEGIN { no strict 'refs'; *{'".$name."::'.\$_} = \\&{'".$parent_class."::IMPORT::'.\$_} for keys \%".$parent_class."::IMPORT::; }; sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
 		abstract	=> "",
 		interface	=> " __PACKAGE__->interface_join;"
 	};
