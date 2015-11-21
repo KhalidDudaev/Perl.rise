@@ -1,0 +1,32 @@
+namespace rise.lib {
+
+    public class fs {
+        //extends Puma.lib.fsHelper
+        // use base 'Puma::lib::fsHelper';
+        using rise.lib.fs.pathWorker;
+        using rise.lib.fs.dirWorker;
+        using rise.lib.fs.fileWorker;
+
+        public var dir = new rise.lib.fs.dirWorker;
+        public var path = new rise.lib.fs.pathWorker;
+        public var file = new rise.lib.fs.fileWorker;
+
+        // var fsHelper = new Puma.lib.fsHelper;
+        //
+        // public function fpath {
+        //     return self.fsHelper.p;
+        // }
+        //
+        // public function fdir {
+        //     return self.fsHelper.d;
+        // }
+        //
+        // public function ffile {
+        //     return self.fsHelper.f;
+        // }
+    }
+
+    // public class fsHelper {
+    // }
+
+}

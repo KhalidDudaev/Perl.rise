@@ -250,8 +250,16 @@ sub parse {
 
 
 			($regex_g)		= $rule =~ s/^(G\:)//gsx;
-			$rule			= '\b'.$rule if $rule !~ m/^\(\?\<\w+\>[^\\b]\W+/;
-			#$rule			= qr/$rule/o;
+			# $rule			= '\b'.$rule if $rule !~ m/^\(\?\<\w+\>[^\\b]\W+/;
+			$rule			= '\b'.$rule if $rule !~ m/^\(\?\<\w+\>(?<!\\b)\W+/;
+			# $rule			= '\b'.$rule if $rule !~ m/^\(\?\<\w+\>[^\\b]/;
+			# $rule			= '\b'.$rule if $rule !~ m/^\(\?\<\w+\>/;
+            # $rule			= '\b'.$rule if $rule !~ m/^\(\?\<\w+\>\w/;
+			# $rule			= '\b'.$rule if $rule !~ m/^(?:\(\?)/;
+			# $rule			= '\b'.$rule if $rule !~ m/^\(\?\<\w+\>(?!\\b)/;
+			# $rule			= '\b'.$rule;
+			# $rule			= qr/$rule/o;
+            # print $rule . "\n";
 
             $source =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse, \$passed)/gmsxe if $source ne $last_sourse;
 			# while ($source =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse, \$passed)/gmsxe && $source ne $last_sourse){};

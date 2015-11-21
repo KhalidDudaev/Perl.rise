@@ -1,0 +1,78 @@
+// file access and modify methods
+
+namespace rise.lib.fs {
+
+    using FileHandle;
+    using rise.lib.fs.pathWorker;
+
+    public class fileWorker {
+
+        var fh 						= new FileHandle;
+        var path                    = new rise.lib.fs.pathWorker;
+        var fhelper                 = new rise.lib.fs.fileHelper;
+
+        public var binmode          = 0;
+
+        function cmd_sel (c) {
+        	var cmddp = {
+                'read'					=> '<',
+        	    'write'					=> '>',
+        	    'append'				=> '>>'
+            };
+            return cmddp.{c};
+        };
+
+        public function file(cmd, name, data) {
+            var res;
+        	data = join('',<data>) if ref data eq 'Fh';
+            name = self.cmd_sel(cmd) _+ self.path.abs(name);
+
+            // self.fh->open(name) || die "cannot open file $@";
+            self.fh->open(name);
+            self.fh->binmode() if self.binmode;
+
+            res = join('', [self.fh->getlines()])  if cmd eq 'read';
+            res = self.fh->write(data)           if cmd eq 'write';
+            res = self.fh->write(data)           if cmd eq 'append';
+            self.fh->close;
+            return res;
+        }
+
+        public function read (name) {
+            return self.file('read', name);
+        }
+
+        public function write (name, data) {
+            return self.file('write', name, data);
+        }
+
+        public function append(name, data) {
+            return self.file('append', name, data);
+        }
+
+        public function copy(name1, name2) {
+            return self.fhelper.fcopy(name1, name2);
+        }
+
+        public function move(name_old, name_new) {
+            return self.fhelper.fmove(name_old, name_new);
+        }
+
+        public function delete(name) {
+            unlink name;
+        }
+
+    }
+
+    public class fileHelper {
+        using File.Copy;
+
+        public function fcopy(name1, name2) {
+            return File::Copy::copy(name1, name2);
+        }
+
+        public function fmove(name_old, name_new) {
+            return File::Copy::move(name_old, name_new);
+        }
+    }
+}

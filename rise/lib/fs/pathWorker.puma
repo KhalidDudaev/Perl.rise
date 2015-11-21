@@ -1,0 +1,34 @@
+namespace rise.lib.fs {
+    public class pathWorker {
+        public function cwd {
+            var cwdir;
+            cwdir = $0 =~ m/^(.*?)\w+(?:\.\w+)*$/gsx;
+            return cwdir.[0];
+        }
+
+        public function abs(fname) {
+             fname = self.cwd _+ fname if self.isRel(fname);
+             return fname;
+        }
+
+        public function isAbs(fname) {
+            return fname =~ m/^(?:\w+\:|[\W]+)/;
+        }
+
+        public function isRel(fname) {
+            return fname !~ m/^(?:\w+\:|[\W]+)/;
+        }
+
+        public function basename(fname) {
+            fname      =~ s/^.*?(\w+(?:\.\w+)*)$/$1/sx;
+            fname      =~ s/^(.*?)(?:\.(\w+))?$/$1/sx;
+            return fname;
+        }
+
+        public function ext(fname) {
+            fname      =~ s/^.*?(\w+(?:\.\w+)*)$/$1/sx;
+            fname      =~ s/^(.*?)(?:\.(\w+))?$/$2/sx;
+            return fname;
+        }
+    }
+}

@@ -26,6 +26,7 @@ my @export_list 			= qw/
 	b
 	true
 	false
+	toList
 
 	__RISE_A2R
 	__RISE_H2R
@@ -93,6 +94,7 @@ sub a (){ $a; };
 sub b (){ $b; };
 sub true { !!1; };
 sub false { !!0; };
+sub toList ($){@{$_[0]}}
 
 
 sub line (;$){

@@ -1,0 +1,63 @@
+namespace rise.lib.fs {
+
+    public class dirWorker {
+
+        public function list(path) {
+            var dlist   = [];
+
+            opendir(DIR, path);
+            foreach var item (readdir DIR) {
+                push dlist, path _+ '/' _+ item if item !~ m/^(?:\.|\.\.)$/;
+            }
+            closedir DIR;
+
+            return dlist;
+        }
+
+        public function listf(dir, params) {
+            var dir_arr     = [dir];
+            var res         = [];
+
+            params.{deep}   ||= 0;
+            params.{filter} ||= '*.*';
+
+            foreach var dname (dir_arr) {
+                foreach var item (self.list(dname)) {
+                    push dir_arr, item if self.isDir(item) && params.{deep};
+                    push res, item if self.isFile(item) && self.filter(item, params.{filter});
+                }
+            }
+            return res;
+        }
+
+        public function listd(dir, params) {
+            var dir_arr     = [dir];
+            var res         = [];
+
+            params.{deep}   ||= 0;
+            params.{filter} ||= '*';
+
+            foreach var dname (dir_arr) {
+                foreach var item (self.list(dname)) {
+                    if (self.isDir(item)){
+                        push dir_arr, item if params.{deep};
+                        push res, item if self.filter(item, params.{filter});
+                    }
+                }
+            }
+            return res;
+        }
+
+        function filter(name, fltr) {
+            fltr        =~ s/([^\w\*\?])/\\$1/gsx;
+            fltr        =~ s/\?/\\w/gsx;
+            fltr        =~ s/\*/\.\*\?/gsx;
+            name        =~ s/^(.*?)(\w+(?:\.\w+)*)$/$2/sx;
+            return name =~ m/^(?:$fltr)$/gsx;
+        }
+
+        public function isFile (name) { -e name && !-d _ }
+        public function isDir  (name) { -d name }
+
+    }
+}

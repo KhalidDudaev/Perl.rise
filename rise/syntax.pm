@@ -150,7 +150,7 @@ sub confirm {
 		'_class',
 		'_inject',
 		'_using',
-		# @{var 'parser_code'},
+		@{var 'parser_code'},
 	];
 
 	var ('parser_interface')		= [
@@ -161,7 +161,7 @@ sub confirm {
 		'_interface_set',
 		'_inject',
 		'_using',
-		# @{var 'parser_code'},
+		@{var 'parser_code'},
 	];
 
 	var ('parser_namespace')		= [
@@ -238,7 +238,8 @@ sub confirm {
 	keyword implements				=> 'implements';
 	keyword inject					=> 'inject';
 
-	keyword function				=> 'function';
+	keyword function1				=> 'function';
+	keyword function2				=> 'func';
 	keyword method					=> 'method';
 	keyword fmethod					=> 'fmethod';
     keyword thread					=> 'thread';
@@ -254,7 +255,8 @@ sub confirm {
 	keyword dot					    => '\.';
 	keyword self					=> 'self';
     keyword context				    => '_';
-    keyword concat				    => '\_\+';
+    # keyword concat				    => '_\+';
+    keyword concat				    => '\~';
 
 	keyword for						=> 'for';
 	keyword foreach					=> 'foreach';
@@ -292,7 +294,10 @@ sub confirm {
 	token using						=> keyword 'using';
 	token inherits					=> keyword 'inherits';
 	token implements				=> keyword 'implements';
-	token function					=> keyword 'function';
+	token function1					=> keyword 'function1';
+	token function2					=> keyword 'function2';
+	# token function					=> q/(?:function1|function2)/;
+	token function					=> keyword 'function1';
 	token method					=> keyword 'method';
 	token fmethod					=> keyword 'fmethod';
 	token thread					=> keyword 'thread';
@@ -360,12 +365,12 @@ sub confirm {
     # token spec_vars                 => q/(?:\W|\^\w+|\w+|\d+|{\^\w+})/;
 
     # token op_dot					=> q/(?<! [\s\W] ) \. (?! [\s\d\.] )/;
-	token op_dot					=> q/\./;
-	# token op_dot					=> keyword 'dot';
+	# token op_dot					=> q/\./;
+	token op_dot					=> keyword 'dot';
 	#token op_dot					=> q/(?:[^\s])\.(?:[^\s\d\.])/;
 
     token context                   => keyword 'context';
-    token concat                    => keyword 'concat';
+    token concat                    => '(?<![!=])'.keyword('concat');
 
 	token for						=> keyword 'for';
 	token foreach					=> keyword 'foreach';
@@ -455,8 +460,8 @@ sub confirm {
 	token _class_type_				=> q/_namespace_|_base_|_class_|_abstract_|_interface_/;
 	token _var_						=> q/_var_/;
 	token _const_					=> q/_const_/;
-	token op_for_each				=> q/\_\_ (?:FOR|FOREACH) \_\_/;
-	token op_for_each_cond			=> q/\_\_ (?:FOR_COND|FOREACH_COND) \_\_/;
+	token op_for_each				=> q/__ (?:FOR|FOREACH) __/;
+	token op_for_each_cond			=> q/__ (?:FOR_COND|FOREACH_COND) __/;
 
 	#token code_attr					=> q/(?:\(\W*\))?(?:\:\s*content\s*)?/;
 	#token code_attr					=> q/(?:\(\W*\))?(?:\:[\w\s\(\)\,]+)?/;
@@ -702,12 +707,12 @@ sub confirm {
     rule _op_array_hash 					=> q/(_NOT:(OR:\-\>op_dot))<op_array_hash>/;
     rule _op_for_each                       => q/(<op_for_each>|<op_for_each_cond>)/;
 
-    # rule _context                           => q/(_NOT:sigils)\b\_\b/;
+    # rule _context                           => q/(_NOT:sigils)\b_\b/;
 	rule _comma_quarter 					=> q/<name_ops> <name_dot_list>/;
 	# rule _comma_quarter 					=> q/<name_ops> <self_name>/;
-	rule _op_dot							=> q/(_NOT:(OR:\s\W))op_dot(NOT:(OR:\s\d\.))/;
-	# rule _op_dot							=> q/ op_dot /;
-	rule _concat							=> q/ concat /;
+	# rule _op_dot							=> q/(_NOT:(OR:\s\W))op_dot(NOT:(OR:\s\d\.))/;
+	rule _op_dot							=> q/<op_dot>/;
+	rule _concat							=> q/<concat>/;
 	rule _optimize4 						=> q/\s+\;/;
 	#rule _optimize5 						=> q/\s\s+(_NOT:\n|\t)/;
 	rule _optimize5 						=> q/space_try/;
@@ -797,10 +802,10 @@ sub confirm {
 	order = var 'parser__';
 
 	#print dump(order);
-	# print token 'self_name';
+	# print token 'function';
 	# print rule '_op_for_each';
 	# print "\n";
-	# print rule '_regex_replace';
+	# print rule '_op_dot';
 	# print "\n";
 
 }
@@ -887,7 +892,7 @@ sub _syntax_unwrap_header_code {
 sub _syntax_inject {
 	my ($self, $rule_name, $confs)			= @_;
 	my $content				= &content;
-	$content 				=~ s/\<TEXT\_(\d+)\>/var('excluding')->[$1]/gsxe;
+	$content 				=~ s/\<TEXT_(\d+)\>/var('excluding')->[$1]/gsxe;
 	#__add_stack($1) if $content =~ m/\'(\w+(?:\.\w+)?)\'/gsx;
 	return "require...${content}<op_end>"
 }
@@ -1702,7 +1707,7 @@ sub __object {
 	$block 				=~ s/\{(.*)\}/$1/gsx;
 	#$block 				= parse($self, $block, &grammar, ['_variable_boost2', '_variable_boost3'], { parent => $parent_class });
 	$block 				= parse($self, $block, &grammar, [@{var 'parser_'.$object}], { parent => $name });
-	$block 				= parse($self, $block, &grammar, [@{var 'parser_code'}], { parent => $name });
+	# $block 				= parse($self, $block, &grammar, [@{var 'parser_code'}], { parent => $name });
 
 	$res				= "{ package ${name};".$sps1."use strict; use warnings;". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $confs) . $sps4.$block."}";
 	var('wrap_code')->{$name} = $res;
@@ -1802,7 +1807,7 @@ sub _syntax_op_regex {
     # my $specv = &spec_name;
     # print "############ $specv ##############\n";
     # return "__RISE_A2R <sigils><self_name>...<op_regex>";
-    return "__RISE_MATCH <spec_name>...<op_regex>";
+    return "__RISE_MATCH <spec_name>...<op_regex>...";
     # return "<symbol><regex_m_want>...__RISE_A2R <spec_name>...<op_regex>";
 }
 # sub _syntax_op_scalar { "__RISE_A2R <op_scalar><sps1><string>," }
@@ -1828,7 +1833,7 @@ sub _syntax_op_for_each {
     $op_for_each = 'for' if &op_for_each eq '__FOR__' || &op_for_each_cond eq '__FOR_COND__';
     $op_for_each = 'foreach' if &op_for_each eq '__FOREACH__' || &op_for_each_cond eq '__FOREACH_COND__';
 
-    # $op_for_each =~ s/\_//gsx;
+    # $op_for_each =~ s/_//gsx;
     return $op_for_each;
 }
 
@@ -1848,7 +1853,7 @@ sub _syntax_op_for_each {
 # sub _syntax_op_hash {
 # 	# my $sigils			= &sigils || '&';
 # 	# my $selfname		= &self_name;
-# 	# $selfname 			= "\%{${sigils}<self_name>}" if &self_name !~ /\_\_RISE/; # if $sigils eq '$';
+# 	# $selfname 			= "\%{${sigils}<self_name>}" if &self_name !~ /__RISE/; # if $sigils eq '$';
 #
 # 	return "__RISE_A2R <op_hash>...<paren_L>...__RISE_R2H ";
 # }
