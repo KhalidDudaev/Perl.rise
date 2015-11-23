@@ -711,7 +711,7 @@ sub confirm {
 	rule _comma_quarter 					=> q/<name_ops> <name_dot_list>/;
 	# rule _comma_quarter 					=> q/<name_ops> <self_name>/;
 	# rule _op_dot							=> q/(_NOT:(OR:\s\W))op_dot(NOT:(OR:\s\d\.))/;
-	rule _op_dot							=> q/<op_dot>/;
+	rule _op_dot							=> q/(_NOT:op_dot)<op_dot>(NOT:op_dot)/;
 	rule _concat							=> q/<concat>/;
 	rule _optimize4 						=> q/\s+\;/;
 	#rule _optimize5 						=> q/\s\s+(_NOT:\n|\t)/;
