@@ -182,6 +182,9 @@ sub confirm {
 		'_commentC',
 		'_excluding',
 
+        # '_op_sort_blockless',
+        # '_op_array_block',
+        # '_op_array_hash',
 
 		'_nonamedblock',
 		@{var 'parser_namespace'},
@@ -195,7 +198,7 @@ sub confirm {
 
         '_op_sort_blockless',
         '_op_array_block',
-        '_op_array_hash',
+        # '_op_array_hash',
 
 		# '_op_array1',
 		# '_op_array2',
@@ -595,6 +598,7 @@ sub confirm {
     token op_sort_blockless         => q/\bsort\b(?!\s*\{)/;
     token op_array_block            => q/\b(?:map|grep|sort)\b/;
     token op_array_hash             => q/\b(?:keys|values|each|map|grep|join|reverse|pop|push|shift|unshift|size|splice)\b/;
+    # token op_array_hash             => q/(?<!name_ops\s+)\b(?:keys|values|each|map|grep|join|reverse|pop|push|shift|unshift|size|splice)\b/;
     # token op_array_hash             => q/\b(?:keys|values|each|map|grep|join|reverse|pop|push|shift|unshift|size|splice)\b (?! \s+ [\@\%] )/;
     # token op_ahref_expr			    => q/\b(?:keys|values|each|reverse|pop|shift|size)\b/;
     token op_arr2arr_sort			=> q/\b(?:sort)\b/;
