@@ -39,14 +39,13 @@ my @export_list 			= qw/
 	values
 	each
 
+    __RISE_SORT_BLOCK
 	__RISE_MAP_BLOCK
 	__RISE_GREP_BLOCK
-	__RISE_SORT_BLOCK
-
     __RISE_GREP
 
+	sort
 	map
-	UNIVERSAL::grep
 	join
 	reverse
 	pop
@@ -214,15 +213,16 @@ sub each ($){
 
 ########## ARRAY ######################################################
 # sub grep (&$){
+# sub grep ($$){
 # 	my $filter = CORE::shift;
 # 	my $arr = CORE::shift;
 # 	my @result;
 # 	if( ref $filter eq 'Regexp' ) {
-# 		@result = grep { m/$filter/ } @$arr;
+# 		@result = CORE::grep { m/$filter/ } @$arr;
 # 	} elsif( ! ref $filter ) {
-# 		@result = grep { $filter eq $_ } @$arr;  # find all of the exact matches
+# 		@result = CORE::grep { $filter eq $_ } @$arr;  # find all of the exact matches
 # 	} else {
-# 		@result = grep { &$filter } @$arr;
+# 		@result = CORE::grep { &$filter } @$arr;
 # 	}
 # 	return wantarray ? @result : \@result;
 # }
@@ -236,7 +236,7 @@ sub each ($){
 #
 #                 my $filter = CORE::shift;
 #                 my $arr = CORE::shift;
-#                 my @result = grep { $_ ~~ $filter } @$arr;
+#                 my @result = CORE::grep { $_ ~~ $filter } @$arr;
 #                 return wantarray ? @result : \@result;
 #             }
 #        ' or croak $@;
@@ -246,11 +246,11 @@ sub each ($){
 #             my $arr = CORE::shift;
 #             my @result;
 #             if( ref $filter eq 'Regexp' ) {
-#                 @result = grep { m/$filter/ } @$arr;
+#                 @result = CORE::grep { m/$filter/ } @$arr;
 #             } elsif( ! ref $filter ) {
-#                 @result = grep { $filter eq $_ } @$arr;  # find all of the exact matches
+#                 @result = CORE::grep { $filter eq $_ } @$arr;  # find all of the exact matches
 #             } else {
-#                 @result = grep { $filter->($_) } @$arr;
+#                 @result = CORE::grep { $filter->($_) } @$arr;
 #             }
 #             return wantarray ? @result : \@result;
 #        };
@@ -277,21 +277,12 @@ sub __RISE_MAP_BLOCK (&$){
 	# return wantarray ? @$res : $res;
 }
 
-sub UNIVERSAL::grep ($$){
-	my( $filter, $array ) = @_;
-	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'grep') unless ref $array eq 'ARRAY';
-    # my $res = [grep $filter, @$array];
-	# return wantarray ? @$res : $res;
-	# return [CORE::grep { m/$filter/ } @$array];
-    return '##### OK ######';
-}
-
 sub __RISE_GREP ($$){
 	my( $filter, $array ) = @_;
 	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'grep') unless ref $array eq 'ARRAY';
     # my $res = [grep $filter, @$array];
-	return [CORE::grep { m/$filter/ } @$array];
 	# return wantarray ? @$res : $res;
+	return [CORE::grep { m/$filter/ } @$array];
 }
 
 sub map ($$){
@@ -323,7 +314,15 @@ sub __RISE_SORT_BLOCK (&$){
 	my $sub		= CORE::shift;
 	my $array	= CORE::shift;
 	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'sort') unless ref $array eq 'ARRAY' || ref $array eq 'HASH';
-	my $res = [ sort { &$sub || $a cmp $b } @$array ];
+	my $res = [ CORE::sort { &$sub || $a cmp $b } @$array ];
+	return $res;
+}
+
+sub sort (&$){
+	my $sub		= CORE::shift;
+	my $array	= CORE::shift;
+	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'sort') unless ref $array eq 'ARRAY' || ref $array eq 'HASH';
+	my $res = [ CORE::sort { &$sub || $a cmp $b } @$array ];
 	return $res;
 }
 
