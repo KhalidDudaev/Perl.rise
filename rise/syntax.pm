@@ -668,6 +668,7 @@ sub confirm {
 	rule _function_defs 					=> q/[<accessmod>] <function> [<args_attr>] <op_end><nline>/;
 	# rule _function_method					=> q/(_NOT:__METHOD__)<name> \( (NOT:__PACKAGE__)/;
 	rule _function_method					=> q/(_NOT:op_dot)<name> \((NOT: __PACKAGE__)/;
+	# rule _function_method					=> q/(_NOT:op_dot)(NOT:<name_ops>)<name> \((NOT: __PACKAGE__)/;
 	rule _function_method_post1				=> q/(__METHOD__)+/;
 	rule _function_method_post2				=> q/__PACKAGE__\,\)/;
 
@@ -1175,7 +1176,7 @@ sub _syntax_function_method {
 		# print ">>> $parent_class->$name | fnlist - *$members_list* \n";
 	}
 
-	return "${name}(${this}";
+	return "${name}...(${this}";
 }
 
 sub  _syntax_function_method_post1 {''}
@@ -1785,12 +1786,19 @@ sub __list_extends {
 	my $tk_extends				= token 'inherits';
 	my $tk_implements			= token 'implements';
 	my $sps						= '';
+    my $npsmbl                  = '';
 
 	$args_attr					=~ s/$tk_extends\s+(?<ext>$tk_name_list)//sx;		$list_extends		= $+{ext} || '';
 	$args_attr					=~ s/$tk_implements\s+(?<imp>$tk_name_list)//sx;	$list_implements	= $+{imp} || '';
 	$args_attr					=~ s/(?<sps>\s*)//; $sps = $+{sps};
 
-	return ";${sps}__PACKAGE__->extends_error" if $args_attr;
+    print "ERROR EXTENDS -> $args_attr\n" if $args_attr;
+    print "NONPRINT SMBL -> $args_attr\n" if $args_attr =~ m/\W/gsx;
+    # print "EXTENDS -> $list_extends\n" if $list_extends;
+    # print "IMPLEMENTS -> $list_implements\n" if $list_implements;
+
+    $npsmbl = "NONPRINT SMBL" if $args_attr =~ m/\W/gsx;
+	return ";${sps}__PACKAGE__->extends_error; $npsmbl" if $args_attr;
 
 	$comma						= ',' if $list_extends;
 
