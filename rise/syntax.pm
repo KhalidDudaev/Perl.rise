@@ -668,8 +668,8 @@ sub confirm {
 												<comma_long_short>] [<not>](<regex_pattern_txt>|<self_name>)
 												<comma_long_short> (<regex_expr_txt>|<regex_expr_block>|<self_name> <code_args>)/;
 
-	rule _function 							=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
-    # rule _function 							=> q/[<accessmod>] [<override>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
+	# rule _function 							=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
+    rule _function 							=> q/[<accessmod>] [<override>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
 	rule _function_defs 					=> q/[<accessmod>] <function> [<args_attr>] <op_end><nline>/;
 	# rule _function_method					=> q/(_NOT:__METHOD__)<name> \( (NOT:__PACKAGE__)/;
 	rule _function_method					=> q/(_NOT:op_dot)<name> \((NOT: __PACKAGE__)/;
@@ -1296,8 +1296,8 @@ sub _syntax_function {
 
     # $header             = "use rise::core::ops::extends 'rise::core::object::function', '${parent_class}'; use rise::core::object::function::helper; BEGIN { __PACKAGE__->__RISE_COMMANDS }";
     # $header             = "use rise::core::object::funcdecl;";
-    $header             = "use rise::core::object::funcdecl; no warnings qw/redefine prototype/;";
-    # $header             = "use rise::core::object::funcdecl;$override";
+    # $header             = "use rise::core::object::funcdecl; no warnings qw/redefine prototype/;";
+    $header             = "use rise::core::object::funcdecl;$override";
     var('wrap_header_code')->{$name} = $header;
     $header = '%%%WRAP_HEADER_CODE_' . $name . '%%%';
 
