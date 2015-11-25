@@ -88,6 +88,7 @@ sub __RISE_COMMANDS { no strict 'refs';
 	my $self	= shift || caller(0);
 	#autobox::Core->import;
 	*{$self . "::$_"} = \&$_ for @export_list;
+	# *{"UNIVERSAL::CORE::size"} = \&size;
 }
 
 sub _ (){ $_; };
@@ -346,8 +347,10 @@ sub __RISE_UNSHIFT ($$){
 
 sub size ($){
 	my $array = shift;
-	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'size') unless ref $array eq 'ARRAY';
-	scalar @$array;
+	return scalar @$array if ref $array eq 'ARRAY';
+	return scalar %$array if ref $array eq 'HASH';
+	return length $array if ref \$array eq 'SCALAR';
+	__PACKAGE__->__RISE_ERR('ARRAY_HASH', 'size');
 }
 
 sub __RISE_SPLICE {
