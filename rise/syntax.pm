@@ -8,7 +8,7 @@ use utf8;
 use Data::Dump 'dump';
 use Clone 'clone';
 
-use lib '../lib/rise/';
+# use lib '../lib/rise/';
 
 use rise::grammar qw/:simple/;
 #use rise::action;
@@ -252,6 +252,7 @@ sub confirm {
 	keyword private					=> 'private';
 	keyword protected				=> 'protected';
 	keyword public					=> 'public';
+	keyword override				=> 'override';
 	keyword local					=> 'local';
 	keyword export					=> 'export';
 
@@ -309,6 +310,7 @@ sub confirm {
 	token private					=> keyword 'private';
 	token protected					=> keyword 'protected';
 	token public					=> keyword 'public';
+	token override					=> keyword 'override';
 	token local						=> keyword 'local';
 	token export					=> keyword 'export';
 	token self						=> keyword 'self';
@@ -447,6 +449,8 @@ sub confirm {
 
 	token accessmod_class			=> q/private|protected|public/;
 	token accessmod					=> q/local|export(?::\w+)*|private|protected|public/;
+	# token accessmod					=> q/(?:(?:override)\s+)?(?:local|export(?::\w+)*|private|protected|public)/;
+    # token accessmod					=> q/(?:(?:local|export(?::\w+)*|private|protected|public)?(?:\s+override)?)/;
 	token class_type				=> q/namespace|class|abstract|interface/;
 	#token function					=> q/function/;
 	token name_ops					=> q/class_type|function|thread|variable|constant|using|inherits|implements|new/;
@@ -664,7 +668,8 @@ sub confirm {
 												<comma_long_short>] [<not>](<regex_pattern_txt>|<self_name>)
 												<comma_long_short> (<regex_expr_txt>|<regex_expr_block>|<self_name> <code_args>)/;
 
-	rule _function 							=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
+	# rule _function 							=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
+    rule _function 							=> q/[<accessmod>] [<override>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
 	rule _function_defs 					=> q/[<accessmod>] <function> [<args_attr>] <op_end><nline>/;
 	# rule _function_method					=> q/(_NOT:__METHOD__)<name> \( (NOT:__PACKAGE__)/;
 	rule _function_method					=> q/(_NOT:op_dot)<name> \((NOT: __PACKAGE__)/;
@@ -1185,6 +1190,7 @@ sub  _syntax_function_method_post2 {'__PACKAGE__)'}
 sub _syntax_function {
 	my ($self, $rule_name, $confs)			= @_;
     my $header;
+    my $override           = '';
 	my $accmod             = &accessmod || var('accessmod');
 	my $name               = &name;
 	my $args               = &code_args || '';
@@ -1227,11 +1233,17 @@ sub _syntax_function {
 		$args = '';
 	}
 
+        print "$accmod - $name\n";
+    if (&override){
+        $override = " no warnings qw/redefine prototype/;";
+        # $accmod                         = token 'private' if !$accmod;
+    }
+
     if ($accmod =~ s/export//sx){
         my @export_tags                 = $accmod =~ m/\:\w+/gsx;
 
         push @export_tags, ':import' if !$accmod;
-        $accmod                         = 'public';
+        $accmod                         = token 'public';
 
         foreach my $t ($name, ':all', ':function', @export_tags){ no strict 'refs';
             var('exports')->{$parent_class}{$t} .= ' '.$name;
@@ -1283,7 +1295,9 @@ sub _syntax_function {
 	# $block 				= parse($self, $block, &grammar, [@{var 'parser_code'}], { parent => $name });
 
     # $header             = "use rise::core::ops::extends 'rise::core::object::function', '${parent_class}'; use rise::core::object::function::helper; BEGIN { __PACKAGE__->__RISE_COMMANDS }";
-    $header             = "use rise::core::object::funcdecl;";
+    # $header             = "use rise::core::object::funcdecl;";
+    # $header             = "use rise::core::object::funcdecl; no warnings qw/redefine prototype/;";
+    $header             = "use rise::core::object::funcdecl;$override";
     var('wrap_header_code')->{$name} = $header;
     $header = '%%%WRAP_HEADER_CODE_' . $name . '%%%';
 
