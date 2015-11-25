@@ -55,7 +55,6 @@ my @export_list 			= qw/
 	__RISE_EACH
 
 	__RISE_MATCH
-	__RISE_FOR
 /;
 	#m
 	#nm
