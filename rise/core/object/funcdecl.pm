@@ -14,8 +14,8 @@ sub import { no strict 'refs';
 
 	########################################################################
 		push @{$obj.'::ISA'}, $parent, 'rise::core::object::object';
-		strict		->import;
-		warnings	->import;
+		# strict		->import;
+		# warnings	->import;
 		$obj		->__RISE_COMMANDS;
 	########################################################################
 

@@ -28,6 +28,13 @@ my $VARS		= {};
 # 	return bless {}, $class;
 # }
 
+# sub import {
+# 	my $caller              = (caller(0))[0];
+# 	print "############# $caller ##############\n";
+# 	strict		->import;
+# 	warnings	->import;
+# }
+
 sub obj {
 	my $self	= shift;
 	my $caller	= caller(1);
