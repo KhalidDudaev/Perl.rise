@@ -7,7 +7,7 @@ use feature 'say';
 use vars qw($VERSION);
 $VERSION = '0.001';
 
-#use rise::core::ops::commands;
+use rise::core::ops::commands;
 
 sub import { no strict 'refs';
 	my $obj					= caller(0);
@@ -21,10 +21,10 @@ sub import { no strict 'refs';
 	# say "self   -> $fn_name";
 
 	########################################################################
-		push @{$obj.'::ISA'}, $parent, 'rise::core::object::object';
+		push @{$obj.'::ISA'}, $parent;
 		# strict		->import;
 		# warnings	->import;
-		$obj		->__RISE_COMMANDS;
+		$obj		->rise::core::ops::commands::init;
 	########################################################################
 
 	*{$obj} = *{"$obj::$fn_name"};

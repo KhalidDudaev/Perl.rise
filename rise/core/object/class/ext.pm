@@ -1,4 +1,4 @@
-package rise::core::object::classext;
+package rise::core::object::class::ext;
 use strict;
 use warnings;
 use utf8;
@@ -23,7 +23,7 @@ use parent qw/
 our $VERSION 	= '0.01';
 
 my $ENV_CLASS		= {
-	this_class		=> 'rise::core::object::class',
+	this_class		=> 'rise::core::object::class::ext',
 	caller_class	=> 'CALLER',
 	caller_code		=> 'CODE',
 	caller_data		=> 'DATA'
@@ -61,10 +61,6 @@ sub import { no strict "refs";
 	# say '--------- classext ---------';
 	# say "caller -> $caller";
 	# say "self   -> $self";
-
-	# package Puma::lib::fs; use strict; use warnings; use rise::core::ops::extends 'rise::core::object::class','Puma::lib';   sub super { $Puma::lib::fs::ISA[1] } my $self = 'Puma::lib::fs'; sub self { $self }; BEGIN { __PACKAGE__->__RISE_COMMANDS } __PACKAGE__->interface_confirm; sub __OBJLIST__ {'public-var-dir public-var-path public-var-file public-var-info'}
-	# push @{$self.'::ISA'}, $caller, 'rise::core::object::object';
-	# $self->__RISE_COMMANDS if $self ne 'rise::core::object::classext';
 
 	if (exists &{$self."::__OBJLIST__"}){
 		$self->interface_confirm($self->__OBJLIST__);

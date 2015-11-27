@@ -5,8 +5,8 @@ use utf8;
 
 use parent qw/
 	rise::core::object::error
-	rise::core::ops::commands
 /;
+	# rise::core::ops::commands
 
 our $VERSION = '0.01';
 

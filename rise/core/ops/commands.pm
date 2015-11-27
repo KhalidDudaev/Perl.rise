@@ -83,7 +83,7 @@ sub new {
     return $self;
 }
 
-sub __RISE_COMMANDS { no strict 'refs';
+sub init { no strict 'refs';
 	my $self	= shift || caller(0);
 	#autobox::Core->import;
 	*{$self . "::$_"} = \&$_ for @export_list;

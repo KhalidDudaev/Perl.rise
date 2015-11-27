@@ -1650,7 +1650,7 @@ sub _syntax_namespace {
 
 	#print ">>>>>> parent_class - ". &name ." | name - ".&name."\n";
 
-	return "{ package $name;$s1 use strict; use warnings;$s2 $s3 $s4$block}"
+	return "{ package ${name};${s1}use rise::core::object::namespace;${s2} ${s3} ${s4}${block}}"
 }
 
 #-------------------------------------------------------------------------------------< class
@@ -1720,7 +1720,7 @@ sub __object {
 
 	$list_extends		.= __list_extends($self, $args_attr) if $args_attr;
 	if ($list_extends) {
-        $extends			= "use rise::core::ops::extends ${list_extends}; ";
+        $extends			= "use rise::core::ops::extends ${list_extends};";
         $self->{$name}{extends} = 1;
     }
 	# $extends			= "use rise::core::ops::extends ${base_class}${list_extends}; ";
@@ -1733,7 +1733,8 @@ sub __object {
 	$block 				= parse($self, $block, &grammar, [@{var 'parser_'.$object}], { parent => $name });
 	# $block 				= parse($self, $block, &grammar, [@{var 'parser_code'}], { parent => $name });
 
-	$res				= "{ package ${name};".$sps1."use strict; use warnings; use rise::core::object::class;". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $confs) . $sps4.$block."}";
+	$res				= "{ package ${name};".$sps1."use rise::core::object::${object};". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $confs) . $sps4.$block."}";
+	# $res				= "{ package ${name};".$sps1."use strict; use warnings; use rise::core::object::class;". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $confs) . $sps4.$block."}";
 	var('wrap_code')->{$name} = $res;
 	$res = '%%%WRAP_CODE_' . $name . '%%%';
 
@@ -1749,7 +1750,9 @@ sub __object_header {
     my $res;
 
 	my $header			= {
-		class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; ",
+        namespace   => "use rise::core::object::namespace;",
+		class		=> "",
+		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; ",
 		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
 		# class		=> " BEGIN { no strict 'refs'; *{'".$name."::'.\$_} = \\&{'".$parent_class."::IMPORT::'.\$_} for keys \%".$parent_class."::IMPORT::; }; sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
 		abstract	=> "",
@@ -1768,7 +1771,7 @@ sub __object_header {
     }
 
 	if ($self->{debug} && $self->{$name}{extends}) {
-		$header->{class}	.= " sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
+		$header->{class}	.= "sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
 		# $header->{class}	.= " BEGIN { sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}... };";
 		# $header->{class}	.= " __PACKAGE__->interface_confirm; sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
 		$header->{abstract} .= " __PACKAGE__->interface_join;";

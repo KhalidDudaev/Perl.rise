@@ -6,11 +6,12 @@ use utf8;
 our $VERSION = '0.01';
 
 sub import {
-	strict		->import();	
-	warnings	->import();
+	my $caller              = caller(0);
+	$caller->strict::import;
+	$caller->warnings::import;
+	$caller->utf8::import;
 }
 
 sub DESTROY {}
 
 1;
-
