@@ -58,13 +58,13 @@ sub import { no strict "refs";
 	my $caller              = (caller(0))[0];
 	my $self                = shift;
 
-	# say '--------- class ---------';
+	# say '--------- classext ---------';
 	# say "caller -> $caller";
 	# say "self   -> $self";
 
 	# package Puma::lib::fs; use strict; use warnings; use rise::core::ops::extends 'rise::core::object::class','Puma::lib';   sub super { $Puma::lib::fs::ISA[1] } my $self = 'Puma::lib::fs'; sub self { $self }; BEGIN { __PACKAGE__->__RISE_COMMANDS } __PACKAGE__->interface_confirm; sub __OBJLIST__ {'public-var-dir public-var-path public-var-file public-var-info'}
 	# push @{$self.'::ISA'}, $caller, 'rise::core::object::object';
-	# $self->__RISE_COMMANDS;
+	# $self->__RISE_COMMANDS if $self ne 'rise::core::object::classext';
 
 	if (exists &{$self."::__OBJLIST__"}){
 		$self->interface_confirm($self->__OBJLIST__);
