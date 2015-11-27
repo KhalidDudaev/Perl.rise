@@ -29,10 +29,7 @@ my $VARS		= {};
 # }
 
 # sub import {
-# 	my $caller              = (caller(0))[0];
-# 	print "############# $caller ##############\n";
-# 	strict		->import;
-# 	warnings	->import;
+# 	print "############# OBJECT ##############\n";
 # }
 
 sub obj {

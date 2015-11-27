@@ -1236,14 +1236,14 @@ sub _syntax_function {
         # print "$accmod - $name\n";
     if (&override){
         $override = " no warnings qw/redefine prototype/;";
-        # $accmod                         = token 'private' if !$accmod;
+        # $accmod                         = keyword 'private' if !$accmod;
     }
 
     if ($accmod =~ s/export//sx){
         my @export_tags                 = $accmod =~ m/\:\w+/gsx;
 
         push @export_tags, ':import' if !$accmod;
-        $accmod                         = token 'public';
+        $accmod                         = keyword 'public';
 
         foreach my $t ($name, ':all', ':function', @export_tags){ no strict 'refs';
             var('exports')->{$parent_class}{$t} .= ' '.$name;
@@ -1253,6 +1253,7 @@ sub _syntax_function {
     }
 
 	$accmod                = __accessmod($self, 'code_'.$accmod, $parent_class, $name);
+
 	$name                  = $parent_class . '::' . $name;
     # $fn_name               = 'code';
 
@@ -1714,11 +1715,15 @@ sub __object {
 		var('members')->{$parent_class} .= ' '.$accmod.'-'.$object.'-'.$name;
 		var('members')->{$parent_class} =~ s/^\s+//;
 		$name				= $parent_class . '::' . $name;
-		$list_extends		= ",'$parent_class'";
+		# $list_extends		= ",'$parent_class'";
 	}
 
 	$list_extends		.= __list_extends($self, $args_attr) if $args_attr;
-	$extends			= "use rise::core::ops::extends ${base_class}${list_extends}; ";
+	if ($list_extends) {
+        $extends			= "use rise::core::ops::extends ${list_extends}; ";
+        $self->{$name}{extends} = 1;
+    }
+	# $extends			= "use rise::core::ops::extends ${base_class}${list_extends}; ";
 
 	$accmod				= var($accmod.'_'.$object);
 	$accmod				= eval $accmod if $accmod;
@@ -1728,7 +1733,7 @@ sub __object {
 	$block 				= parse($self, $block, &grammar, [@{var 'parser_'.$object}], { parent => $name });
 	# $block 				= parse($self, $block, &grammar, [@{var 'parser_code'}], { parent => $name });
 
-	$res				= "{ package ${name};".$sps1."use strict; use warnings;". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $confs) . $sps4.$block."}";
+	$res				= "{ package ${name};".$sps1."use strict; use warnings; use rise::core::object::class;". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $confs) . $sps4.$block."}";
 	var('wrap_code')->{$name} = $res;
 	$res = '%%%WRAP_CODE_' . $name . '%%%';
 
@@ -1744,7 +1749,8 @@ sub __object_header {
     my $res;
 
 	my $header			= {
-		class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
+		class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; ",
+		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
 		# class		=> " BEGIN { no strict 'refs'; *{'".$name."::'.\$_} = \\&{'".$parent_class."::IMPORT::'.\$_} for keys \%".$parent_class."::IMPORT::; }; sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
 		abstract	=> "",
 		interface	=> " __PACKAGE__->interface_join;"
@@ -1761,8 +1767,10 @@ sub __object_header {
         # print dump var('exports')->{$name};
     }
 
-	if ($self->{debug}) {
-		$header->{class}	.= " __PACKAGE__->interface_confirm; sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
+	if ($self->{debug} && $self->{$name}{extends}) {
+		$header->{class}	.= " sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
+		# $header->{class}	.= " BEGIN { sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}... };";
+		# $header->{class}	.= " __PACKAGE__->interface_confirm; sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
 		$header->{abstract} .= " __PACKAGE__->interface_join;";
 	}
 
@@ -1820,7 +1828,8 @@ sub __list_extends {
 	if ($list_extends) {
 		$list_extends				=~ s/(?<scomma>\s*\,\s*)/'$+{scomma}'/gsx;
 		$list_extends				=~ s/\s?\,\s?/,/gsx;
-		$list_extends				= ",'$list_extends'";
+		$list_extends				= "'$list_extends'";
+		# $list_extends				= ",'$list_extends'";
 	}
 	$list_extends				||= '';
 
