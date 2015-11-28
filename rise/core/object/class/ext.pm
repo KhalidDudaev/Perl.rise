@@ -4,7 +4,7 @@ use warnings;
 use utf8;
 
 use feature 'say';
-#use Data::Dump 'dump';
+use Data::Dump 'dump';
 
 #use autobox::Core;
 #local $\ = "\n";
@@ -15,8 +15,8 @@ use feature 'say';
 
 use parent qw/
 	rise::core::object::object
-	rise::core::object::variable
 /;
+	# rise::core::object::variable
 
 # use rise::core::ops::commands;
 
@@ -63,7 +63,8 @@ sub import { no strict "refs";
 	# say "self   -> $self";
 
 	if (exists &{$self."::__OBJLIST__"}){
-		$self->interface_confirm($self->__OBJLIST__);
+		$self->interface_confirm;
+		# $self->interface_confirm($self->__OBJLIST__);
 	}
 
 	if (exists &{$self."::__EXPORT__"}){
@@ -104,37 +105,34 @@ sub export { no strict "refs";
 sub interface_confirm {
 	no strict 'refs';
 	no warnings;
-	my $class				= caller(1);
+	my $caller				= caller(1);
 	my $self				= shift;
-
-	# my $class				= shift;
-	#my $child			= caller(2);
-	# print "############ interface conf - $class ############\n";
-
-	my $objlist				= shift;
-
-	# print "############ objlist - $objlist ############\n";
-
-	# my $objlist				= '';
-	my $interfacelist		= \%{$class.'::IMPORT_INTERFACELIST'};
+	my $memberlist			= $self->__OBJLIST__;
+	my $interfacelist		= \%{$self.'::INTERFACE'};
 	my @objnames 			= keys %$interfacelist;
 	my $obj_name;
 	my $obj_type;
 	my $obj_accmod;
 	my $msg_error			= '';
 
-	$objlist 				||= '';
-	# $objlist 				= $class->__OBJLIST__;
+	# say '--------- iface confirm ---------';
+	# say "caller -> $caller";
+	# say "self   -> $self";
+	# say "memb   -> $memberlist";
+	# say "ilist  -> " . dump \%{$self.'::INTERFACE'};
+	# say "objects-> " . dump @objnames;
+
+	$memberlist				||= '';
 
 	foreach my $object (@objnames) {
 		($obj_accmod, $obj_type, $obj_name) = $object =~ m/(\w+)-(\w+)-(\w+(?:\:\:\w+)*)/;
-		$msg_error .= "INTERFACE ERROR: Not created $obj_accmod $obj_type \"$obj_name\" in class \"$class\"\n" if ($objlist !~ m/\b$object\b/);
+		$msg_error .= "INTERFACE ERROR: Not created $obj_accmod $obj_type \"$obj_name\" in class \"$self\"\n" if ($memberlist!~ m/\b$object\b/);
 	}
 
 	if ($msg_error ne '') {
 		$msg_error			= "################################ ERROR ##################################\n"
 			.$msg_error
-			."\n#########################################################################\n\n";
+			."#########################################################################\n\n";
 		die $msg_error;
 	}
 	1;

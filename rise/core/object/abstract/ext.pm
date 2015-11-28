@@ -3,10 +3,17 @@ use strict;
 use warnings;
 use utf8;
 
-#use Data::Dump 'dump';
+use feature 'say';
+use Data::Dump 'dump';
 #local $\ = "\n";
 
-use parent 'rise::core::object::object', 'rise::core::object::error', 'rise::core::object::function', 'rise::core::object::variable', 'rise::core::ops::commands';
+use parent qw/
+    rise::core::object::object
+/;
+    # rise::core::object::error
+    # rise::core::object::function
+    # rise::core::object::variable
+    # rise::core::ops::commands
 
 our $VERSION			= '0.01';
 my $VARS				= {};
@@ -24,24 +31,24 @@ my $ERROR_MESSAGES		= '';
 
 sub obj_type {'ABSTRACT'};
 
-sub interface_join {
-	no strict 'refs';
-	no warnings;
-
-	#my $self			= shift;
-	my $interface 		= shift;
-	my $class			= caller(2); #shift;
-
-	#print ">>>>>>>>>> $interface <<<<<<<<<<\n";
-	#print "\n###### interface - $interface | class - $class ######\n";
-
-	%{$class.'::IMPORT_INTERFACELIST'} = (%{$class.'::IMPORT_INTERFACELIST'}, %{$interface.'::IMPORT_INTERFACELIST'});
-
-	#interface_confirm($class);
-
-	#print dump (\%{$class.'::IMPORT_INTERFACELIST'}), "\n";
-	#print "### - " . dump (\%{$interface.'::IMPORT_INTERFACELIST'}) . "\n";
-}
+# sub interface_join {
+# 	no strict 'refs';
+# 	no warnings;
+#
+# 	#my $self			= shift;
+# 	my $interface 		= shift;
+# 	my $class			= caller(2); #shift;
+#
+# 	#print ">>>>>>>>>> $interface <<<<<<<<<<\n";
+# 	#print "\n###### interface - $interface | class - $class ######\n";
+#
+# 	%{$class.'::INTERFACE'} = (%{$class.'::INTERFACE'}, %{$interface.'::INTERFACE'});
+#
+# 	#interface_confirm($class);
+#
+# 	#print dump (\%{$class.'::INTERFACE'}), "\n";
+# 	#print "### - " . dump (\%{$interface.'::INTERFACE'}) . "\n";
+# }
 
 #sub interface_confirm {
 #	no strict 'refs';
@@ -49,7 +56,7 @@ sub interface_join {
 #	#my $child			= caller(2);
 #	print "############ $class ###########";
 #
-#	my $interfacelist		= \%{$class.'::IMPORT_INTERFACELIST'};
+#	my $interfacelist		= \%{$class.'::INTERFACE'};
 #	my @objnames 			= keys %$interfacelist;
 #	my $objlist;
 #	my $obj_name;
@@ -96,8 +103,8 @@ sub interface_join {
 	# #print "############ $class - $child - $interface ###########\n";
 
 	# my $h_i 			= $interface;
-	# my $h_ii 			= \%{$class.'::IMPORT_INTERFACELIST'};
-	# my $h_ci 			= \%{$child.'::IMPORT_INTERFACELIST'};
+	# my $h_ii 			= \%{$class.'::INTERFACE'};
+	# my $h_ci 			= \%{$child.'::INTERFACE'};
 
 	# %$h_i				= (%$h_i, %$h_ii);
 	# %$h_ci				= (%$h_ci, %$h_i);
@@ -107,14 +114,18 @@ sub interface_join {
 sub set_interface {
 	no strict 'refs';
 	no warnings;
+	my $caller			= caller(4);
 	my $class			= shift;
 	my $name			= shift;
-	#my $h_i = shift;
 
 	my $h_i				= { $name => 1 };
-	my $h_ii 			= \%{$class.'::IMPORT_INTERFACELIST'};
+	my $h_ii 			= \%{$caller.'::INTERFACE'};
 	%$h_ii				= (%$h_ii, %$h_i);
-	#print "### ".dump (\%$h_ii)." ###\n";
+	# print "### ".dump (\%{$class.'::'})." ###\n";
+    # say '--------- iface sets ---------';
+    # say "caller -> $caller";
+    # say "self   -> $class";
+    # say "ilist  -> ". dump \%{$caller.'::INTERFACE'};
 }
 
 ################################# access mod #################################
