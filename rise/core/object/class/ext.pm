@@ -80,9 +80,13 @@ sub export { no strict "refs";
 	my $__CALLER_CLASS__	= (caller(1))[0];
 	my $self                = shift;
 	my $exports				= shift;
-	for (@$exports){
-		*{$__CALLER_CLASS__ . "::$_"} = \&{"$self::$_"};
-		*{$__CALLER_CLASS__ . "::IMPORT::$_"} = \&{"$self::$_"};
+
+	foreach my $func (@$exports){
+		# *{$__CALLER_CLASS__ . "::$_"} = \&{"$self::$_"};
+		# *{$__CALLER_CLASS__ . "::IMPORT::$_"} = \&{"$self::$_"};
+
+		*{$__CALLER_CLASS__ . "::$func"} = sub { &{"$self::$func"}($self, @_) };
+		*{$__CALLER_CLASS__ . "::IMPORT::$func"} = sub { &{"$self::$func"}($self, @_) };
 	}
 }
 

@@ -1242,6 +1242,8 @@ sub _syntax_function {
 
     if ($accmod =~ s/export//sx){
         $isExport                       = 1;
+        # $self_args		                = '';
+
         my @export_tags                 = $accmod =~ m/\:\w+/gsx;
 
         push @export_tags, ':import' if !$accmod;
@@ -1269,6 +1271,8 @@ sub _syntax_function {
 		my $proto			= '';
 		my $i = 0;
 
+        # $i = -1 if $isExport;
+
 		s{
 			(?<name>\b\w+(?:\s*\:\s*\w+)?\b)
 			(\s*\=\s*(?<def>.*))?
@@ -1283,8 +1287,11 @@ sub _syntax_function {
 
 		$args_list	=~ s/\,$//;
 		$args_def	=~ s/\,$//;
-        $args_def   =~ s/\$_\[0\]/\'$parent_class\'/sx if $isExport;
-		#$attr	||= '('.$proto.')';
+
+        # $args_def   =~ s/\$_\[\-1\]/\'$parent_class\'/sx if $isExport;
+        # $args_def   = '__RISE_OREF(@_)' if $isExport;
+
+        #$attr	||= '('.$proto.')';
 
 		$self_args	= $args_list;
 	#}

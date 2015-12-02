@@ -29,6 +29,8 @@ my @export_list 			= qw/
 	toList
 	size
 
+	__RISE_OREF
+
 	__RISE_A2R
 	__RISE_H2R
 	__RISE_R2A
@@ -136,6 +138,13 @@ sub clone {
 	return $data;
 }
 
+sub __RISE_OREF {
+	my $caller						= (caller(1))[3];
+	$caller							=~ s{::\w+::\w+$}{}sx;
+	my $self						= shift if ($_[0] && $_[0] =~ m{^$caller}sx);
+	$self							||= $caller;
+	return $self, @_;
+}
 	#token op_array1					=> q/\b(?:pop|push|shift|slice|unshift|sort)\b/;
 	#token op_array2					=> q/\b(?:grep|map|join|sort)\b/;
 
