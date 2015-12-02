@@ -25,7 +25,7 @@ namespace rise.lib.fs {
         public function file(cmd, name, data) {
             var res;
         	data = join('',<data>) if ref data eq 'Fh';
-            name = self.cmd_sel(cmd) _+ self.path.abs(name);
+            name = self.cmd_sel(cmd) ~ self.path.toAbs(name);
 
             // self.fh->open(name) || die "cannot open file $@";
             self.fh->open(name);

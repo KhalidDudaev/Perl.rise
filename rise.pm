@@ -12,7 +12,7 @@ our $VERSION = '0.001';
 # $\ = "\n";
 
 #use dialect::Parents;
-use rise::lib::fs::file;
+use rise::lib::fs::fileWorker;
 use rise::grammar;
 use rise::syntax;
 #use dialect::syntax_pmd;
@@ -76,7 +76,7 @@ sub __init {
 
 	# print dump $conf;
 	#$parser						= new dialect::Parser ({ info => $conf->{info} });
-	$file						= new rise::lib::fs::file;
+	$file						= new rise::lib::fs::fileWorker;
 	$grammar					= new rise::grammar $conf;
 	$syntax						= new rise::syntax $conf;
 

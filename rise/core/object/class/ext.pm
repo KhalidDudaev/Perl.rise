@@ -3,22 +3,12 @@ use strict;
 use warnings;
 use utf8;
 
+use parent 'rise::core::object::object';
+
 use feature 'say';
 use Data::Dump 'dump';
 
 #use autobox::Core;
-#local $\ = "\n";
-#use overload
-#  '""'	=> sub { @_ },
-#  '0+'	=> sub { @_ };
-#use rise::core::attribute;
-
-use parent qw/
-	rise::core::object::object
-/;
-	# rise::core::object::variable
-
-# use rise::core::ops::commands;
 
 our $VERSION 	= '0.01';
 
@@ -28,6 +18,8 @@ my $ENV_CLASS		= {
 	caller_code		=> 'CODE',
 	caller_data		=> 'DATA'
 };
+
+sub __objtype {'CLASS'};
 
 sub new {
   my $class         = ref $_[0] || $_[0];                                       # получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
@@ -46,12 +38,6 @@ sub new {
 # 	my $args			= $_[1]		|| {};
 # 	%$args				= (%$ENV_CLASS, %$args);
 # 	return bless $args, $class;
-# }
-
-# sub import {
-# 	my $self	= shift;
-# 	#autobox::Core->import;
-# 	$self->__RISE_COMMANDS;
 # }
 
 sub import { no strict "refs";
@@ -89,8 +75,6 @@ sub import { no strict "refs";
 # 	return $args[0] if $index eq 'self';
 # 	return $args[$index + 1];
 # }
-
-sub obj_type {'CLASS'}
 
 sub export { no strict "refs";
 	my $__CALLER_CLASS__	= (caller(1))[0];

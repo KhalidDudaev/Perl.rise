@@ -1,4 +1,4 @@
-package rise::core::object::abstract::ext;
+package rise::core::object::interface::ext;
 use strict;
 use warnings;
 use utf8;
@@ -15,7 +15,7 @@ use parent 'rise::core::object::object';
 
 our $VERSION			= '0.01';
 
-sub __objtype {'ABSTRACT'};
+sub __objtype {'INTERFACE'};
 
 sub set_interface {
 	no strict 'refs';
@@ -55,16 +55,16 @@ sub interface_join {
 
 ################################# access mod #################################
 
-sub protected_abstract {
+sub protected_interface {
 	#my ($self)			= @_;
 	my $callercode		= (caller(2))[3]; $callercode		=~ s/.*::(\w+)/$1/;
 	my $callercode_eval	= (caller(3))[3]; $callercode_eval	=~ s/.*::(\w+)/$1/;
 
-	($callercode eq 'import' || $callercode_eval eq 'import') or shift->__error('abstract_prot');
+	($callercode eq 'import' || $callercode_eval eq 'import') or shift->__error('interface_prot');
 }
 
-sub private_abstract { shift->__error('abstract_priv') }
-sub public_abstract { shift->__error('abstract_publ') }
+sub private_interface { shift->__error('interface_priv') }
+sub public_interface { shift->__error('interface_publ') }
 
 sub DESTROY {}
 

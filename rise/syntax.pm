@@ -645,8 +645,8 @@ sub confirm {
 	rule _implements						=> q/<implements> <name_list>/;
 
 	rule _class								=> q/[<accessmod_class>] <class> <name> [<content>] <block_brace>/;
-	rule _abstract							=> q/[<accessmod_class>] <abstract> <name> [<content>] <block_brace>/;
-	rule _interface							=> q/[<accessmod_class>] <interface> <name> [<content>] <block_brace>/;
+	rule _abstract							=> q/<abstract> <name> [<content>] <block_brace>/;
+	rule _interface							=> q/<interface> <name> [<content>] <block_brace>/;
 	rule _interface_set						=> q/[<accessmod_class>] <object_members> <name> <op_end>/;
 
 	rule _for								=> q/<for_each> \( [<variable>] <name> \=<condition> \) [<block_brace>]/;
@@ -1727,6 +1727,7 @@ sub __object {
 
 	$accmod				= var($accmod.'_'.$object);
 	$accmod				= eval $accmod if $accmod;
+    # $accmod				= __accessmod($self, $object.'_'.$accmod, $parent_class, $name);
 
 	$block 				=~ s/\{(.*)\}/$1/gsx;
 	#$block 				= parse($self, $block, &grammar, ['_variable_boost2', '_variable_boost3'], { parent => $parent_class });

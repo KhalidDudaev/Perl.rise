@@ -2,9 +2,11 @@ package rise::core::object::abstract;
 use strict;
 use warnings;
 use utf8;
-use	rise::core::object::abstract::ext;
+# use	rise::core::object::abstract::ext;
+use	parent 'rise::core::object::abstract::ext';
 use rise::core::ops::commands;
-use feature 'say';
+
+# use feature 'say';
 #use Data::Dump 'dump';
 
 #use autobox::Core;

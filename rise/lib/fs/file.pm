@@ -34,6 +34,8 @@ sub file {
 
 	$fname = $path_current . $fname if $fname !~ m/^(?:\w+\:|[\W]+)/gsx;
 
+	# print "$path_current\n";
+
 	$data = join('',<$data>) if ref $data eq 'Fh';
 
     $fh->open($command->{$cmd}.$fname) || die "cannot open $fname";

@@ -1,59 +1,83 @@
+// ^(.*?)[\\\/](?:(\*|\?+)[\\\/])?([^\\\/]+)$
+
 namespace rise.lib.fs {
 
     public class dirWorker {
 
-        public function list(path) {
-            var dlist   = [];
+        public var slash;
+
+        function listhelper(path) {
+            var dlist       = [];
+            var (slash)     = path =~ m{(\\|\/)}sx;
+
+            slash           = self.slash || slash;
 
             opendir(DIR, path);
             foreach var item (readdir DIR) {
-                push dlist, path _+ '/' _+ item if item !~ m/^(?:\.|\.\.)$/;
+                push dlist, path ~ item if item !~ m{^(?:\.|\.\.)$};
             }
             closedir DIR;
 
             return dlist;
         }
 
-        public function listf(dir, params) {
-            var dir_arr     = [dir];
+        public function list(path, filtrItem = '') {
             var res         = [];
+            var dir;
+            var fltrD;
+            var fltrF;
+            var isD         = 1;
+            var isF         = 1;
+            var (slash)     = path =~ m{(\\|\/)}sx;
 
-            params.{deep}   ||= 0;
-            params.{filter} ||= '*.*';
+            isD             = 0 if filtrItem eq 'file';
+            isF             = 0 if filtrItem eq 'dir';
 
-            foreach var dname (dir_arr) {
-                foreach var item (self.list(dname)) {
-                    push dir_arr, item if self.isDir(item) && params.{deep};
-                    push res, item if self.isFile(item) && self.filter(item, params.{filter});
+            slash           = self.slash || slash;
+            path            = [path] if ref path ne 'ARRAY';
+
+            foreach var dname (path) {
+                (dir, fltrD, fltrF) = self.filterExtract(dname);
+                dir         ||= dname;
+                fltrD       ||= '';
+                fltrF       ||= '*.*';
+
+                // say 'path     -> ' ~ dname;
+                // say 'dir      -> ' ~ dir;
+                // say 'filter D -> ' ~ fltrD;
+                // say 'filter F -> ' ~ fltrF;
+
+                foreach var item (self.listhelper(dir)) {
+                    push path, item ~ slash ~ fltrD ~ slash ~ fltrF if self.isDir(item) && self.filter(item, fltrD);
+                    push res, item if self.isDir(item) && isD && self.filter(item, fltrF);
+                    push res, item if self.isFile(item) && isF && self.filter(item, fltrF);
                 }
             }
             return res;
         }
 
-        public function listd(dir, params) {
-            var dir_arr     = [dir];
-            var res         = [];
+        public function listf(path) {
+            return self.list(path, 'file');
+        }
 
-            params.{deep}   ||= 0;
-            params.{filter} ||= '*';
-
-            foreach var dname (dir_arr) {
-                foreach var item (self.list(dname)) {
-                    if (self.isDir(item)){
-                        push dir_arr, item if params.{deep};
-                        push res, item if self.filter(item, params.{filter});
-                    }
-                }
-            }
-            return res;
+        public function listd(path) {
+            return self.list(path, 'dir');
         }
 
         function filter(name, fltr) {
-            fltr        =~ s/([^\w\*\?])/\\$1/gsx;
-            fltr        =~ s/\?/\\w/gsx;
-            fltr        =~ s/\*/\.\*\?/gsx;
-            name        =~ s/^(.*?)(\w+(?:\.\w+)*)$/$2/sx;
-            return name =~ m/^(?:$fltr)$/gsx;
+            fltr        =~ s{([^\w\*\?])}{\\$1}gsx;
+            fltr        =~ s{\*\\\.\*}{*(?:\\.*)?}gsx;
+            fltr        =~ s{(?<![()])\?}{\\w}gsx;
+            fltr        =~ s{(?<!\\)\*}{\.\*\?}gsx;
+            name        =~ s{^(.*?)(\w+(?:\.\w+)*)$}{$2}sx;
+            return name =~ m{^(?:$fltr)$}gsx;
+        }
+
+        function filterExtract(path) {
+             var fltrD;
+             var fltrF;
+             (path, fltrD, fltrF) = m{^(.*?[\\\/])(?:(\*|\?+)[\\\/])?([^\\\/]+)?$}sx;
+             return (path, fltrD, fltrF);
         }
 
         public function isFile (name) { -e name && !-d _ }

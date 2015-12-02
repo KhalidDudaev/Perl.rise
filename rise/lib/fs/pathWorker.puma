@@ -1,33 +1,53 @@
 namespace rise.lib.fs {
     public class pathWorker {
+
+        // public var slash          = '/';
+
         public function cwd {
-            var cwdir;
-            cwdir = $0 =~ m/^(.*?)\w+(?:\.\w+)*$/gsx;
-            return cwdir.[0];
+            var (cwdir) = toList $0 =~ m{^(.*?)[^\\\/]*$}sx;
+            return cwdir;
         }
 
-        public function abs(fname) {
-             fname = self.cwd _+ fname if self.isRel(fname);
-             return fname;
+        public function toAbs(fname) {
+            fname = self.cwd ~ fname if self.isRel(fname);
+            return fname;
+        }
+
+        public function toRel(fname) {
+            var cwdir   = self.cwd;
+            cwdir =~ s{\\}{\\\\}gsx;
+            fname =~ s{$cwdir}{}sx;
+            // fname =~ replace:sx cwdir => "";
+            return fname;
         }
 
         public function isAbs(fname) {
-            return fname =~ m/^(?:\w+\:|[\W]+)/;
+            return fname =~ m{^(?:\w+\:|[\W]+)};
         }
 
         public function isRel(fname) {
-            return fname !~ m/^(?:\w+\:|[\W]+)/;
+            return fname !~ m{^(?:\w+\:|[\W]+)};
+        }
+
+        public function path(fname) {
+            var (p) = fname =~ m{^(.*?)[^\\\/]*$}sx;
+             return p;
+        }
+
+        public function filename(fname) {
+            fname      =~ s{^.*?([^\\\/]*)$}{$1}sx;
+            return fname;
         }
 
         public function basename(fname) {
-            fname      =~ s/^.*?(\w+(?:\.\w+)*)$/$1/sx;
-            fname      =~ s/^(.*?)(?:\.(\w+))?$/$1/sx;
+            fname      =~ s{^.*?(\w+(?:\.\w+)*)$}{$1}sx;
+            fname      =~ s{^(.*?)(?:\.(\w+))?$}{$1}sx;
             return fname;
         }
 
         public function ext(fname) {
-            fname      =~ s/^.*?(\w+(?:\.\w+)*)$/$1/sx;
-            fname      =~ s/^(.*?)(?:\.(\w+))?$/$2/sx;
+            fname      =~ s{^.*?(\w+(?:\.\w+)*)$}{$1}sx;
+            fname      =~ s{^(.*?)(?:\.(\w+))?$}{$2}sx;
             return fname;
         }
     }
