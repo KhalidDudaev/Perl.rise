@@ -1206,6 +1206,7 @@ sub _syntax_function {
 	my $self_args          = &kw_self;
 	my $fn_list;
 	my $res                = '';
+    my $isExport           = 0;
 
 
 	if (!$name){
@@ -1240,6 +1241,7 @@ sub _syntax_function {
     }
 
     if ($accmod =~ s/export//sx){
+        $isExport                       = 1;
         my @export_tags                 = $accmod =~ m/\:\w+/gsx;
 
         push @export_tags, ':import' if !$accmod;
@@ -1281,6 +1283,7 @@ sub _syntax_function {
 
 		$args_list	=~ s/\,$//;
 		$args_def	=~ s/\,$//;
+        $args_def   =~ s/\$_\[0\]/\'$parent_class\'/sx if $isExport;
 		#$attr	||= '('.$proto.')';
 
 		$self_args	= $args_list;
