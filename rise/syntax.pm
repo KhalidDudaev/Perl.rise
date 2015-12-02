@@ -1306,13 +1306,13 @@ sub _syntax_function {
 	# $block 				= parse($self, $block, &grammar, [@{var 'parser_code'}], { parent => $name });
 
     # $header             = "use rise::core::ops::extends 'rise::core::object::function', '${parent_class}'; use rise::core::object::function::helper; BEGIN { __PACKAGE__->__RISE_COMMANDS }";
-    # $header             = "use rise::core::object::funcdecl;";
-    # $header             = "use rise::core::object::funcdecl; no warnings qw/redefine prototype/;";
-    $header             = "use rise::core::object::funcdecl;$override";
+    # $header             = "use rise::core::object::function;";
+    # $header             = "use rise::core::object::function; no warnings qw/redefine prototype/;";
+    $header             = "use rise::core::object::function;$override";
     var('wrap_header_code')->{$name} = $header;
     $header = '%%%WRAP_HEADER_CODE_' . $name . '%%%';
 
-	$res				= "${anon_code_open}${anon_code}{ package ${name}; ${header} sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
+	$res				= "${anon_code_open}${anon_code}{ package ${name}; ${header}${s1}sub ${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
 	#$res				= "${anon_code_open}${anon_code}{ package ${name}; use rise::core::object::function::function_new; sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
 	$res 				= parse($self, $res, &grammar, [@{var 'parser_code'}], { parent => $name });
 	var('wrap_code')->{$name} = $res;

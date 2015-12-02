@@ -2,21 +2,33 @@ package rise::core::object::function;
 use strict;
 use warnings;
 use utf8;
+use feature 'say';
 
-use parent qw/
-	rise::core::object::object
-	rise::core::object::variable
-/;
+use vars qw($VERSION);
+$VERSION = '0.001';
 
-our $VERSION 	= '0.01';
+use rise::core::ops::commands;
 
-#my $ERROR		= {
-#	code_priv				=> [ [ 1, 2 ], '"FUNCTION ERROR: Can\'t access function \"$func\" from \"$parent\" at $file line $line\n"' ],
-#	code_prot				=> [ [ 1, 2 ], '"FUNCTION ERROR: Function \"$func\" from \"$parent\" only inheritable at $file line $line\n"' ],
-#};
+sub import { no strict 'refs';
+	my $obj					= caller(0);
+	my $self				= shift;
+	my ($parent, $fn_name)	= $obj =~ /(?:(\w+(?:::\w+)*)::)?(\w+)$/;
 
-sub obj_type {'FUNCTION'}
+	# $fn_name = 'code';
 
-sub DESTROY {}
+	# say '--------- func ---------';
+	# say "caller -> $obj";
+	# say "self   -> $fn_name";
+
+	########################################################################
+		push @{$obj.'::ISA'}, $parent;
+		# strict		->import;
+		# warnings	->import;
+		$obj		->rise::core::ops::commands::init;
+	########################################################################
+
+	*{$obj} = *{"$obj::$fn_name"};
+}
+
 
 1;

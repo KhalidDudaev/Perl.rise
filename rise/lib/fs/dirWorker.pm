@@ -6,7 +6,7 @@
 
         my $slash; no warnings; sub slash ():lvalue; *slash = sub ():lvalue {  $slash }; use warnings; 
 
-        { package rise::lib::fs::dirWorker::listhelper; use rise::core::object::funcdecl; sub listhelper { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'listhelper') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $path; no warnings; local *path; sub path ():lvalue; *path = sub ():lvalue {  $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
+        { package rise::lib::fs::dirWorker::listhelper; use rise::core::object::function; sub listhelper { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'listhelper') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $path; no warnings; local *path; sub path ():lvalue; *path = sub ():lvalue {  $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
             my $dlist; no warnings; sub dlist ():lvalue; *dlist = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'dlist') unless (caller eq 'rise::lib::fs::dirWorker::listhelper' || caller =~ m/^rise::lib::fs::dirWorker::listhelper\b/o); $dlist }; use warnings;  $dlist = [];
              my $slash; no warnings; sub slash ():lvalue; *slash = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'slash') unless (caller eq 'rise::lib::fs::dirWorker::listhelper' || caller =~ m/^rise::lib::fs::dirWorker::listhelper\b/o); $slash }; use warnings;  ($slash) = __RISE_MATCH $path =~ m{(\\|\/)}sx;
 
@@ -21,7 +21,7 @@
             return $dlist;
         }}
 
-        { package rise::lib::fs::dirWorker::list; use rise::core::object::funcdecl; sub  list {  my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $path; no warnings; local *path; sub path ():lvalue; *path = sub ():lvalue {  $path }; use warnings; my $filtrItem; no warnings; local *filtrItem; sub filtrItem ():lvalue; *filtrItem = sub ():lvalue {  $filtrItem }; use warnings;  ($self,$path,$filtrItem) = ($_[0],$_[1],$_[2]||'');
+        { package rise::lib::fs::dirWorker::list; use rise::core::object::function; sub  list {  my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $path; no warnings; local *path; sub path ():lvalue; *path = sub ():lvalue {  $path }; use warnings; my $filtrItem; no warnings; local *filtrItem; sub filtrItem ():lvalue; *filtrItem = sub ():lvalue {  $filtrItem }; use warnings;  ($self,$path,$filtrItem) = ($_[0],$_[1],$_[2]||'');
             my $res; no warnings; sub res ():lvalue; *res = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'res') unless (caller eq 'rise::lib::fs::dirWorker::list' || caller =~ m/^rise::lib::fs::dirWorker::list\b/o); $res }; use warnings;  $res = [];
             my $dir; no warnings; sub dir ():lvalue; *dir = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'dir') unless (caller eq 'rise::lib::fs::dirWorker::list' || caller =~ m/^rise::lib::fs::dirWorker::list\b/o); $dir }; use warnings; 
             my $fltrD; no warnings; sub fltrD ():lvalue; *fltrD = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'fltrD') unless (caller eq 'rise::lib::fs::dirWorker::list' || caller =~ m/^rise::lib::fs::dirWorker::list\b/o); $fltrD }; use warnings; 
@@ -56,15 +56,15 @@
             return $res;
         }}
 
-        { package rise::lib::fs::dirWorker::listf; use rise::core::object::funcdecl; sub  listf {  my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $path; no warnings; local *path; sub path ():lvalue; *path = sub ():lvalue {  $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
+        { package rise::lib::fs::dirWorker::listf; use rise::core::object::function; sub  listf {  my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $path; no warnings; local *path; sub path ():lvalue; *path = sub ():lvalue {  $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
             return $self->list($path, 'file');
         }}
 
-        { package rise::lib::fs::dirWorker::listd; use rise::core::object::funcdecl; sub  listd {  my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $path; no warnings; local *path; sub path ():lvalue; *path = sub ():lvalue {  $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
+        { package rise::lib::fs::dirWorker::listd; use rise::core::object::function; sub  listd {  my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $path; no warnings; local *path; sub path ():lvalue; *path = sub ():lvalue {  $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
             return $self->list($path, 'dir');
         }}
 
-        { package rise::lib::fs::dirWorker::filter; use rise::core::object::funcdecl; sub filter { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'filter') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $name; no warnings; local *name; sub name ():lvalue; *name = sub ():lvalue {  $name }; use warnings; my $fltr; no warnings; local *fltr; sub fltr ():lvalue; *fltr = sub ():lvalue {  $fltr }; use warnings;  ($self,$name,$fltr) = ($_[0],$_[1],$_[2]);
+        { package rise::lib::fs::dirWorker::filter; use rise::core::object::function; sub filter { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'filter') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $name; no warnings; local *name; sub name ():lvalue; *name = sub ():lvalue {  $name }; use warnings; my $fltr; no warnings; local *fltr; sub fltr ():lvalue; *fltr = sub ():lvalue {  $fltr }; use warnings;  ($self,$name,$fltr) = ($_[0],$_[1],$_[2]);
             $fltr        =~ s{([^\w\*\?])}{\\$1}gsx;
             $fltr        =~ s{\*\\\.\*}{*(?:\\.*)?}gsx;
             $fltr        =~ s{(?<![()])\?}{\\w}gsx;
@@ -73,15 +73,15 @@
             return __RISE_MATCH $name =~ m{^(?:$fltr)$}gsx;
         }}
 
-        { package rise::lib::fs::dirWorker::filterExtract; use rise::core::object::funcdecl; sub filterExtract { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'filterExtract') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $path; no warnings; local *path; sub path ():lvalue; *path = sub ():lvalue {  $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
+        { package rise::lib::fs::dirWorker::filterExtract; use rise::core::object::function; sub filterExtract { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'filterExtract') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $path; no warnings; local *path; sub path ():lvalue; *path = sub ():lvalue {  $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
              my $fltrD; no warnings; sub fltrD ():lvalue; *fltrD = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'fltrD') unless (caller eq 'rise::lib::fs::dirWorker::filterExtract' || caller =~ m/^rise::lib::fs::dirWorker::filterExtract\b/o); $fltrD }; use warnings; 
              my $fltrF; no warnings; sub fltrF ():lvalue; *fltrF = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'fltrF') unless (caller eq 'rise::lib::fs::dirWorker::filterExtract' || caller =~ m/^rise::lib::fs::dirWorker::filterExtract\b/o); $fltrF }; use warnings; 
              ($path, $fltrD, $fltrF) = m{^(.*?[\\\/])(?:(\*|\?+)[\\\/])?([^\\\/]+)?$}sx;
              return ($path, $fltrD, $fltrF);
         }}
 
-        { package rise::lib::fs::dirWorker::isFile; use rise::core::object::funcdecl; sub  isFile {  my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $name; no warnings; local *name; sub name ():lvalue; *name = sub ():lvalue {  $name }; use warnings;  ($self,$name) = ($_[0],$_[1]);  -e $name && !-d _ }}
-        { package rise::lib::fs::dirWorker::isDir; use rise::core::object::funcdecl; sub  isDir {  my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $name; no warnings; local *name; sub name ():lvalue; *name = sub ():lvalue {  $name }; use warnings;  ($self,$name) = ($_[0],$_[1]);   -d $name }}
+        { package rise::lib::fs::dirWorker::isFile; use rise::core::object::function; sub  isFile {  my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $name; no warnings; local *name; sub name ():lvalue; *name = sub ():lvalue {  $name }; use warnings;  ($self,$name) = ($_[0],$_[1]);  -e $name && !-d _ }}
+        { package rise::lib::fs::dirWorker::isDir; use rise::core::object::function; sub  isDir {  my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $name; no warnings; local *name; sub name ():lvalue; *name = sub ():lvalue {  $name }; use warnings;  ($self,$name) = ($_[0],$_[1]);   -d $name }}
 
     }
 }
