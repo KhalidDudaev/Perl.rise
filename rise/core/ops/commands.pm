@@ -18,6 +18,7 @@ use constant FIVETEN => ($] >= 5.010);
 my $cenv					= {};
 my @export_list 			= qw/
 	dump
+	clone
 	line
 	say
 	msg
@@ -37,6 +38,8 @@ my @export_list 			= qw/
 	__RISE_R2H
 	__RISE_2R
 	__RISE_R2
+
+	__RISE_SPLIT
 
 	__RISE_MAP_BLOCK
 	__RISE_GREP_BLOCK
@@ -373,12 +376,13 @@ sub __RISE_SPLICE {
 	return [splice @$array];
 }
 
-# sub __RISE_SPLIT ($){
-# 	my $filter	= shift;
-# 	my $data	= shift;
-# 	__PACKAGE__->__RISE_ERR('SCALAR', 'split') unless ref $list;
-# 	return split $filter, $data;
-# }
+sub __RISE_SPLIT ($$){
+	my $filter	= shift;
+	my $data	= shift;
+	__PACKAGE__->__RISE_ERR('SCALAR', 'split') unless ref \$data eq 'SCALAR';
+	# return split $filter, $data;
+	return [ split m/$filter/, $data ];
+}
 
 ########## REGEX ######################################################
 sub __RISE_MATCH (@) {

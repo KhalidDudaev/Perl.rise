@@ -191,7 +191,7 @@ sub confirm {
 		'_unwrap_code',
 		'_op_regex',
 
-		# '_op_scalar',
+		'_op_scalar',
 
         # '_op_array',
 		# '_op_hash',
@@ -707,6 +707,8 @@ sub confirm {
 	# rule _op_regex							=> q/<spec_name> <op_regex> <regex_pattern_txt>/;
 	# rule _op_regex							=> q/<equal> <spec_name> <op_regex> (REGEX_MATH|REGEX_REPLASE)/;
 	# rule _op_regex							=> q/<equal> <spec_name> <op_regex_m>/;
+	rule _op_scalar							=> q/(_NOT:(OR:\-\>op_dot))<op_scalar>/;
+	# rule _op_scalar							=> q/(_NOT:(OR:\-\>op_dot))<op_scalar> <string>\,/;
 	# rule _op_scalar							=> q/<op_scalar> <string>\,/;
     # rule _op_array							=> q/<op_array>/;
 	# rule _op_hash							=> q/<op_hash>/;
@@ -789,6 +791,8 @@ sub confirm {
 	action _unwrap_header_code				=> \&_syntax_unwrap_header_code;
 
 	action _op_regex						=> \&_syntax_op_regex;
+
+    action _op_scalar	        	        => \&_syntax_op_scalar;
 
     action _op_sort_blockless	        	=> \&_syntax_op_sort_blockless;
     action _op_array_block	        		=> \&_syntax_op_array_block;
@@ -1859,7 +1863,9 @@ sub _syntax_op_regex {
     return "__RISE_MATCH <spec_name>...<op_regex>...";
     # return "<symbol><regex_m_want>...__RISE_A2R <spec_name>...<op_regex>";
 }
-# sub _syntax_op_scalar { "__RISE_A2R <op_scalar><sps1><string>," }
+
+sub _syntax_op_scalar { '__RISE_' . uc &op_scalar }
+# sub _syntax_op_scalar { '__RISE_' . uc &op_scalar . '...<string>,' }
 
 # sub _syntax_op_array {
 # 	my $op_array			= '__RISE_' . uc &op_array;
