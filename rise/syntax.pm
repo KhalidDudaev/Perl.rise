@@ -128,7 +128,7 @@ sub confirm {
 
 	var ('parser_thread')			= [
 		'_thread',
-		# '_thread_method',
+		'_thread_method',
 	];
 
 	var ('parser_code')				= [
@@ -1342,17 +1342,152 @@ sub _syntax_thread_method {
     $members_list		=~ s/^\s+(.*?)\s+$/$1/sx;
 	$members_list		=~ s/\s/\|/gsx;
 
-	if ($name =~ m/\b(?:$members_list)\b/sx) {
+    if ($members_list && $name =~ m/\b(?:$members_list)\b/sx) {
 		$this			= '__PACKAGE__,';
 	}
 
-	return "${name}(${this}";
+	return "${name}...(${this}";
 }
 
-sub  _syntax_thread_method_post1 {''}
-sub  _syntax_thread_method_post2 {'__PACKAGE__)'}
+sub _syntax_thread_method_post1 {''}
+sub _syntax_thread_method_post2 {'__PACKAGE__)'}
 
 sub _syntax_thread {
+	my ($self, $rule_name, $confs)			= @_;
+    my $header;
+    my $override           = '';
+	my $accmod             = &accessmod || var('accessmod');
+	my $name               = &name;
+	my $args               = &code_args || '';
+	my $attr               = &code_attr || '';
+	my $block              = &block_brace;
+	my $parent_class       = $confs->{parent};
+	my $trd_name           = &name;
+	my ($s1,$s2,$s3,$s4)   = (&sps1,&sps2,&sps3,&sps4);
+	my $anon_code          = '';
+	my $anon_code_open     = '';
+	my $anon_code_close    = '';
+	my $arguments          = '';
+	my $self_args          = &kw_self;
+	my $trd_list;
+	my $res                = '';
+    my $isExport           = 0;
+
+
+	if (!$name){
+		var('anon_fn_count')++;
+		$name			  = var('anon_code_pref').sprintf("%05d", var('anon_fn_count'));
+        $name             =~ s/\s//gsx;
+		$trd_name		  = $name;
+		$anon_code		  = 'return &'.$name.'; ' ;
+		$anon_code_open   = 'sub { ';
+		$anon_code_close  = '}';
+		$self_args		  = '';
+	}
+
+	if ($name){
+		var('members')->{$parent_class} .= ' '.$accmod.'-thread-'.$name;
+		var('members')->{$parent_class} =~ s/^\s+//;
+		# var('members')->{$parent_class.'::'.$name} .= var('members')->{$parent_class}; # for recursion caller
+		var('members')->{$parent_class.'::'.$name} .= ' '.$accmod.'-thread-'.$name; # for recursion caller
+        var('members')->{$parent_class.'::'.$name} =~ s/^\s+//;
+	}
+
+
+	if ($args !~ m/\(\s*(\w+.*?)\)/sx) {
+		$attr = $args . $attr;
+		$args = '';
+	}
+
+        # print "$accmod - $name\n";
+    if (&override){
+        $override = " no warnings qw/redefine prototype/;";
+        # $accmod                         = keyword 'private' if !$accmod;
+    }
+
+    if ($accmod =~ s/export//sx){
+        $isExport                       = 1;
+        # $self_args		                = '';
+
+        my @export_tags                 = $accmod =~ m/\:\w+/gsx;
+
+        push @export_tags, ':import' if !$accmod;
+        $accmod                         = keyword 'public';
+
+        foreach my $t ($name, ':all', ':thread', @export_tags){ no strict 'refs';
+            var('exports')->{$parent_class}{$t} .= ' '.$name;
+    		var('exports')->{$parent_class}{$t} =~ s/^\s+//;
+    		var('exports')->{$parent_class.'::'.$name}{$t} .= var('exports')->{$parent_class}{$t}; # for recursion caller
+        }
+    }
+
+	$accmod                = __accessmod($self, 'code_'.$accmod, $parent_class, $name);
+
+	$name                  = $parent_class . '::' . $name;
+    # $trd_name               = 'code';
+
+	#if ($args) {
+		$args				=~ s/^\((.*?)\)$/$1/;
+		$self_args			.= ',' . $args if $args;
+
+		my @args = split /\,/,$self_args;
+		my $args_list			= '';
+		my $args_def			= '';
+		my $proto			= '';
+		my $i = 0;
+
+        # $i = -1 if $isExport;
+
+		s{
+			(?<name>\b\w+(?:\s*\:\s*\w+)?\b)
+			(\s*\=\s*(?<def>.*))?
+		  }{
+			$args_list	.= $+{name} . ',';
+			$args_def 	.= '$_['.$i.']';
+			$args_def	.=('||'.$+{def}) if $+{def};
+			$args_def	.=',';
+			$proto		.= '$';
+			$i++;
+		}sxe for @args;
+
+		$args_list	=~ s/\,$//;
+		$args_def	=~ s/\,$//;
+
+        # $args_def   =~ s/\$_\[\-1\]/\'$parent_class\'/sx if $isExport;
+        # $args_def   = '__RISE_OREF(@_)' if $isExport;
+
+        #$attr	||= '('.$proto.')';
+
+		$self_args	= $args_list;
+	#}
+	$self_args =~ s/^\,//;
+
+	$arguments			= &kw_local." ".&kw_variable." ($self_args) = ($args_def);" if $self_args;
+	$arguments			= parse($self, $arguments, &grammar, [@{var 'parser_variable'}], { parent => $name });
+
+    $block 				=~ s/\{(.*)\}/$1/gsx;
+	# $block 				= parse($self, $block, &grammar, ['_variable_boost1', '_variable_boost2', '_variable_boost3'], { parent => $name });
+	# $block 				= parse($self, $block, &grammar, [@{var 'parser_variable'}], { parent => $name });
+	# $block 				= parse($self, $block, &grammar, [@{var 'parser_code'}], { parent => $name });
+
+    # $header             = "use rise::core::ops::extends 'rise::core::object::function', '${parent_class}'; use rise::core::object::function::helper; BEGIN { __PACKAGE__->__RISE_COMMANDS }";
+    # $header             = "use rise::core::object::function;";
+    # $header             = "use rise::core::object::function; no warnings qw/redefine prototype/;";
+    $header             = "use rise::core::object::thread;$override";
+    var('wrap_header_code')->{$name} = $header;
+    $header = '%%%WRAP_HEADER_CODE_' . $name . '%%%';
+
+	$res				= "${anon_code_open}${anon_code}{ package ${name}; ${header}${s1}sub ${trd_name}${s2}${attr}${s3}{ ${accmod} my \$thr; \$thr = threads->create(sub{${arguments}${s4}${block}}, \@_); { no strict; no warnings; \@{${parent_class}::THREAD::${trd_name}}[\$thr->tid] = \$thr; } return \$thr; }}${anon_code_close}";
+	# $res				= "${anon_code_open}${anon_code}{ package ${name}; ${header}${s1}sub ${trd_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
+	#$res				= "${anon_code_open}${anon_code}{ package ${name}; use rise::core::object::function::function_new; sub ${s1}${trd_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
+	$res 				= parse($self, $res, &grammar, [@{var 'parser_code'}], { parent => $name });
+	var('wrap_code')->{$name} = $res;
+	$res = '%%%WRAP_CODE_' . $name . '%%%';
+
+	return $res;
+}
+
+sub _syntax_thread_off {
 	my ($self, $rule_name, $confs)			= @_;
     my $header;
 	my $accmod             = &accessmod || var('accessmod');
