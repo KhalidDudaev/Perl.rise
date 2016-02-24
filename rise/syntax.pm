@@ -448,7 +448,7 @@ sub confirm {
 	token for_each					=> q/\b(?:foreach|for)\b/;
 
 	token accessmod_class			=> q/private|protected|public/;
-	token accessmod					=> q/local|export(?::\w+)*|private|protected|public/;
+	token accessmod					=> q/local|export(?:\s*:\w+)*|private|protected|public/;
 	# token accessmod					=> q/(?:(?:override)\s+)?(?:local|export(?::\w+)*|private|protected|public)/;
     # token accessmod					=> q/(?:(?:local|export(?::\w+)*|private|protected|public)?(?:\s+override)?)/;
 	token class_type				=> q/namespace|class|abstract|interface/;
@@ -470,6 +470,9 @@ sub confirm {
 	token op_for_each				=> q/__ (?:FOR|FOREACH) __/;
 	token op_for_each_cond			=> q/__ (?:FOR_COND|FOREACH_COND) __/;
 
+	token code_args					=> q/\(content\)/;
+	token code_type					=> q/(?:\:\s*word\s*)*/;
+
 	#token code_attr					=> q/(?:\(\W*\))?(?:\:\s*content\s*)?/;
 	#token code_attr					=> q/(?:\(\W*\))?(?:\:[\w\s\(\)\,]+)?/;
 	#token code_attr					=> q/(?:\:\s*content\s*)/;
@@ -479,7 +482,6 @@ sub confirm {
 	#token code_attr					=> q/(?:[^\{\}\n]*)?/;
 	#token code_attr					=> q/[^\{\}\n]*/;
 
-	token code_args					=> q/\(content\)/;
 
 	token args_attr					=> q/(?:[^\{\}](?!object|accessmod))*/;
 	#token args_attr					=> q/(?:[^\{\}\;])*/;
@@ -669,7 +671,8 @@ sub confirm {
 												<comma_long_short> (<regex_expr_txt>|<regex_expr_block>|<self_name> <code_args>)/;
 
 	# rule _function 							=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
-    rule _function 							=> q/[<accessmod>] [<override>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
+    # rule _function 							=> q/[<accessmod>] [<override>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
+    rule _function 							=> q/[<accessmod>] [<override>] <function> [<name>] [<code_args>] [<code_type>] <block_brace>/;
 	rule _function_defs 					=> q/[<accessmod>] <function> [<args_attr>] <op_end><nline>/;
 	# rule _function_method					=> q/(_NOT:__METHOD__)<name> \( (NOT:__PACKAGE__)/;
 	rule _function_method					=> q/(_NOT:op_dot)<name> \((NOT: __PACKAGE__)/;
@@ -1198,7 +1201,8 @@ sub _syntax_function {
 	my $accmod             = &accessmod || var('accessmod');
 	my $name               = &name;
 	my $args               = &code_args || '';
-	my $attr               = &code_attr || '';
+	my $type               = &code_type || '';
+	# my $attr               = &code_attr || '';
 	my $block              = &block_brace;
 	my $parent_class       = $confs->{parent};
 	my $fn_name            = &name;
@@ -1211,6 +1215,7 @@ sub _syntax_function {
 	my $fn_list;
 	my $res                = '';
     my $isExport           = 0;
+	my $retval				= '';
 
 
 	if (!$name){
@@ -1233,10 +1238,10 @@ sub _syntax_function {
 	}
 
 
-	if ($args !~ m/\(\s*(\w+.*?)\)/sx) {
-		$attr = $args . $attr;
-		$args = '';
-	}
+	# if ($args !~ m/\(\s*(\w+.*?)\)/sx) {
+	# 	$attr = $args . $attr;
+	# 	$args = '';
+	# }
 
         # print "$accmod - $name\n";
     if (&override){
@@ -1304,6 +1309,13 @@ sub _syntax_function {
 	$arguments			= &kw_local." ".&kw_variable." ($self_args) = ($args_def);" if $self_args;
 	$arguments			= parse($self, $arguments, &grammar, [@{var 'parser_variable'}], { parent => $name });
 
+	if ($type) {
+		$type				=~ s/\://sx;
+		$retval				= "my \$_RETVAL_; __PACKAGE__->__RISE_CAST($type, \\\$_RETVAL_); ";
+		$block 				=~ s/return(.*?)(\s*(?:\;|\}|\)|if))/\$_RETVAL_ = $1; return \$_RETVAL_$2/sx;
+		# $block 				=~ s/return(.*?)\;/\$_RETVAL_ = $1; return \$_RETVAL_;/sx;
+	}
+
     $block 				=~ s/\{(.*)\}/$1/gsx;
 	# $block 				= parse($self, $block, &grammar, ['_variable_boost1', '_variable_boost2', '_variable_boost3'], { parent => $name });
 	# $block 				= parse($self, $block, &grammar, [@{var 'parser_variable'}], { parent => $name });
@@ -1316,7 +1328,8 @@ sub _syntax_function {
     var('wrap_header_code')->{$name} = $header;
     $header = '%%%WRAP_HEADER_CODE_' . $name . '%%%';
 
-	$res				= "${anon_code_open}${anon_code}{ package ${name}; ${header}${s1}sub ${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
+	$res				= "${anon_code_open}${anon_code}{ package ${name}; ${header}${s1}sub ${fn_name}${s2}${s3}{ ${accmod} $retval${arguments}${s4}${block}}}${anon_code_close}";
+	# $res				= "${anon_code_open}${anon_code}{ package ${name}; ${header}${s1}sub ${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
 	#$res				= "${anon_code_open}${anon_code}{ package ${name}; use rise::core::object::function::function_new; sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
 	$res 				= parse($self, $res, &grammar, [@{var 'parser_code'}], { parent => $name });
 	var('wrap_code')->{$name} = $res;

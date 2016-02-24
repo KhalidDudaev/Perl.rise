@@ -209,10 +209,10 @@ sub compile { #print "#### ASSEMBLY ####\n";
 
 	# say "$fname_source ...";
 
-	if (!$fname_dest){
-		($fname_dest)				= $fname_source =~ m/(.*?)$fext$/sx;
-		$fname_dest					.= $this->{dest}{fext};
-	}
+	# if (!$fname_dest){
+	# 	($fname_dest)				= $fname_source =~ m/(.*?)$fext$/sx;
+	# 	$fname_dest					.= $this->{dest}{fext};
+	# }
 
 	# print $fname_source;
 	$code_source				= __file('read', $fname_source);
@@ -221,13 +221,13 @@ sub compile { #print "#### ASSEMBLY ####\n";
 		&__syntax->{RULE}		= $grammar->compile_RBNF(&__syntax->{RULE});
 		($code_dest, $info)		= __parse($code_source, &__syntax);
 		$code_dest .= "\n1;";
-		__file('write', $fname_dest, $code_dest);
+		__file('write', $fname_dest, $code_dest) if $fname_dest;
 	}
 
 	$info =~ s/\n$//gsx;
 	__msg_box ($info,'compilation ' . $title ) if $this->{info};
 	say 'compilation ' . $title . '...OK' if !$this->{info};
-
+	return $code_dest if !$fname_dest;
 	return {code => $code_dest, fname => $fname_dest, info => $info};
 }
 

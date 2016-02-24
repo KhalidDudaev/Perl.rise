@@ -141,6 +141,16 @@ sub clone {
 	return $data;
 }
 
+# sub pipe {
+#     no strict 'refs';
+#     my $a = shift || 'a';
+#     my $b = shift || 'b';
+#     return &{$b}($a);
+# }
+# sub UNIVERSAL::pipe {
+#     goto &pipe;
+# }
+
 sub __RISE_OREF {
 	my $caller						= (caller(1))[3];
 	$caller							=~ s{::\w+::\w+$}{}sx;

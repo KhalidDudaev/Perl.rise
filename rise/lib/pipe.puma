@@ -1,0 +1,23 @@
+namespace rise.lib {
+
+    class pipe {
+
+        export:simple function portal (a) {
+            self ||= 'a';
+            a ||= 'b';
+            # say "a -> $a";
+            # say "b -> $b";
+            return &{a}(self);
+        }
+
+        // sub UNIVERSAL::pipe {
+        //     goto &pipe;
+        // }
+
+        sub UNIVERSAL::portal {
+            goto &portal;
+        }
+
+    }
+
+}
