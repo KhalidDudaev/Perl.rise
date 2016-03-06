@@ -1,6 +1,6 @@
 namespace rise.lib {
 
-    class pipe {
+    class portal {
 
         export:simple function portal (a) {
             self ||= 'a';

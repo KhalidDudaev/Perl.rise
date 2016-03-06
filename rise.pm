@@ -2,9 +2,10 @@ package rise;
 use strict;
 use warnings;
 use utf8;
+
 #use ExtUtils::Installed;
 use Time::HiRes qw(time);
-
+use Clone 'clone';
 use Data::Dump 'dump';
 
 our $VERSION = '0.001';
@@ -68,12 +69,13 @@ sub import {
 sub new {
     my ($class, $ARGS)			= (ref $_[0] || $_[0], $_[1] || {});    	# получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
 	%$conf						= (%$conf, %$ARGS);							# применяем умолчания, если имеются входные данные то сохраняем их в умолчаниях
-    #__init();
+    # __init();
 	return bless($conf, $class);                         					# обьявляем класс и его свойства
 }
 
 sub __init {
 
+	# $rise::grammar::info_rule	= {};
 	# print dump $conf;
 	#$parser						= new dialect::Parser ({ info => $conf->{info} });
 	$file						= new rise::lib::fs::fileWorker;
@@ -190,9 +192,8 @@ sub compile_list { #print "#### COMPILE ####\n";
 	return $assembly;
 }
 
-sub compile { #print "#### ASSEMBLY ####\n";
+sub compile { #print "#### COMPILE ####\n";
 	my ($this, $fname_source, $fname_dest) 				= __class_ref(@_);
-
 
 	my $title					= $fname_source;
 	my $code_dest;
@@ -203,6 +204,18 @@ sub compile { #print "#### ASSEMBLY ####\n";
 	my $path_source				= $this->{source}{fpath}	|| $path_current;
 	my $path_dest				= $this->{dest}{fpath}		|| $path_current;
 	my $fext					= $this->{source}{fext};
+
+	# my $grammar					= new rise::grammar {};
+
+	# $grammar->{info_rule}		= {};
+	# $grammar->{info_all}		= '';
+
+	# $rise::grammar::info_all	= '';
+	# $rise::grammar::info_rule	= {} if $rise::grammar::info_rule->{_class};
+	# $rise::grammar::info_rule	= {};
+	# print ">>> ".dump($rise::grammar::info_rule)."\n";
+
+
 
 	# $fname_source					= $path_source	. $fname_source if $fname_source !~ m/[\\\/]/;
 	# $fname_dest						= $path_dest	. $fname_dest if $fname_dest !~ m/[\\\/]/;
@@ -218,8 +231,9 @@ sub compile { #print "#### ASSEMBLY ####\n";
 	$code_source				= __file('read', $fname_source);
 
 	if ($code_source) {
+		# $grammar->clear;
 		&__syntax->{RULE}		= $grammar->compile_RBNF(&__syntax->{RULE});
-		($code_dest, $info)		= __parse($code_source, &__syntax);
+		($code_dest, $info)		= $grammar->parse($code_source, &__syntax);
 		$code_dest .= "\n1;";
 		__file('write', $fname_dest, $code_dest) if $fname_dest;
 	}
@@ -227,14 +241,23 @@ sub compile { #print "#### ASSEMBLY ####\n";
 	$info =~ s/\n$//gsx;
 	__msg_box ($info,'compilation ' . $title ) if $this->{info};
 	say 'compilation ' . $title . '...OK' if !$this->{info};
-	return $code_dest if !$fname_dest;
-	return {code => $code_dest, fname => $fname_dest, info => $info};
+	# return $code_dest if !$fname_dest;
+	# $grammar = {};
+	# $grammar->clear;
+	# print ">>> ".dump($grammar->{info_rule})."\n";
+
+	# $rise::grammar::info_rule	= {};
+	# print "### COUNT $rise::grammar::parser_count\n";
+	# $rise::grammar::parser_count	= '';
+
+	return {code => $code_dest, fname => $fname_dest, info => clone $info};
 }
 
 #sub __obj__		{ $parser }
 sub __parse		{ $grammar->parse(@_) }
 sub __syntax	{ $syntax->syntax(@_) }
 sub __file		{ $file->file(@_) }
+sub clear		{ $grammar->clear }
 
 sub __message { print @_ if $conf->{info} }
 
@@ -263,8 +286,11 @@ sub __class_ref {
 	return $this, @_;
 }
 
-
+# DESTROY {
+# 	$rise::grammar::info_rule	= {};
+# }
 #########################################################################
 
 exit if $conf->{end};
+
 1;

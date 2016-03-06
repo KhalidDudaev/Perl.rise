@@ -29,6 +29,7 @@ my @export_list 			= qw/
 	false
 	toList
 	size
+	portal
 
 	__RISE_OREF
 
@@ -141,15 +142,15 @@ sub clone {
 	return $data;
 }
 
-# sub pipe {
-#     no strict 'refs';
-#     my $a = shift || 'a';
-#     my $b = shift || 'b';
-#     return &{$b}($a);
-# }
-# sub UNIVERSAL::pipe {
-#     goto &pipe;
-# }
+sub portal {
+    no strict 'refs';
+    my $a = shift || 'a';
+    my $b = shift || 'b';
+    return &{$b}($a);
+}
+sub UNIVERSAL::portal {
+    goto &portal;
+}
 
 sub __RISE_OREF {
 	my $caller						= (caller(1))[3];

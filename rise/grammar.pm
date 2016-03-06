@@ -5,6 +5,7 @@ use warnings;
 use 5.008;
 use utf8;
 
+use Clone 'clone';
 use Data::Dump 'dump';
 
 our $VERSION = '0.100';
@@ -43,10 +44,10 @@ my $word_b = '';
 my ($k, $v);
 my $last_rule_name					= '';
 
-my $info_rule						= {};
-my $info_all						= '';
-my @rule_order;
-#my $passed 							= 0;
+# our $info_rule						= {};
+# my $info_all						= '';
+# my @{$self->{rule_order}};
+our $parser_count					= 0;
 
 our $syntax_class;
 
@@ -71,9 +72,11 @@ sub new {
 	my $self = bless($PACK_ENV, $class);
 
 	#print ">>>>>>>>>> ".dump($self)."\n";
-
+	# $info_rule	= {};
 	return $self;                         					# обьявляем класс и его свойства
 }
+
+# sub import { $info_rule	= {}; };
 
 sub grammar :lvalue	{ $GRAMMAR }
 sub order :lvalue	{ grammar->{ORDER} }
@@ -200,13 +203,15 @@ sub parse {
 	my $rule_name_selected = [];
 	my $confs;
 
-	my $fself;
+	# my $fself;
 
 	($self, $source, grammar, $rule_name_selected, $confs,  @_)	= __class_ref(@_);
 
-	#print ">>>>>>>>>>>>>>>>>>> ".dump($rule_name_selected)." - ".dump($confs)."\n";
+	# print ">>>>>>>>>>>>>>>>>>> ".dump($rule_name_selected)." - ".dump($confs)."\n";
+	# print ">>> ".dump($confs)."\n";
+	# print ">>> $self\n";
 
-	#print "-----> ".dump($self)."\n";
+	# print "---> ".dump($info_rule)."\n";
 
 	#$self = __PACKAGE__;
 
@@ -219,8 +224,14 @@ sub parse {
 	my $rmode				= '';
 	my $regex_mod			= '';
 	#my $info				= '';
-	my $passed 				= 0;
+	# my $passed 				= 0;
 	my @order;
+	# my $info_all			= '';
+
+	# $info_rule				= {} if $parser_count > 2;
+	$parser_count++;
+
+
 
 
 	@order					= @{&order} if &order;
@@ -236,11 +247,12 @@ sub parse {
 	#eval {
 		map {
 			$rule_name 		= $_;
-			#push @rule_order, $rule_name;
+			#push @{$self->{rule_order}}, $rule_name;
 
 			my $regex_g		= '';
 			my $last_sourse = '';
 			my $res_sourse	= '';
+			# $info_all				= '';
 
 			#grammar->{RULE}	= compile_RBNF(grammar->{RULE});
 
@@ -261,7 +273,8 @@ sub parse {
 			# $rule			= qr/$rule/o;
             # print $rule . "\n";
 
-            $source =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse, \$passed)/gmsxe if $source ne $last_sourse;
+            $source =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse)/gmsxe if $source ne $last_sourse;
+            # $source =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse, \$passed)/sxe;
 			# while ($source =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse, \$passed)/gmsxe && $source ne $last_sourse){};
 
       #$source = __parse_helper($rule_name, $rule, $source, \$last_sourse, \$passed);
@@ -273,16 +286,16 @@ sub parse {
 			#$info_all .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $passed . " ] : PASSED\n" if $passed;
 			#
 
-			#{@rule_order}->{$rule_name} += $passed;
+			#{@{$self->{rule_order}}}->{$rule_name} += $passed;
+
+			push (@{$self->{rule_order}}, $rule_name) unless exists $self->{info_rule}{$rule_name};
+			# push (@{$self->{rule_order}}, $rule_name) if $info_all eq '';
+			$self->{info_rule}{$rule_name}	+= $self->{passed};
+			$self->{passed}					= 0;
 
 
-			push (@rule_order, $rule_name) unless exists $info_rule->{$rule_name};
-			$info_rule->{$rule_name}	+= $passed;
-			$passed						= 0;
 
-
-
-			#print "$rule_name - $info_rule->{$rule_name} \n";
+			#print "$rule_name - $self->{info_rule}{$rule_name} \n";
 
 		} @order;
 	#};
@@ -290,18 +303,32 @@ sub parse {
 	#die __error('"the action \"'.$rule_name.'\" not correct $file at line $line from $file\n"') if $@;
 
 
-	$info_all = '';
+	$self->{info_all} = '';
+	# $info_rule				= {} if !$confs;
 
 	map {
-		my $rule_name = $_;
-		my $cnt			= 23 - length $rule_name;
-		my $indent		= 4 - length $info_rule->{$rule_name};
-		$info_all .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $info_rule->{$rule_name} . " ] : PASSED\n" if $info_rule->{$rule_name};
-	} @rule_order; #keys %$info_rule;
+		# if ( $self->{info_rule}{$rule_name} ){
+			my $rule_name = $_;
+			my $cnt			= 23 - length $rule_name;
+			my $indent		= 4 - length ($self->{info_rule}{$rule_name}||'');
+			# $self->{info_all} .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $self->{info_rule}{$rule_name} . " ] : PASSED\n";
+			$self->{info_all} .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $self->{info_rule}{$rule_name} . " ] : PASSED\n" if $self->{info_rule}{$rule_name};
+		# }
+	} @{$self->{rule_order}}; #keys %$info_rule;
 
-	#@rule_order = ();
 
-	return ($source, $info_all) if wantarray;
+	# $info_rule = {};
+
+
+	$parser_count--;
+
+	if (!$parser_count){
+		$self->{info_rule}		= {};
+		$self->{rule_order}		= [];
+	}
+	# print ">>> $parser_count\n";
+
+	return ($source, clone $self->{info_all}) if wantarray;
 	return $source;
 }
 
@@ -316,12 +343,15 @@ sub __parse_helper {
 }
 
 sub __parse {
-	my ($self, $rule_name, $source, $confs, $last_sourse, $passed) = @_;
+	my ($self, $rule_name, $source, $confs, $last_sourse) = @_;
 	my $res			= '';
+	# $info_all 		= '';
+	# print "-----> ".dump($info_rule)."\n";
+	# $info_rule		= {} if !$confs;
 
 	#print ">>>>>>>>>>>>>>>>>>> $rule_name - ".dump($confs)."\n" if $rule_name;
 
-	$$passed++;
+	$self->{passed}++;
 
 	die __error('"the action \"'.$rule_name.'\" not exists\n"') if !exists grammar->{ACTION}{$rule_name};
 	#eval {
@@ -548,6 +578,11 @@ sub __error {
 	die $err;
 }
 
+sub clear {
+	my $self = shift;
+	$self->{info_rule} = {};
+}
+
 #sub __class_ref {
 #	my $this					= shift if (ref $_[0] eq __PACKAGE__);
 #	$this						||= $PACK_ENV;
@@ -564,6 +599,8 @@ sub __class_ref {
 		$self = caller(1);
 	}
 
+	# print " SELF >>> $self \n";
+
 	return $self, @_;
 }
 
@@ -573,5 +610,9 @@ sub __class_ref {
 #	($child, $file, $line, $func) = (caller(1));
 #	return $self, @_;
 #}
+
+# DESTROY {
+# 	$info_rule = undef;
+# }
 
 1;
