@@ -5,7 +5,7 @@ use utf8;
 
 #use ExtUtils::Installed;
 use Time::HiRes qw(time);
-use Clone 'clone';
+# use Clone 'clone';
 use Data::Dump 'dump';
 
 our $VERSION = '0.001';
@@ -43,6 +43,14 @@ my $modules;
 #&tokens;
 ############################################################################################################
 
+sub new {
+	my ($class, $ARGS)			= (ref $_[0] || $_[0], $_[1] || {});    	# получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
+	%$conf						= (%$conf, %$ARGS);							# применяем умолчания, если имеются входные данные то сохраняем их в умолчаниях
+	# print ">>> " . dump($conf) ."\n";
+	# __init();
+	return bless($conf, $class);                         					# обьявляем класс и его свойства
+}
+
 sub import {
 	my $this					= caller;
 	my $ARGS 					= $_[1] || {};
@@ -65,13 +73,6 @@ sub import {
 }
 
 
-
-sub new {
-    my ($class, $ARGS)			= (ref $_[0] || $_[0], $_[1] || {});    	# получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
-	%$conf						= (%$conf, %$ARGS);							# применяем умолчания, если имеются входные данные то сохраняем их в умолчаниях
-    # __init();
-	return bless($conf, $class);                         					# обьявляем класс и его свойства
-}
 
 sub __init {
 
@@ -239,9 +240,8 @@ sub compile { #print "#### COMPILE ####\n";
 	}
 
 	$info =~ s/\n$//gsx;
-	__msg_box ($info,'compilation ' . $title ) if $this->{info};
-	say 'compilation ' . $title . '...OK' if !$this->{info};
-	# return $code_dest if !$fname_dest;
+	__msg_box ($info,'compilation ' . $title ) if $this->{info} == 2;
+	say 'compilation ' . $title . '...OK' if $this->{info};
 	# $grammar = {};
 	# $grammar->clear;
 	# print ">>> ".dump($grammar->{info_rule})."\n";
@@ -250,7 +250,8 @@ sub compile { #print "#### COMPILE ####\n";
 	# print "### COUNT $rise::grammar::parser_count\n";
 	# $rise::grammar::parser_count	= '';
 
-	return {code => $code_dest, fname => $fname_dest, info => clone $info};
+	# return $code_dest if !$fname_dest;
+	return {code => $code_dest, fname => $fname_dest, info => $info};
 }
 
 #sub __obj__		{ $parser }

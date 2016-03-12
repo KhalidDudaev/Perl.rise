@@ -11,5 +11,6 @@
 	start_dir		=> 'bin/',
 	end				=> 0,
 	accmod	        => 'private',
-	debug			=> 1
+	debug			=> 1,
+	info			=> 1
 }

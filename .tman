@@ -1,0 +1,26 @@
+// File Modification Monitor
+using rise.lib.fs;
+
+namespace rise.lib.tman {
+
+    public class fmm {
+
+        var fs              = new rise.lib.fs;
+        // public var diff     = 2;
+
+        public function monitor (spath, diff = 2) {
+            var tdiff;
+            var sname;
+            var mname       = '';
+
+            foreach sname ( self.fs.dir.listf(spath) ) {
+                tdiff = time - self.fs.info.mtime(sname);
+                next if tdiff > diff;
+                mname = sname;
+                last if tdiff < diff;
+            }
+
+            return mname;
+        }
+    }
+}

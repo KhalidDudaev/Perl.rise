@@ -1,0 +1,16 @@
+using rise;
+namespace rise.lib.tman.plugin {
+	public class puma {
+		public function puma (conf) {
+			if (self.src_name){
+				var r             		= new rise conf;
+				var c					= r.compile(self.src_name);
+				r = undef;
+				self.code_res		= c.{code};
+				self.dst_ext		= 'pm';
+				say c.{info} if conf.{info};
+			}
+			return self;
+		}
+	}
+}

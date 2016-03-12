@@ -5,7 +5,7 @@ use warnings;
 use 5.008;
 use utf8;
 
-use Clone 'clone';
+# use Clone 'clone';
 use Data::Dump 'dump';
 
 our $VERSION = '0.100';
@@ -290,12 +290,13 @@ sub parse {
 
 			push (@{$self->{rule_order}}, $rule_name) unless exists $self->{info_rule}{$rule_name};
 			# push (@{$self->{rule_order}}, $rule_name) if $info_all eq '';
+
 			$self->{info_rule}{$rule_name}	+= $self->{passed};
 			$self->{passed}					= 0;
 
 
 
-			#print "$rule_name - $self->{info_rule}{$rule_name} \n";
+			# print "$rule_name \n" if $self->{passed} eq undef;
 
 		} @order;
 	#};
@@ -328,7 +329,7 @@ sub parse {
 	}
 	# print ">>> $parser_count\n";
 
-	return ($source, clone $self->{info_all}) if wantarray;
+	return ($source, $self->{info_all}) if wantarray;
 	return $source;
 }
 

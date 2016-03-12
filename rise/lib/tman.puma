@@ -1,0 +1,201 @@
+using rise.lib.fs;
+using rise.lib.tman.fmm;
+using Audio.Beep;
+
+namespace rise.lib {
+
+    public class tman {
+
+        var fs            		= new rise.lib.fs;
+		var fmon				= new rise.lib.tman.fmm;
+		var snd					= new Audio.Beep;
+
+		var snd_OK				= "f'20 d25";
+		var snd_ERR				= "g'20 g10.. g20 g10..";
+
+		var tlast;
+		var tcurrent;
+		var tcode				= {};
+		var tstack				= {};
+		var wcode				= {};
+		var wstack				= {};
+		var wstart				= 0;
+
+		var code_src;
+		var code_res;
+		var filename;
+		var basename;
+		var src_path;
+		var src_name;
+		// var lsrc_name;
+		var dst_path;
+		var dst_name;
+		var dst_ext				= 'tman';
+		public var ref_path;
+		public var dst_file;
+
+		function sndOK {
+			// var sound					= new Audio.Beep;
+			self.snd.play(self.snd_OK);
+		}
+
+		function sndERR {
+			// var sound					= new Audio.Beep;
+			self.snd.play(self.snd_ERR);
+		}
+
+		// public function monitor (spath, diff = 2) {
+		// 	var tdiff;
+		// 	var sname;
+		// 	var mname       = 0;
+		//
+		// 	foreach sname ( self.fs.dir.listf(spath) ) {
+		// 		tdiff = time - self.fs.info.mtime(sname);
+		// 		next if tdiff > diff;
+		// 		mname = sname;
+		// 		last if tdiff < diff;
+		// 	}
+		//
+		// 	return mname;
+		// }
+
+		public function src (path) {
+			self.src_path			= path;
+			// self.src_name			= undef;
+			// self.src_name			= self.monitor(path,1);
+			self.src_name			= self.fmon.monitor(path,1);
+
+			// say ">>> " ~ self.src_name;
+
+			if (self.src_name) {
+				// self.lsrc_name			= self.src_name if self.src_name;
+				self.filename			= self.fs.path.filename(self.src_name);
+				self.basename			= self.fs.path.basename(self.src_name);
+				self.code_src			= self.fs.file.read(self.src_name) if self.src_name;
+				// self.dst_ext			= self.fs.path.ext(self.src_name);
+			}
+
+			return self;
+		}
+
+		public function dst (path) {
+			if (self.src_name) {
+				self.dst_path		= path;
+
+				var dpath			= path ~ self.referPath();
+				var err				= '';
+
+				// say ">>> " ~ dpath;
+
+				if(!self.fs.dir.isDir(dpath)){
+					mkdir dpath or err = "ERROR: Cant make dir $dpath";
+					if (err) {
+						say err;
+						self.sndERR();
+						return;
+					}
+					// say "mkdir $dpath";
+				}
+
+				self.code_res		||= self.code_src;
+				self.dst_file		= self.basename ~ '.' ~ self.dst_ext;
+				self.dst_name		= dpath ~ self.dst_file;
+				self.fs.file.write(self.dst_name, self.code_res) if self.code_res;
+				self.sndOK();
+			}
+			// self.snd.play(self.snd_OK);
+			return self;
+		}
+
+		function referPath () {
+			var spath			= self.src_path;
+			spath               =~ s{^([^\*]*).*?$}{$1}sx;
+			var (ref_path)		= self.src_name =~ m{^$spath(.*?)$}sx;
+			self.ref_path		= self.fs.path.path(ref_path);
+			return self.ref_path;
+		}
+
+		export:simple function plugin (name) {
+			no strict;
+			inject 'rise/lib/tman/plugin/' ~ name ~ '.pm';
+			*{"rise::lib::tman::$name"} = *{"rise::lib::tman::plugin::$name::$name"};
+		}
+
+		export:simple function tman () {
+			return self;
+		}
+
+        export:simple function start (tname) {
+			tname ||= 'default';
+			say '';
+			say line { title => 'tman START' };
+
+			foreach var task (self.tstack.{tname}) {
+				say line { title => 'TASK: ' ~ task, char => '-' };
+				self.tcurrent		= task;
+				//self.init();
+				self.tcode.{task}();
+				// if (self.wstart) {
+					foreach var wath (self.wstack.{task}) {
+						foreach var wcode (self.wcode.{task}) {
+							// say '### WATCH ' ~ wath;
+							wcode.join if wcode;
+						}
+					}
+				// }
+			}
+			self.wstart = 0;
+			say line { title => 'tman END' };
+			say '';
+        }
+
+        export:simple function task (taskName, data) {
+			self.tlast		= taskName;
+            self.tstack.{taskName} = [];
+			if (ref data eq 'CODE') {
+				self.tcode.{taskName} = data;
+				data = [taskName];
+			}
+            push self.tstack.{taskName}, data;
+        }
+
+        public function watch (path, data) {
+			self.wstart = 1;
+			// say '###>> ' ~ dump data;
+			self.wcode.{self.tcurrent}		= [];
+			self.wstack.{self.tcurrent}	= [];
+			var wc						= [];
+
+			foreach var tname (data) {
+				push wc, self.watch_go(path, self.tcode.{tname});
+			}
+
+			if (ref data eq 'CODE') {
+				// say '>>> ' ~ self.tcurrent;
+				push wc, self.watch_go(path, data);
+				data = [self.tcurrent];
+			}
+
+			self.wcode.{self.tcurrent} = wc;
+			push self.wstack.{self.tcurrent}, data;
+
+			return self;
+        }
+
+		// function action_reg (aname, code) {
+		// 	self.tcode.{aname} = code;
+		// }
+
+		thread watch_go (path, data) {
+			// say '### PATH: ' ~ path ~ ' | DATA: ' ~ dump data;
+			while(1){
+				self.src(path);
+				if (self.src_name){
+					// say line { title => 'WATCH', char => '~' };
+					data.();
+				}
+				sleep 1;
+			}
+		}
+    }
+}

@@ -1,0 +1,37 @@
+using rise.lib.ftp;
+
+namespace rise.lib.tman.plugin {
+	public class ftp {
+
+		public function ftp (conf) {
+			// if (self.src_name){
+				var ftppath			= conf.{path} ~ '/' ~ self.referPath();
+				var ftppath_full	= ftppath ~ self.filename;
+				var ftpw			= rise::lib::ftp->new ( conf.{host}, Timeout => 100, Debug => 0 ) || die "Can't connect to ftp server.\n";
+
+				self.dst_file		= self.filename;
+				self.ref_path		= self.referPath();
+
+				ftpw.login(conf.{user}, conf.{pass});
+				// ftpw.cwd('/');
+
+				if(!ftpw.cwd(ftppath)){
+					ftpw.mkdir(ftppath, 1);
+					// say "make remote dir -> $ftppath";
+				}
+
+				// say ">>> host   -> " ~ conf.{host};
+				// say ">>> user   -> " ~ conf.{user};
+				// say ">>> pass   -> " ~ conf.{pass};
+				// say ">>> path   -> " ~ conf.{path};
+
+				// self.fs.file.write(self.src_name, ftppath_full) if ftppath_full;
+				// ftpw.cwd(ftppath);
+				ftpw.put(self.src_name, ftppath_full);
+				// say "file put to FTP -> $ftppath_full";
+				self.sndOK();
+			// }
+			return self;
+		}
+	}
+}

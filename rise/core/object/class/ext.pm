@@ -76,7 +76,7 @@ sub import { no strict "refs";
 # 	return $args[$index + 1];
 # }
 
-sub export { no strict "refs";
+sub export { no strict "refs"; no warnings;
 	my $__CALLER_CLASS__	= (caller(1))[0];
 	my $self                = shift;
 	my $exports				= shift;
