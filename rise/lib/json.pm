@@ -16,27 +16,27 @@ sub new {
     return $self;
 }
 
-sub perl_json {
-	my $self  					= shift;
-	my $data					= shift;
-	$data 						= Data::Dump::dump $data;
-	$data 						=~ s/\"?(\w+)\"?\s*\=\>/"$1" :/gsx;
-
-	#$data 						=~ s/(\w+)(\s*)\:/"$1"$2:/gsx;
-	#$data 						=~ s/(\w+)(\s*)\=\>/"$1"$2:/gsx;
-	#$data 						=~ s/\:\s*(\w+)/: "$1"/gsx;
-
-	$data 						=~ s/\,(\s*[\]|\}])/$1/gsx;
-	return $data;
-}
-
-sub json_perl {
-	my $self  					= shift;
-	my $data					= shift;
-	$data 						=~ s/\:/\=\>/gsx;
-	$data						= eval $data;
-	return $data;
-}
+# sub perl_json {
+# 	my $self  					= shift;
+# 	my $data					= shift;
+# 	$data 						= Data::Dump::dump $data;
+# 	$data 						=~ s/\"?(\w+)\"?\s*\=\>/"$1" :/gsx;
+#
+# 	#$data 						=~ s/(\w+)(\s*)\:/"$1"$2:/gsx;
+# 	#$data 						=~ s/(\w+)(\s*)\=\>/"$1"$2:/gsx;
+# 	#$data 						=~ s/\:\s*(\w+)/: "$1"/gsx;
+#
+# 	$data 						=~ s/\,(\s*[\]|\}])/$1/gsx;
+# 	return $data;
+# }
+#
+# sub json_perl {
+# 	my $self  					= shift;
+# 	my $data					= shift;
+# 	$data 						=~ s/\:/\=\>/gsx;
+# 	$data						= eval $data;
+# 	return $data;
+# }
 
 sub json2hash {
 	my $self  					= shift;
