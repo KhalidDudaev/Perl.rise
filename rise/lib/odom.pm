@@ -6,14 +6,19 @@ use utf8;
 use feature 'say';
 use rise::lib::odom::hdom;
 use Data::Dump 'dump';
+use Clone 'clone';
 
 our $VERSION = '0.000';
 
 my $ENV_CLASS          = {
-  xml       => '',
-  hash      => {},
-  xdom      => {}
+    xml     => '',
+    hash    => {},
+    xdom    => {},
+    direct  => '',
+    # root    => {},
 };
+
+my $ROOT;
 
 # my $xdom    = {};
 my $hdom            = new rise::lib::odom::hdom;
@@ -32,16 +37,42 @@ sub parse {
   # my $xdom          = {};
   # my $hdom          = new lib::odom::hdom;
   # $hdom->clear;
+  $ROOT             = $hdom->parse($key,$hash);
+
+  $self             = $self->reparse($key,$hash);
+
+  # say "########################## ". dump($self->{xdom}) ." ########################";
+
+  # return bless { xdom => $self->{xdom}, root => $ENV_CLASS->{root} }, ref $self;
+  return $self;
+}
+
+sub reparse {
+  my $self          = shift;
+  my $key           = shift || '';
+  my $hash          = shift;
+  # my $xdom          = {};
+  # my $hdom          = new lib::odom::hdom;
+  # $hdom->clear;
+  # $ENV_CLASS->{root} = $hdom->reparse($key,$hash) if !$ENV_CLASS->{root};
+
   $self->{xdom}     = $hdom->parse($key,$hash);
 
   # say "########################## ". dump($self->{xdom}) ." ########################";
 
-  return bless { xdom => $self->{xdom} }, ref $self;
+  return bless { xdom => $self->{xdom}, root => $ENV_CLASS->{root} }, ref $self;
+  # return bless $self, ref $self;
 }
 
 sub xdom {
   my $self          = shift;
   return $self->{xdom};
+}
+
+sub root {
+    my $self          = shift;
+    $self->{xdom}   = $ROOT;
+    return $self;
 }
 
 sub id {
@@ -51,41 +82,48 @@ sub id {
   return  $res;
 }
 
-sub node {
+sub class {
   my $self          = shift;
-  my $node          = shift;
-  $ENV_CLASS->{selected}{node} = $node;
-  $ENV_CLASS->{selected}{attr} = '';
-  # foreach my $n (@$node) {
-  #     push @{$self->{xdom}{node}{$n}}, $n;
-  # }
+  my $class            = shift;
+  my $res           = $self->attr('class')->attrValue($class);
+  return  $res;
+}
 
-  $self             = $self->new->parse('',$self->{xdom}) if (ref $self->{xdom} eq 'ARRAY');
-  return  bless { xdom => $self->{xdom}{node}{$node} }, ref $self;
+sub node {
+    my $self        = shift;
+    my $node        = shift;
+
+    $ENV_CLASS->{selected}{node} = $node;
+    $ENV_CLASS->{selected}{attr} = '';
+    $ENV_CLASS->{selected}{path} .= ' ' . $node;
+
+    $self           = $self->new->reparse($node,$self->{xdom}) if (ref $self->{xdom} eq 'ARRAY');
+
+    @{$self->{xdom}{node}{$node}} = [grep $_->{parent} eq  $ENV_CLASS->{direct}, @{$self->{xdom}{node}{$node}}] if $ENV_CLASS->{direct} ne '';
+
+    return  bless ({ root => $self->{root}, xdom => $self->{xdom}{node}{$node}, xpath => $ENV_CLASS->{selected}{path} }, ref $self);
+
+    # my $lself           = $self->new->reparse('',$self->{xdom}) if (ref $self->{xdom} eq 'ARRAY');
+    #
+    # $lself->{xdom}       = $lself->{xdom}{node}{$node};
+    # $lself->{xpath}      = $ENV_CLASS->{selected}{path};
+    # # $self->{xpath}      = $ENV_CLASS->{selected}{path};
+    #
+    # %$self = (%$lself,%$self);
+    #
+    # return  bless ($self, ref $self);
 }
 
 sub attr {
-  # my $self        = shift;
-  # my $attr        = shift;
-  # my $attr_name   = [keys(%$attr)]->[0];
-  # my $attr_value  = $attr->{$attr_name};
-  # my $res_arr     = [];
-  #
-  # $self = $self->new->parse('',$self->{xdom}) if (ref $self->{xdom} eq 'ARRAY');
-  #
-  # foreach my $n (@{$self->{xdom}{attr}{$attr_name}}) {
-  #     push @{$res_arr}, $n if $n->{attr}{$attr_name} eq $attr_value;
-  # }
-  #
-  # # say "########################## ". dump($res_arr) ." ########################";
-  #
-  # return bless { xdom => $res_arr }, ref $self;
-
   my $self          = shift;
   my $attr          = shift;
+
   $ENV_CLASS->{selected}{attr} = $attr;
-  $self = $self->new->parse('',$self->{xdom}) if (ref $self->{xdom} eq 'ARRAY');
-  return bless { xdom => $self->{xdom}{attr}{$attr} }, ref $self;
+  $ENV_CLASS->{selected}{path} .= ' @' . $attr;
+
+  $self             = $self->new->reparse('',$self->{xdom}) if (ref $self->{xdom} eq 'ARRAY');
+
+  return bless { root => $self->{root}, xdom => $self->{xdom}{attr}{$attr}, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
 }
 
 sub attrValue {
@@ -93,7 +131,11 @@ sub attrValue {
   my $attrVal       = shift;
   my $node_arr      = [];
 
-  $self = $self->new->parse('',$self->{xdom}) if (ref $self->{xdom} eq 'ARRAY');
+  $ENV_CLASS->{selected}{path} .= '="' . $attrVal . '"';
+
+  $self = $self->new->reparse('',$self->{xdom}) if (ref $self->{xdom} eq 'ARRAY');
+
+  # return bless { root => $ENV_CLASS->{root}, xdom => $self->{xdom}{attrValue}{$attrVal} }, ref $self;
 
   $node_arr = $self->{xdom}{attrValue}{$attrVal};
 
@@ -106,14 +148,24 @@ sub attrValue {
 
   # say "########################## ". $ENV_CLASS->{selected}{attr} ." ########################";
 
-  # return bless { xdom => $self->{xdom}{attrValue}{$attrVal} }, ref $self;
-  return bless { xdom => $node_arr }, ref $self;
+  return bless { root => $self->{root}, xdom => $node_arr, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
+}
+
+sub direct {
+    my $self          = shift;
+
+    $ENV_CLASS->{selected}{path} .= ' >';
+    $ENV_CLASS->{direct} = $ENV_CLASS->{selected}{node};
+    return $self;
 }
 
 sub index {
   my $self          = shift;
   my $index         = shift;
-  return bless { xdom => $self->{xdom}[$index]{content} }, ref $self;
+
+  $ENV_CLASS->{selected}{path} .= ' i:' . $index;
+
+  return bless { root => $self->{root}, xdom => [$self->{xdom}[$index]], xpath => $ENV_CLASS->{selected}{path} }, ref $self;
 }
 
 sub inner {
@@ -122,15 +174,18 @@ sub inner {
   my $num;
   { no warnings; $num = 1 if $index =~ m/\d+/sx };
   # return $self->{xdom}[$index]{content} if $num;
-  return $self->index($index)->{xdom} if $num;
-  return $self->{xdom};
+  # return $self->index($index)->{xdom} if $num;
+  return $self->{xdom}[0]{content}[$index] if $num;
+  return $self->{xdom}[0]{content};
 }
 
 sub text {&inner}
 
 sub reset {
   my $self          = shift;
-  my $name          = shift;
+  my $name          = shift || '';
   $ENV_CLASS->{selected}{$name} = '';
   return bless $self, ref $self;
 }
+
+1;

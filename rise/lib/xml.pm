@@ -33,10 +33,13 @@ sub parse {
   my $xml_hash      = $xhash->parse($xml);
   my $xdom          = $odom->parse('',$xml_hash);
 
+  # $xdom->{xhash}    = $xml_hash;
+
   # say "########################## ". dump($xdom) ." ########################";
 
   return $xdom;
 }
+
 
 
 

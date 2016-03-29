@@ -15,21 +15,21 @@ my $ENV_CLASS          = {
   hash      => {}
 };
 
-my $xml_pattern        = '(?<XML>
-  (?:(?<TAG>\<\s*(?<TAGNAME>###TAGNAME###\b)(?<TAGPROPH>(?(?<!\\\)[^\<\>])*)?(?:(?<!\\\|\/)\>
-    (?<INNER>
-      (?>
-        (?!
-          (?:(?&TAG))
-          |(?:\<\/(?&TAGNAME)\>)
-        ).
-        |(?&XML)
-      )*
-    )
-    (?:<\/(?&TAGNAME)>)
-    |\/\>)
-  ))
-)';
+# my $xml_pattern        = '(?<XML>
+#   (?:(?<TAG>\<\s*(?<TAGNAME>###TAGNAME###\b)(?<TAGPROPH>(?(?<!\\\)[^\<\>])*)?(?:(?<!\\\|\/)\>
+#     (?<INNER>
+#       (?>
+#         (?!
+#           (?:(?&TAG))
+#           |(?:\<\/(?&TAGNAME)\>)
+#         ).
+#         |(?&XML)
+#       )*
+#     )
+#     (?:<\/(?&TAGNAME)>)
+#     |\/\>)
+#   ))
+# )';
 
 sub new {
   my $class         = ref $_[0] || $_[0];                                       # получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
@@ -63,13 +63,13 @@ sub parse {
   /gsxe;
   $xml =~ s/\"attr\"\s*\=\>\s*\{\s*\}/"attr" => undef/gsx;
 
-  # say "########################## $xml ########################";
   { #no strict;
     $hash = eval $xml;
   }
+  # say "########################## ". dump($hash) ." ########################";
   # $hash =  __hparse3('', [$hash]);
   # $self->{xdom} = $xdom;
-  return $hash;
+  return [$hash];
 }
 
 sub __node_proph {
@@ -84,3 +84,5 @@ sub __escape {
   $char =~ s/(\/)/\\$1/gsx;
   return $char;
 }
+
+1;
