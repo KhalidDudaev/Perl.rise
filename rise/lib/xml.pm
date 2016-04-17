@@ -24,14 +24,13 @@ sub new {
   return bless($object, $class);                                                # обьявляем класс и его свойства
 }
 
-
 sub parse {
   my $self          = shift;
   my $xml           = shift;
   my $xhash         = new rise::lib::xml::hash;
   my $odom          = new rise::lib::odom;
   my $xml_hash      = $xhash->parse($xml);
-  my $xdom          = $odom->parse('',$xml_hash);
+  my $xdom          = $odom->parse($xml_hash);
 
   # $xdom->{xhash}    = $xml_hash;
 
@@ -39,8 +38,5 @@ sub parse {
 
   return $xdom;
 }
-
-
-
 
 1;
