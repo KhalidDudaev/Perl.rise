@@ -32,38 +32,23 @@ sub new {
 
 sub parse {
   my $self          = shift;
-  # my $key           = shift || '';
   my $hash          = shift;
-  # my $xdom          = {};
-  # my $hdom          = new lib::odom::hdom;
-  # $hdom->clear;
+
   $ENV_CLASS->{base} = $hash;
 
   $ROOT             = $hdom->parse($hash);
-
   $self             = $self->reparse($hash);
 
-  # say "########################## ". dump($self->{xdom}) ." ########################";
-
-  # return bless { xdom => $self->{xdom}, root => $ENV_CLASS->{root} }, ref $self;
   return $self;
 }
 
 sub reparse {
   my $self          = shift;
-  # my $key           = shift || '';
   my $hash          = shift;
-  # my $xdom          = {};
-  # my $hdom          = new lib::odom::hdom;
-  # $hdom->clear;
-  # $ENV_CLASS->{root} = $hdom->reparse($key,$hash) if !$ENV_CLASS->{root};
 
   $self->{xdom}     = $hdom->parse($hash);
 
-  # say "########################## ". dump($self->{xdom}) ." ########################";
-
   return bless { xdom => $self->{xdom}, root => $ENV_CLASS->{root} }, ref $self;
-  # return bless $self, ref $self;
 }
 
 sub xdom {
@@ -107,23 +92,6 @@ sub class {
 
   return  $res;
 }
-
-# sub class {
-#   my $self          = shift;
-#   my $class          = shift;
-#
-#   $ENV_CLASS->{selected}{attr} = 'class';
-#   $ENV_CLASS->{selected}{path} .= ' .';
-#
-#   $self             = $self->attrValue($class);
-#   $self             = $self->new->reparse($self->{xdom}) if (ref $self->{xdom} eq 'ARRAY');
-#
-#
-#   return bless { xdom => $self->{xdom}{attr}{'class'}, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
-#
-#   # $self->{xpath}      = $ENV_CLASS->{selected}{path};
-#   # return $self;
-# }
 
 sub node {
     my $self        = shift;
@@ -169,15 +137,7 @@ sub attr {
 
   $self             = $self->new->reparse($self->{xdom}) if (ref $self->{xdom} eq 'ARRAY');
 
-  # my $obj;
-  # $obj = bless { xdom => $self->{xdom}{attr}{$attr}, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
-  # $ENV_CLASS->{selected}{obj} = $obj;
-  # return $obj;
-
   return bless { xdom => $self->{xdom}{attr}{$attr}, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
-
-  # $self->{xpath}      = $ENV_CLASS->{selected}{path};
-  # return $self;
 }
 
 sub attrValue {
@@ -201,17 +161,7 @@ sub attrValue {
 
   $ENV_CLASS->{selected}{attr} = '';
 
-  # say "########################## ". $ENV_CLASS->{selected}{attr} ." ########################";
-
-  # my $obj;
-  # $obj = bless {  xdom => $node_arr, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
-  # $ENV_CLASS->{selected}{obj} = $obj;
-  # return $obj;
-
   return bless {  xdom => $node_arr, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
-
-  # $self->{xpath}      = $ENV_CLASS->{selected}{path};
-  # return $self;
 }
 
 sub direct {
@@ -225,7 +175,6 @@ sub direct {
 sub addNode {
     my $self        = shift;
     my $node        = shift;
-    # my $obj         = $ENV_CLASS->{selected}{obj};
     my $parent      = $ENV_CLASS->{selected}{node};
 
     __error('ERROR NODE: No selected node
@@ -254,43 +203,9 @@ sub addNode {
     return $self->node($node);
 }
 
-# sub addNode {
-#     my $self        = shift;
-#     my $name        = shift;
-#     my $node        = $ENV_CLASS->{selected}{node};
-#     my $obj;
-#
-#     $ENV_CLASS->{selected}{path} .= ' +' . $name;
-#
-#
-#     my $node_add    = {
-#       'attr' => {},
-#       'order' => 0,
-#       'content' => ['ASDASDAS'],
-#       'name' => $name,
-#       'parent' => $node
-#     };
-#
-#     $self           = $self->new->reparse($self->{xdom}) if (ref $self->{xdom} eq 'ARRAY');
-#
-#     @{$self->{xdom}{node}{$node}} = grep {
-#         $node_add->{order} = $#{$_->{content}};
-#         push @{$_->{content}}, $node_add;
-#     } @{$self->{xdom}{node}{$node}};
-#
-#     $self->new->parse($ENV_CLASS->{base});
-#
-#     # say "########################## ". dump($self) ." ########################";
-#
-#     # return bless { xdom => $self->{xdom}{node}{$name}, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
-#     $self = bless { xdom => $self->{xdom}{node}{$node}, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
-#     return $self->node($name);
-# }
-
 sub addNodeVal {
     my $self        = shift;
     my $value       = shift;
-    # my $obj         = $ENV_CLASS->{selected}{obj};
     my $node        = $ENV_CLASS->{selected}{node};
 
     __error('ERROR VAL: No selected node
@@ -312,7 +227,6 @@ sub addAttr {
     my $self        = shift;
     my $attr        = shift;
     my $node        = $ENV_CLASS->{selected}{node};
-    # my $obj         = $ENV_CLASS->{selected}{obj};
 
     __error('ERROR ATTR: No selected node
     -> package:    $package
@@ -341,7 +255,6 @@ sub addAttrVal {
 
     my $node        = $ENV_CLASS->{selected}{node};
     my $attr        = $ENV_CLASS->{selected}{attr};
-    # my $obj         = $ENV_CLASS->{selected}{obj};
 
     __error('ERROR ATTRVAL: No selected attribute
     -> package:    $package
@@ -367,37 +280,29 @@ sub addAttrVal {
 sub index {
   my $self          = shift;
   my $index         = shift;
-  # my $obj;
 
   $ENV_CLASS->{selected}{path} .= ' i:' . $index;
 
   return bless {  xdom => [$self->{xdom}[$index]], xpath => $ENV_CLASS->{selected}{path} }, ref $self;
-
-  # $self->{xpath}      = $ENV_CLASS->{selected}{path};
-  # return $self;
-
 }
 
 sub nodeVal {
   my $self          = shift;
   my $val           = shift || '';
-  # my $num;
   my $arr           = [];
-  # { no warnings; $num = 1 if $index =~ m/\d+/sx };
 
   grep {
-    #   push @$arr, $_->{content}[$index] if $num;
-    #   push @$arr, $_->{content} if !$num;
-    # $_->{content} ||= '';
     grep {
         push @$arr, $_ if $_ =~ m/$val/sx;
     } @{$_->{content}};
-
-    # push @$arr, $_->{content} if $_->{content} =~ m/$val/sx;
   } @{$self->{xdom}};
 
-  # return $arr->[$index] if $num;
   return $arr;
+}
+
+sub item {
+    my $self        = shift;
+
 }
 
 sub inner {
@@ -408,25 +313,12 @@ sub inner {
   { no warnings; $num = 1 if $index =~ m/\d+/sx };
 
   grep {
-    #   push @$arr, $_->{content}[$index] if $num;
-    #   push @$arr, $_->{content} if !$num;
       push @$arr, $_->{content};
   } @{$self->{xdom}};
 
   return $arr->[$index] if $num;
   return $arr;
 }
-
-# sub inner {
-#   my $self          = shift;
-#   my $index         = shift;
-#   my $num;
-#   { no warnings; $num = 1 if $index =~ m/\d+/sx };
-#   # return $self->{xdom}[$index]{content} if $num;
-#   # return $self->index($index)->{xdom} if $num;
-#   return $self->{xdom}[0]{content}[$index] if $num;
-#   return $self->{xdom}[0]{content};
-# }
 
 sub val {&inner}
 
@@ -446,10 +338,6 @@ sub __error {
 
     $func               =~ s/.*?(\w+)$/$1/sx;
     $err_msg            = '"' . $err_msg . '"';
-
-    # $err_msg     .= "
-    # -> line $line: $func('@arr') - $package
-    # \n";
 
     die eval $err_msg;
 }

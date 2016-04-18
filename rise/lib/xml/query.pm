@@ -49,6 +49,7 @@ sub xq {
         $_ =~ s/^\+\=\"(.*?)\"$/$xdom->addNodeVal($1)/sxe;
         $_ =~ s/^\+\@(\w+)$/$xdom->addAttr($1)/sxe;
         $_ =~ s/^\+\@\"(.*?)\"$/$xdom->addAttrVal($1)/sxe;
+        $_ =~ s/^\[(.*?)\]$/$xdom->index($1)/sxe;
     } @$stack;
 
     return $stack;
