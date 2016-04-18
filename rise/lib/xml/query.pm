@@ -30,6 +30,7 @@ sub xq {
     my $xdom        = shift;
     my $qcommands   = shift;
     my $stack       = [];
+    my $res;
 
     $qcommands      =~ s/((?:\"\"|\"(?(?<!\\)[^\"]|.)*?[^\\]\"))/__xqexlude($1)/gsxe;
     $qcommands      =~ s/^\s*(.*?)\s*$/$1/sx;
@@ -39,20 +40,20 @@ sub xq {
     grep {
         $_ =~ s/%%TXT(\d+)%%/__xqinclude($1)/sxe;
 
-        $_ =~ s/^\/$/$xdom->root/sxe;
-        $_ =~ s/^\:base$/$xdom->base/sxe;
-        $_ =~ s/^\#(\w+)$/$xdom->id($1)/sxe;
-        $_ =~ s/^(\w+)$/$xdom->node($1)/sxe;
-        $_ =~ s/^\@(\w+)$/$xdom->attr($1)/sxe;
-        $_ =~ s/^\@\"(.*?)\"$/$xdom->attrVal($1)/sxe;
-        $_ =~ s/^\+(\w+)$/$xdom->addNode($1)/sxe;
-        $_ =~ s/^\+\=\"(.*?)\"$/$xdom->addNodeVal($1)/sxe;
-        $_ =~ s/^\+\@(\w+)$/$xdom->addAttr($1)/sxe;
-        $_ =~ s/^\+\@\"(.*?)\"$/$xdom->addAttrVal($1)/sxe;
-        $_ =~ s/^\[(.*?)\]$/$xdom->index($1)/sxe;
+        $res = $xdom->root              if $_ =~ m/^\/$/sx;
+        $res = $xdom->base              if $_ =~ m/^\:base$/sx;
+        $res = $xdom->id($1)            if $_ =~ m/^\#(\w+)$/sx;
+        $res = $xdom->node($1)          if $_ =~ m/^(\w+)$/sx;
+        $res = $xdom->attr($1)          if $_ =~ m/^\@(\w+)$/sx;
+        $res = $xdom->attrValue($1)     if $_ =~ m/^\@\"(.*?)\"$/sx;
+        $res = $xdom->addNode($1)       if $_ =~ m/^\+(\w+)$/sx;
+        $res = $xdom->addNodeValue($1)  if $_ =~ m/^\+\=\"(.*?)\"$/sx;
+        $res = $xdom->addAttr($1)       if $_ =~ m/^\+\@(\w+)$/sx;
+        $res = $xdom->addAttrValue($1)  if $_ =~ m/^\+\@\"(.*?)\"$/sx;
+        $res = $xdom->index($1)         if $_ =~ m/^\[(.*?)\]$/sx;
     } @$stack;
 
-    return $stack;
+    return $res;
 }
 
 sub __xqexlude {

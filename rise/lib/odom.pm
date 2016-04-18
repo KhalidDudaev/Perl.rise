@@ -203,7 +203,7 @@ sub addNode {
     return $self->node($node);
 }
 
-sub addNodeVal {
+sub addNodeValue {
     my $self        = shift;
     my $value       = shift;
     my $node        = $ENV_CLASS->{selected}{node};
@@ -249,7 +249,7 @@ sub addAttr {
     return bless { xdom => $self->{xdom}{attr}{$attr}, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
 }
 
-sub addAttrVal {
+sub addAttrValue {
     my $self        = shift;
     my $val         = shift;
 
@@ -286,7 +286,7 @@ sub index {
   return bless {  xdom => [$self->{xdom}[$index]], xpath => $ENV_CLASS->{selected}{path} }, ref $self;
 }
 
-sub nodeVal {
+sub nodeValue {
   my $self          = shift;
   my $val           = shift || '';
   my $arr           = [];
