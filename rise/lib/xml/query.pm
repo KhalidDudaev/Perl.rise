@@ -30,7 +30,6 @@ sub xq {
     my $xdom        = shift;
     my $qcommands   = shift;
     my $stack       = [];
-    my $res;
 
     $qcommands      =~ s/((?:\"\"|\"(?(?<!\\)[^\"]|.)*?[^\\]\"))/__xqexlude($1)/gsxe;
     $qcommands      =~ s/^\s*(.*?)\s*$/$1/sx;
@@ -40,20 +39,26 @@ sub xq {
     grep {
         $_ =~ s/%%TXT(\d+)%%/__xqinclude($1)/sxe;
 
-        $res = $xdom->root              if $_ =~ m/^\/$/sx;
-        $res = $xdom->base              if $_ =~ m/^\:base$/sx;
-        $res = $xdom->id($1)            if $_ =~ m/^\#(\w+)$/sx;
-        $res = $xdom->node($1)          if $_ =~ m/^(\w+)$/sx;
-        $res = $xdom->attr($1)          if $_ =~ m/^\@(\w+)$/sx;
-        $res = $xdom->attrValue($1)     if $_ =~ m/^\@\"(.*?)\"$/sx;
-        $res = $xdom->addNode($1)       if $_ =~ m/^\+(\w+)$/sx;
-        $res = $xdom->addNodeValue($1)  if $_ =~ m/^\+\=\"(.*?)\"$/sx;
-        $res = $xdom->addAttr($1)       if $_ =~ m/^\+\@(\w+)$/sx;
-        $res = $xdom->addAttrValue($1)  if $_ =~ m/^\+\@\"(.*?)\"$/sx;
-        $res = $xdom->index($1)         if $_ =~ m/^\[(.*?)\]$/sx;
+        $xdom = $xdom->root             if $_ =~ m/^(?:\/|\:root|\:r)$/sx;
+        $xdom = $xdom->base             if $_ =~ m/^\:(?:base|b)$/sx;
+        $xdom = $xdom->id($1)           if $_ =~ m/^\#(\w+)$/sx;
+        $xdom = $xdom->class($1)        if $_ =~ m/^\.(\w+)$/sx;
+        $xdom = $xdom->node($1)         if $_ =~ m/^(\w+)$/sx;
+        $xdom = $xdom->nodeValue($1)    if $_ =~ m/^\?(?:\"(.*?)\")?$/sx;
+        $xdom = $xdom->nodeInner($1)    if $_ =~ m/^\=(?:\[(.*?)\])?$/sx;
+        $xdom = $xdom->direct           if $_ =~ m/^(?:\:direct|\:d|\>)$/sx;
+        $xdom = $xdom->flat             if $_ =~ m/^(?:\:flat|\:f|\<)$/sx;
+        $xdom = $xdom->attr($1)         if $_ =~ m/^\@(\w+)$/sx;
+        $xdom = $xdom->attrValue($1)    if $_ =~ m/^\@\"(.*?)\"$/sx;
+        $xdom = $xdom->addNode($1)      if $_ =~ m/^\+(\w+)$/sx;
+        $xdom = $xdom->addNodeValue($1) if $_ =~ m/^\+\=\"(.*?)\"$/sx;
+        $xdom = $xdom->addAttr($1)      if $_ =~ m/^\+\@(\w+)$/sx;
+        $xdom = $xdom->addAttrValue($1) if $_ =~ m/^\+\@\"(.*?)\"$/sx;
+        $xdom = $xdom->index($1)        if $_ =~ m/^\[(.*?)\]$/sx;
+
     } @$stack;
 
-    return $res;
+    return $xdom;
 }
 
 sub __xqexlude {

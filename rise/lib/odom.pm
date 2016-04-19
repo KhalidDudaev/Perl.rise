@@ -36,7 +36,7 @@ sub parse {
 
   $ENV_CLASS->{base} = $hash;
 
-  $ROOT             = $hdom->parse($hash);
+  $ROOT             = $hdom->parse($hash, 1);
   $self             = $self->reparse($hash);
 
   return $self;
@@ -60,7 +60,7 @@ sub root {
     my $self          = shift;
     $ENV_CLASS->{selected}{node} = '';
     $ENV_CLASS->{selected}{attr} = '';
-    $ENV_CLASS->{selected}{path} .= ' /';
+    $ENV_CLASS->{selected}{path} .= ' :root';
     $self->{xdom}   = $ROOT;
     return $self;
 }
@@ -97,11 +97,7 @@ sub node {
     my $self        = shift;
     my $node        = shift;
 
-    __error('ERROR NODE: The node name is not specified
-    -> package:    $package
-       line:       $line
-       method:     $func(?)
-    \n') if !$node;
+    __error('ERROR NODE: The node name is not specified','?') if !$node;
 
     $ENV_CLASS->{selected}{node} = $node;
     $ENV_CLASS->{selected}{attr} = '';
@@ -115,10 +111,61 @@ sub node {
     return bless { xdom => $self->{xdom}{node}{$node}, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
 }
 
+sub nodeValue {
+  my $self          = shift;
+  my $val           = shift || '.*?';
+  my $arr           = [];
+
+  $ENV_CLASS->{selected}{path} .= ' ?';
+  $ENV_CLASS->{selected}{path} .= '"'.$val.'"' if $val;
+
+  # say "### $ENV_CLASS->{selected}{path} ###";
+
+  grep {
+    my $node = $_;
+    grep {
+        push @$arr, $node if $_ =~ m/$val/sx;
+        # push @$arr, $_ if !$val;
+    } @{$_->{content}};
+  } @{$self->{xdom}};
+
+  return bless { xdom => $arr, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
+}
+
+
+sub nodeInner {
+  my $self          = shift;
+  my $item          = shift;
+  my $arr           = [];
+
+  my $num           = 0;
+
+  { no warnings; $num = 1 if $item =~ m/\d+/sx };
+
+  __error('ERROR ITEM: Only number item',"'$item'") if $item && !$num;
+
+  # $item             = '0' if $item == 0;
+
+  $ENV_CLASS->{selected}{path} .= ' =';
+  $ENV_CLASS->{selected}{path} .= '['.$item.']' if $num;
+
+  # say "### $ENV_CLASS->{selected}{path} ###";
+
+  grep {
+    grep {
+        push @$arr, $_;
+    } @{$_->{content}};
+  } @{$self->{xdom}};
+
+  return $arr->[$item] if $num;
+  return $arr;
+}
+
 sub flat {
     my $self        = shift;
     my $nodes       = [];
 
+    $ENV_CLASS->{selected}{path} .= ' :flat';
     $self           = $self->new->reparse($self->{xdom}) if (ref $self->{xdom} eq 'ARRAY');
 
     grep {
@@ -167,7 +214,7 @@ sub attrValue {
 sub direct {
     my $self          = shift;
 
-    $ENV_CLASS->{selected}{path} .= ' >';
+    $ENV_CLASS->{selected}{path} .= ' :direct';
     $ENV_CLASS->{direct} = $ENV_CLASS->{selected}{node};
     return $self;
 }
@@ -177,11 +224,7 @@ sub addNode {
     my $node        = shift;
     my $parent      = $ENV_CLASS->{selected}{node};
 
-    __error('ERROR NODE: No selected node
-    -> package:    $package
-       line:       $line
-       method:     $func(\''.$node.'\')
-    \n') if !$parent;
+    __error('ERROR NODE: No selected node',"'$node'") if !$parent;
 
     $ENV_CLASS->{selected}{path} .= ' +' . $node;
 
@@ -194,7 +237,7 @@ sub addNode {
     };
 
     grep {
-        $node_add->{order} = $#{$_->{content}};
+        # $node_add->{order} = "QWEQWE";
         push @{$_->{content}}, clone($node_add);
     } @{$self->{xdom}};
 
@@ -208,11 +251,7 @@ sub addNodeValue {
     my $value       = shift;
     my $node        = $ENV_CLASS->{selected}{node};
 
-    __error('ERROR VAL: No selected node
-    -> package:    $package
-       line:       $line
-       method:     $func(\''.$value.'\')
-    \n') if !$node;
+    __error('ERROR VAL: No selected node',"'$value'") if !$node;
 
     $ENV_CLASS->{selected}{path} .= ' +="' . $value . '"';
 
@@ -228,11 +267,7 @@ sub addAttr {
     my $attr        = shift;
     my $node        = $ENV_CLASS->{selected}{node};
 
-    __error('ERROR ATTR: No selected node
-    -> package:    $package
-       line:       $line
-       method:     $func(\''.$attr.'\')
-    \n') if !$node;
+    __error('ERROR ATTR: No selected node',"'$attr'") if !$node;
 
     $ENV_CLASS->{selected}{attr} = $attr;
     $ENV_CLASS->{selected}{path} .= ' +@' . $attr;
@@ -256,11 +291,7 @@ sub addAttrValue {
     my $node        = $ENV_CLASS->{selected}{node};
     my $attr        = $ENV_CLASS->{selected}{attr};
 
-    __error('ERROR ATTRVAL: No selected attribute
-    -> package:    $package
-       line:       $line
-       method:     $func(\''.$val.'\')
-    \n') if !$attr;
+    __error('ERROR ATTRVAL: No selected attribute', "'$val'") if !$attr;
 
     $ENV_CLASS->{selected}{path} .= ' +="' . $val . '"';
 
@@ -281,29 +312,15 @@ sub index {
   my $self          = shift;
   my $index         = shift;
 
-  $ENV_CLASS->{selected}{path} .= ' i:' . $index;
+  $ENV_CLASS->{selected}{path} .= " [$index]";
 
   return bless {  xdom => [$self->{xdom}[$index]], xpath => $ENV_CLASS->{selected}{path} }, ref $self;
 }
 
-sub nodeValue {
-  my $self          = shift;
-  my $val           = shift || '';
-  my $arr           = [];
 
-  grep {
-    grep {
-        push @$arr, $_ if $_ =~ m/$val/sx;
-    } @{$_->{content}};
-  } @{$self->{xdom}};
-
-  return $arr;
-}
-
-sub item {
-    my $self        = shift;
-
-}
+# sub item {
+#     my $self        = shift;
+# }
 
 sub inner {
   my $self          = shift;
@@ -333,13 +350,26 @@ sub reset {
 sub __error {
     my $err_msg         = shift;
     my @arr             = @_;
+    my $err;
+    my ($package, $file, $line, $func);
+    my $level           = 1;
 
-    my ($package, $file, $line, $func)      = (caller(1));
+    $package            = 1;
 
-    $func               =~ s/.*?(\w+)$/$1/sx;
-    $err_msg            = '"' . $err_msg . '"';
+    while ($package) {
+        ($package, $file, $line, $func)      = (caller($level));
+        if ($package) {
+            $func               =~ s/.*?(\w+)$/$1/sx;
+            $err .= "$err_msg
+    -> package:    $package
+       line:       $line
+       method:     $func(@arr)\n";
+        }
+        $level++;
+        $err_msg = '';
+    }
 
-    die eval $err_msg;
+    die $err;
 }
 
 1;
