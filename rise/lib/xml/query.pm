@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use utf8;
 use feature 'say';
-use rise::lib::xml::hash;
-use rise::lib::odom;
 
 use Data::Dump 'dump';
 
@@ -44,17 +42,18 @@ sub xq {
         $xdom = $xdom->id($1)           if $_ =~ m/^\#(\w+)$/sx;
         $xdom = $xdom->class($1)        if $_ =~ m/^\.(\w+)$/sx;
         $xdom = $xdom->node($1)         if $_ =~ m/^(\w+)$/sx;
-        $xdom = $xdom->nodeValue($1)    if $_ =~ m/^\?(?:\"(.*?)\")?$/sx;
+        $xdom = $xdom->nodeValue($1)    if $_ =~ m/^(?:\"(.*?)\")?$/sx;
         $xdom = $xdom->nodeInner($1)    if $_ =~ m/^\=(?:\[(.*?)\])?$/sx;
         $xdom = $xdom->direct           if $_ =~ m/^(?:\:direct|\:d|\>)$/sx;
         $xdom = $xdom->flat             if $_ =~ m/^(?:\:flat|\:f|\<)$/sx;
         $xdom = $xdom->attr($1)         if $_ =~ m/^\@(\w+)$/sx;
         $xdom = $xdom->attrValue($1)    if $_ =~ m/^\@\"(.*?)\"$/sx;
         $xdom = $xdom->addNode($1)      if $_ =~ m/^\+(\w+)$/sx;
-        $xdom = $xdom->addNodeValue($1) if $_ =~ m/^\+\=\"(.*?)\"$/sx;
+        $xdom = $xdom->addNodeValue($1) if $_ =~ m/^\+\"(.*?)\"$/sx;
         $xdom = $xdom->addAttr($1)      if $_ =~ m/^\+\@(\w+)$/sx;
         $xdom = $xdom->addAttrValue($1) if $_ =~ m/^\+\@\"(.*?)\"$/sx;
         $xdom = $xdom->index($1)        if $_ =~ m/^\[(.*?)\]$/sx;
+        $xdom = $xdom->xml              if $_ =~ m/^(?:\:xml|\<\>)$/sx;
 
     } @$stack;
 

@@ -18,7 +18,7 @@ my $ENV_CLASS          = {
     # root    => {},
 };
 
-my $ROOT;
+# my $ROOT;
 
 # my $xdom    = {};
 my $hdom            = new rise::lib::odom::hdom;
@@ -30,13 +30,13 @@ sub new {
   return bless($object, $class);                                                # обьявляем класс и его свойства
 }
 
-sub parse {
+sub dom {
   my $self          = shift;
   my $hash          = shift;
 
   $ENV_CLASS->{base} = $hash;
 
-  $ROOT             = $hdom->parse($hash, 1);
+  # $ROOT             = $hdom->parse($hash, 1);
   $self             = $self->reparse($hash);
 
   return $self;
@@ -61,8 +61,12 @@ sub root {
     $ENV_CLASS->{selected}{node} = '';
     $ENV_CLASS->{selected}{attr} = '';
     $ENV_CLASS->{selected}{path} .= ' :root';
-    $self->{xdom}   = $ROOT;
-    return $self;
+    $self->{xdom}   = $ENV_CLASS->{base};
+
+    # $self           = $self->new->reparse($self->{xdom}) if (ref $self->{xdom} eq 'ARRAY');
+    return $self
+    # return bless { xdom => $self->{xdom}, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
+    # return $ENV_CLASS->{base};
 }
 
 sub parent {
@@ -241,7 +245,7 @@ sub addNode {
         push @{$_->{content}}, clone($node_add);
     } @{$self->{xdom}};
 
-    $self->new->parse($ENV_CLASS->{base});
+    $self->new->dom($ENV_CLASS->{base});
 
     return $self->node($node);
 }
@@ -279,7 +283,7 @@ sub addAttr {
     } @$arr;
 
     $self           = $self->new->reparse($self->{xdom}) if (ref $self->{xdom} eq 'ARRAY');
-    $self->new->parse($ENV_CLASS->{base});
+    $self->new->dom($ENV_CLASS->{base});
 
     return bless { xdom => $self->{xdom}{attr}{$attr}, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
 }
@@ -303,7 +307,7 @@ sub addAttrValue {
     } @$arr;
 
     $self             = $self->new->reparse($self->{xdom}) if (ref $self->{xdom} eq 'ARRAY');
-    $self->new->parse($ENV_CLASS->{base});
+    $self->new->dom($ENV_CLASS->{base});
 
     return bless { xdom => $self->{xdom}{attr}{$attr}, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
 }

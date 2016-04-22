@@ -1,16 +1,10 @@
-##################################### XML ######################################
-package rise::lib::xml;
+##################################### XML::HASH ################################
+package rise::lib::xml::hashxml;
+
 use strict;
 use warnings;
 use utf8;
 use feature 'say';
-use parent 'rise::lib::odom';
-use parent 'rise::lib::xml::hashxml';
-# use rise::lib::odom;
-use rise::lib::xml::query;
-use rise::lib::xml::xmlhash;
-
-# use rise::lib::xml::hash;
 
 use Data::Dump 'dump';
 
@@ -21,8 +15,6 @@ my $ENV_CLASS          = {
   hash      => {}
 };
 
-my $xq              = new rise::lib::xml::query;
-
 sub new {
   my $class         = ref $_[0] || $_[0];                                       # получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
   my $object        = $_[1] || {};                                              # получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
@@ -30,24 +22,43 @@ sub new {
   return bless($object, $class);                                                # обьявляем класс и его свойства
 }
 
-sub parse {
+sub xml {
   my $self          = shift;
-  my $xml           = shift;
-  my $xhash         = new rise::lib::xml::xmlhash;
-  # my $odom          = new rise::lib::odom;
-  my $xml_hash      = $xhash->parse($xml);
-  $self          = $self->dom($xml_hash);
+  # my $obj           = shift;
+  my $xml;
 
-  # $xdom->{xhash}    = $xml_hash;
+  grep {
+      $xml .= __xml($_) if ref $_ eq 'HASH';
+      $xml .= $_ if ref $_ ne 'HASH';
+  } @{$self->{xdom}};
 
-  # say "########################## ". dump($xdom) ." ########################";
+  # $xml              = __xml($array);
 
-  return $self;
+  return $xml;
 }
 
-sub xq {
-    my $self        = shift;
-    return $xq->xq($self, @_);
+sub __xml {
+    my $hash       = shift;
+    my $xml;
+
+    # say "################## ".dump($hash)." ##################";
+
+    $xml    .= '<'.$hash->{name} if ref $hash eq 'HASH';
+    grep {
+        $xml    .= ' ' . $_ .'="'. $hash->{attr}{$_} .'"';
+    } keys %{$hash->{attr}};
+    $xml    .= '>';
+
+    grep {
+        $xml .= __xml($_) if ref $_ eq 'HASH';
+        $xml .= $_ if ref $_ ne 'HASH';
+    } @{$hash->{content}};
+
+    $xml    .= '</'.$hash->{name}.'>';
+
+    # $xml = __xml($hash);
+
+    return $xml;
 }
 
 1;
