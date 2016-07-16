@@ -228,6 +228,8 @@ sub parse {
 	my @order;
 	# my $info_all			= '';
 
+    $self->{passed}			= 0;
+
 	# $info_rule				= {} if $parser_count > 2;
 	$parser_count++;
 
@@ -236,6 +238,8 @@ sub parse {
 
 	@order					= @{&order} if &order;
 	@order					= @$rule_name_selected if $rule_name_selected;
+
+    # print dump(@order);
 
 	#my @order				= ($rule_name_selected) || @{&order};
 	#my @order				= ($rule_name_selected)||('_');
@@ -249,7 +253,7 @@ sub parse {
 			$rule_name 		= $_;
 			#push @{$self->{rule_order}}, $rule_name;
 
-			my $regex_g		= '';
+            my $regex_g		= '';
 			my $last_sourse = '';
 			my $res_sourse	= '';
 			# $info_all				= '';
@@ -293,8 +297,6 @@ sub parse {
 
 			$self->{info_rule}{$rule_name}	+= $self->{passed};
 			$self->{passed}					= 0;
-
-
 
 			# print "$rule_name \n" if $self->{passed} eq undef;
 

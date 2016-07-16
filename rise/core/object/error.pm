@@ -13,41 +13,41 @@ my $ERROR		= {
 	class_priv				=> [ [ 1, 2 ], '"ERROR CLASS:\nCan\'t access class \"$parent\" at\n-> line $line in $file"' ],
 	class_priv_inherit		=> [ [ 1, 3 ], '"ERROR CLASS:\nCan\'t access class \"$parent\" at\n-> line $line in $file"' ],
 	class_prot				=> [ [ 1, 2 ], '"ERROR CLASS:\nClass \"$parent\" only extends at\n-> line $line in $file"' ],
-	class_inherits			=> [ [ 1, 1 ], '"ERROR CLASS:\nextends or implements syntaxis erorr in class \"$parent\" at\n-> line $line in $file"' ],
+	class_inherits			=> [ [ 1, 1 ], '"ERROR CLASS:\nextends or implements syntaxis erorr in class \"$parent\" at"' ],
 
-	abstract_prot			=> [ [ 1, 2 ], '"ERROR ABSTRACT:\nAbstract class \"$parent\" only extends at\n-> line $line in $file"' ],
-	abstract_priv			=> [ [ 1, 1 ], '"ERROR ABSTRACT:\nAn abstract class \"$parent\" cannot be private at\n-> line $line in $file"' ],
-	abstract_publ			=> [ [ 1, 1 ], '"ERROR ABSTRACT:\nAn abstract class \"$parent\" cannot be public at\n-> line $line in $file"' ],
+	abstract_prot			=> [ [ 1, 2 ], '"ERROR ABSTRACT:\nAbstract class \"$parent\" only extends at"' ],
+	abstract_priv			=> [ [ 1, 1 ], '"ERROR ABSTRACT:\nAn abstract class \"$parent\" cannot be private at"' ],
+	abstract_publ			=> [ [ 1, 1 ], '"ERROR ABSTRACT:\nAn abstract class \"$parent\" cannot be public at"' ],
 
-	interface_prot			=> [ [ 1, 2 ], '"ERROR INTERFACE:\nInterface \"$parent\" only extends at\n-> line $line in $file"' ],
-	interface_priv			=> [ [ 1, 1 ], '"ERROR INTERFACE:\nAn interface \"$parent\" cannot be private at\n-> line $line in $file"' ],
-	interface_publ			=> [ [ 1, 1 ], '"ERROR INTERFACE:\nAn interface \"$parent\" cannot be public at\n-> line $line in $file"' ],
+	interface_prot			=> [ [ 1, 2 ], '"ERROR INTERFACE:\nInterface \"$parent\" only extends at"' ],
+	interface_priv			=> [ [ 1, 1 ], '"ERROR INTERFACE:\nAn interface \"$parent\" cannot be private at"' ],
+	interface_publ			=> [ [ 1, 1 ], '"ERROR INTERFACE:\nAn interface \"$parent\" cannot be public at"' ],
 
 	INTERFACE_CONFIRM		=> [ [ 1, 1 ], '"ERROR INTERFACE:\n$msg_error"' ],
 
-	code_priv				=> [ [ 1, 2 ], '"ERROR FUNCTION:\nCan\'t access function \"$name\" from \"$class\" at\n-> line $line in $file"' ],
-	code_prot				=> [ [ 1, 2 ], '"ERROR FUNCTION:\nFunction \"$name\" from \"$class\" only inheritable at\n-> line $line in $file"' ],
+	code_priv				=> [ [ 1, 2 ], '"ERROR FUNCTION:\nCan\'t access function \"$name\" from \"$class\" at"' ],
+	code_prot				=> [ [ 1, 2 ], '"ERROR FUNCTION:\nFunction \"$name\" from \"$class\" only inheritable at"' ],
 
-	CODE_PRIVATE			=> [ [ 0, 1 ], '"ERROR FUNCTION:\nCan\'t access function \"$name\" from \"$class\" at\n-> line $line in $file"' ],
-	CODE_PROTECTED			=> [ [ 0, 1 ], '"ERROR FUNCTION:\nFunction \"$name\" from \"$class\" only inheritable at\n-> line $line in $file"' ],
+	CODE_PRIVATE			=> [ [ 0, 1 ], '"ERROR FUNCTION:\nCan\'t access function \"$name\" from \"$class\" at"' ],
+	CODE_PROTECTED			=> [ [ 0, 1 ], '"ERROR FUNCTION:\nFunction \"$name\" from \"$class\" only inheritable at"' ],
 
-	var_priv				=> [ [ 1, 2 ], '"ERROR VARIABLE:\nCan\'t access variable \"$name\" from \"$class\" at\n-> line $line in $file"' ],
-	var_prot				=> [ [ 1, 2 ], '"ERROR VARIABLE:\nVariable \"$name\" from \"$class\" only inheritable at\n-> line $line in $file"' ],
+	var_priv				=> [ [ 1, 2 ], '"ERROR VARIABLE:\nCan\'t access variable \"$name\" from \"$class\" at"' ],
+	var_prot				=> [ [ 1, 2 ], '"ERROR VARIABLE:\nVariable \"$name\" from \"$class\" only inheritable at"' ],
 
-	VAR_PRIVATE				=> [ [ 0, 1 ], '"ERROR VARIABLE:\nCan\'t access variable \"$name\" from \"$class\" at\n-> line $line in $file"' ],
-	VAR_PROTECTED			=> [ [ 0, 1 ], '"ERROR VARIABLE:\nVariable \"$name\" from \"$class\" only inheritable at\n-> line $line in $file"' ],
+	VAR_PRIVATE				=> [ [ 0, 1 ], '"ERROR VARIABLE:\nCan\'t access variable \"$name\" from \"$class\" at"' ],
+	VAR_PROTECTED			=> [ [ 0, 1 ], '"ERROR VARIABLE:\nVariable \"$name\" from \"$class\" only inheritable at"' ],
 
-	VAR_CAST				=> [ [ 1, 2 ], '"ERROR TYPE:\nYou can only assign a value type \"$name\" at\n-> line $line in $file"' ],
-	VAR_CAST_UNDEFINE		=> [ [ 1, 2 ], '"ERROR TYPE:\nUndefine value type \"$name\" at\n-> line $line in $file"' ],
+	VAR_CAST				=> [ [ 1, 2 ], '"ERROR TYPE:\nYou can only assign a value type \"$name\" at"' ],
+	VAR_CAST_UNDEFINE		=> [ [ 1, 2 ], '"ERROR TYPE:\nUndefine value type \"$name\" at"' ],
 
 
-	PRIVATE					=> [ [ 0, 1 ], '"ERROR ACCESS:\nCan\'t access function \"$name\" from \"$class\" at\n-> line $line in $file"' ],
-	PROTECTED				=> [ [ 0, 1 ], '"ERROR ACCESS:\nFunction \"$name\" from \"$class\" only inheritable at\n-> line $line in $file"' ],
+	PRIVATE					=> [ [ 0, 1 ], '"ERROR ACCESS:\nCan\'t access function \"$name\" from \"$class\" at"' ],
+	PROTECTED				=> [ [ 0, 1 ], '"ERROR ACCESS:\nFunction \"$name\" from \"$class\" only inheritable at"' ],
 
-	# ARRAY_HASH				=> [ [ 0, 1 ], '"ERROR ARRAY OR HASH:\nNot ARRAY value \"$name\" at\n-> line $line in $file"' ],
-	ARRAY_HASH				=> [ [ 0, 1 ], '"ERROR ARRAY OR HASH OP: \"$name\"\nNot ARRAY or HASH value or error expression at\n-> line $line in $file"' ],
-	SCALAR					=> [ [ 0, 1 ], '"ERROR SCALAR OP: \"$name\"\nNot SCALAR value or error expression at\n-> line $line in $file"' ],
-	PRINT					=> [ [ 0, 1 ], '"ERROR PRINT OP: Use of uninitialized value print at\n-> line $line in $file"' ],
+	# ARRAY_HASH				=> [ [ 0, 1 ], '"ERROR ARRAY OR HASH:\nNot ARRAY value \"$name\" at"' ],
+	ARRAY_HASH				=> [ [ 0, 1 ], '"ERROR ARRAY OR HASH OP: \"$name\"\nNot ARRAY or HASH value or error expression at"' ],
+	SCALAR					=> [ [ 0, 1 ], '"ERROR SCALAR OP: \"$name\"\nNot SCALAR value or error expression at"' ],
+	PRINT					=> [ [ 0, 1 ], '"ERROR PRINT OP: Use of uninitialized value print at"' ],
 
 
 };
@@ -138,67 +138,39 @@ sub __RISE_ERR {
 
 	my $err_conf	= $ERROR->{$err};
 	my $level		= $err_conf->[0];
+	my $level_count	= 1;
 	my $parent		= (caller($level->[0]))[0];
 	my ($child, $file, $line, $func); # = (caller($level->[1]));
+	# my $fext		= $class->{source}{fext};
 	my $fext		= 'puma'; #$class->{source}{fext};
 	my $err_msg		= "################################## ERROR #####################################\n";
 
-	#my $child;
-	#my $file;
-	#my $line = '';
-	#my $func;
 
 	($child, $file, $line, $func) = (caller($level->[1]));
-	$file			=~ s/\.pm/\.$fext/gsx;
-	$file			=~ s/.*?(\/\w+\/\w+\/\w+\.\w+)$/..$1/gsx;
-	$func			=~ s/.*::(\w+)$/$1/;
-	$class			=~ s/::$func$//;
-
-#	print "----------------
-#	self	: $class
-#	error	: $err
-#	parent	: $parent
-#	child	: $child
-#	file	: $file
-#	line	: $line
-#	func	: $name
-#----------------\n";
-
-	#for ( my $i = 3; $line =~ /\d+/ && $i > 0; --$i  ) {
-	#	($child, $file, $line, $func) = (caller($i));
-	#	$line ||= '';
-	#}
-
-
-
-
-	#print ">>>>>> $class - $name | ".$level->[0]." <<<<<<<\n";
-
-
-
+	($class, $file, $func) = __err_filter($class, $file, $func, $fext);
 	$err_msg .= eval $err_conf->[1];
 
-	($child, $file, $line, $func) = (caller($level->[1] + 1));# if $child eq 'main';
-	$file			=~ s/\.pm/\.$fext/gsx;
-	$file			=~ s/.*?(\/\w+\/\w+\/\w+\.\w+)$/..$1/gsx;
-	$func			=~ s/.*::(\w+)$/$1/;
-	$class			=~ s/::$func$//;
+	while ($file && $line && $child ne 'main') {
+		$err_msg .= eval '"\n-> line $line in $file"';
+		($child, $file, $line, $func) = (caller($level->[1] + $level_count));# if $child eq 'main';
+		($class, $file, $func) = __err_filter($class, $file, $func, $fext);
+		# $err_msg .= eval '"\n-> line $line in $file"' if $file && $line && $child ne 'main';
+		$level_count++;
+	}
 
-#	print "----------------
-#	self	: $class
-#	error	: $err
-#	parent	: $parent
-#	child	: $child
-#	file	: $file
-#	line	: $line
-#	func	: $name
-#----------------\n";
-
-	$err_msg .= eval '"\n-> line $line in $file"' if $file && $line && $child ne 'main';
 	$err_msg .= "\n##############################################################################\n\n";
 
 	die $err_msg;
 	#confess $err_msg;
+}
+
+sub __err_filter {
+	my ($class, $file, $func, $fext) = @_;
+	$file			=~ s/\.pm/\.$fext/gsx;
+	$file			=~ s/.*?(\/\w+\/\w+\/\w+\.\w+)$/..$1/gsx;
+	$func			=~ s/.*::(\w+)$/$1/;
+	$class			=~ s/::$func$//;
+	return ($class, $file, $func);
 }
 
 sub DESTROY {}

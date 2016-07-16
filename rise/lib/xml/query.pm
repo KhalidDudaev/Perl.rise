@@ -37,23 +37,32 @@ sub xq {
     grep {
         $_ =~ s/%%TXT(\d+)%%/__xqinclude($1)/sxe;
 
-        $xdom = $xdom->root             if $_ =~ m/^(?:\/|\:root|\:r)$/sx;
-        $xdom = $xdom->base             if $_ =~ m/^\:(?:base|b)$/sx;
-        $xdom = $xdom->id($1)           if $_ =~ m/^\#(\w+)$/sx;
-        $xdom = $xdom->class($1)        if $_ =~ m/^\.(\w+)$/sx;
-        $xdom = $xdom->node($1)         if $_ =~ m/^(\w+)$/sx;
-        $xdom = $xdom->nodeValue($1)    if $_ =~ m/^(?:\"(.*?)\")?$/sx;
-        $xdom = $xdom->nodeInner($1)    if $_ =~ m/^\=(?:\[(.*?)\])?$/sx;
-        $xdom = $xdom->direct           if $_ =~ m/^(?:\:direct|\:d|\>)$/sx;
-        $xdom = $xdom->flat             if $_ =~ m/^(?:\:flat|\:f|\<)$/sx;
-        $xdom = $xdom->attr($1)         if $_ =~ m/^\@(\w+)$/sx;
-        $xdom = $xdom->attrValue($1)    if $_ =~ m/^\@\"(.*?)\"$/sx;
-        $xdom = $xdom->addNode($1)      if $_ =~ m/^\+(\w+)$/sx;
-        $xdom = $xdom->addNodeValue($1) if $_ =~ m/^\+\"(.*?)\"$/sx;
-        $xdom = $xdom->addAttr($1)      if $_ =~ m/^\+\@(\w+)$/sx;
-        $xdom = $xdom->addAttrValue($1) if $_ =~ m/^\+\@\"(.*?)\"$/sx;
-        $xdom = $xdom->index($1)        if $_ =~ m/^\[(.*?)\]$/sx;
-        $xdom = $xdom->xml              if $_ =~ m/^(?:\:xml|\<\>)$/sx;
+        $xdom = $xdom->root                 if $_ =~ m/^(?:\/|\:root|\:r)$/sx;
+        $xdom = $xdom->base                 if $_ =~ m/^\:(?:base|b)$/sx;
+        $xdom = $xdom->id($1)             if $_ =~ m/^\#(\w+)$/sx;
+        $xdom = $xdom->class($1)          if $_ =~ m/^\.(\w+)$/sx;
+        $xdom = $xdom->node($1)           if $_ =~ m/^(\w+)$/sx;
+        $xdom = $xdom->nodeValue($1)      if $_ =~ m/^(?:\"(.*?)\")?$/sx;
+        $xdom = $xdom->attr($1)           if $_ =~ m/^\@(\w+)$/sx;
+        $xdom = $xdom->attrValue($1)      if $_ =~ m/^\@\"(.*?)\"$/sx;
+
+        $xdom = $xdom->addNode($1)          if $_ =~ m/^\+(\w+)$/sx;
+        $xdom = $xdom->addNodeValue($1)     if $_ =~ m/^\+\"(.*?)\"$/sx;
+        $xdom = $xdom->addAttr($1)          if $_ =~ m/^\+\@(\w+)$/sx;
+        $xdom = $xdom->addAttrValue($1)     if $_ =~ m/^\+\@\"(.*?)\"$/sx;
+
+        $xdom = $xdom->nName($1)             if $_ =~ m/^\:name(?:\[(.*?)\])?$/sx;
+        $xdom = $xdom->nParent($1)             if $_ =~ m/^\:parent(?:\[(.*?)\])?$/sx;
+        $xdom = $xdom->nOrder($1)             if $_ =~ m/^\:order(?:\[(.*?)\])?$/sx;
+        $xdom = $xdom->nPath($1)             if $_ =~ m/^\:path(?:\[(.*?)\])?$/sx;
+        $xdom = $xdom->nAttr($1)             if $_ =~ m/^\:attr(?:\[(.*?)\])?$/sx;
+        $xdom = $xdom->nContent($1)      if $_ =~ m/^\=(?:\[(.*?)\])?$/sx;
+
+        $xdom = $xdom->inner($1)            if $_ =~ m/^\:(?:inner|content)(?:\[(.*?)\])?$/sx;
+        $xdom = $xdom->direct               if $_ =~ m/^(?:\:direct|\:d|\>)$/sx;
+        $xdom = $xdom->flat                 if $_ =~ m/^(?:\:flat|\:f|\<)$/sx;
+        $xdom = $xdom->index($1)            if $_ =~ m/^\[(.*?)\]$/sx;
+        $xdom = $xdom->xml                  if $_ =~ m/^(?:\:xml|\<\>)$/sx;
 
     } @$stack;
 

@@ -36,12 +36,15 @@ sub parse {
   my $xhash         = new rise::lib::xml::xmlhash;
   # my $odom          = new rise::lib::odom;
   my $xml_hash      = $xhash->parse($xml);
-  $self          = $self->dom($xml_hash);
+  # my $res           = $self->dom($xml_hash);
+  $self             = $self->dom($xml_hash);
+  # $self             = bless $self->dom($xml_hash), ref $self;
 
   # $xdom->{xhash}    = $xml_hash;
 
   # say "########################## ". dump($xdom) ." ########################";
 
+  # return $res;
   return $self;
 }
 

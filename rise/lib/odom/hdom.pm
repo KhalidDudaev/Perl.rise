@@ -58,15 +58,18 @@ sub __hparse {
     for my $k (@$array) {
         $order++;
         next if ref $k ne 'HASH' || !exists $k->{name};
-        $k->{order}         = $order;
-
 
         # say "#######################".dump($k)."#######################";
         # dump($k->{name});
 
-        $num = $plevel->{$k->{name}}++;
+        $num                = $plevel->{$k->{name}}++;
+
+        $k->{order}         = $order - 1;
+        if ($first) {
+            $k->{path}          = $path . ' ' . $k->{name} . " [$num]";
+        }
+
         $k->{parent}        ||= $key;
-        $k->{path}          = $path . ' ' . $k->{name} . " [$num]" if $first;
 
         $idom               = __hparse($k->{name},$k->{content},$k->{path}) || {};
 

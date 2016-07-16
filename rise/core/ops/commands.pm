@@ -114,7 +114,11 @@ sub line (;$){
 	return $title . $char x ($length - length($title));
 }
 
-sub say { local $\ = ""; print @_ , "\n"; };
+sub say {
+	__PACKAGE__->__RISE_ERR('PRINT') if !$_[0];
+	local $\ = "";
+	print @_ , "\n";
+}
 
 sub msg (;$$){
 	my $text		= shift || 'NO TEXT';

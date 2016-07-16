@@ -37,7 +37,8 @@ sub dom {
   $ENV_CLASS->{base} = $hash;
 
   # $ROOT             = $hdom->parse($hash, 1);
-  $self             = $self->reparse($hash);
+  # $self             = $self->reparse($hash);
+  $self->{xdom}             = $hdom->parse($hash, 1);
 
   return $self;
 }
@@ -137,7 +138,7 @@ sub nodeValue {
 }
 
 
-sub nodeInner {
+sub nContent {
   my $self          = shift;
   my $item          = shift;
   my $arr           = [];
@@ -318,13 +319,108 @@ sub index {
 
   $ENV_CLASS->{selected}{path} .= " [$index]";
 
-  return bless {  xdom => [$self->{xdom}[$index]], xpath => $ENV_CLASS->{selected}{path} }, ref $self;
+  return bless { xdom => [$self->{xdom}[$index]], xpath => $ENV_CLASS->{selected}{path} }, ref $self;
 }
 
 
 # sub item {
 #     my $self        = shift;
 # }
+
+sub nName {
+    my $self          = shift;
+    my $index         = shift;
+    my $num;
+    my $arr           = [];
+    { no warnings; $num = 1 if $index =~ m/\d+/sx };
+
+    $ENV_CLASS->{selected}{path} .= ' :name';
+    $ENV_CLASS->{selected}{path} .= "[$index]" if $num;
+
+    grep {
+        push @$arr, $_->{name};
+    } @{$self->{xdom}};
+
+    return $arr->[$index] if $num;
+    # return bless { xdom => $arr, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
+    return $arr;
+}
+
+sub nParent {
+    my $self          = shift;
+    my $index         = shift;
+    my $num;
+    my $arr           = [];
+    { no warnings; $num = 1 if $index =~ m/\d+/sx };
+
+    $ENV_CLASS->{selected}{path} .= ' :parent';
+    $ENV_CLASS->{selected}{path} .= "[$index]" if $num;
+
+    grep {
+        push @$arr, $_->{parent};
+    } @{$self->{xdom}};
+
+    return $arr->[$index] if $num;
+    # return bless { xdom => $arr, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
+    return $arr;
+}
+
+sub nPath {
+    my $self          = shift;
+    my $index         = shift;
+    my $num;
+    my $arr           = [];
+    { no warnings; $num = 1 if $index =~ m/\d+/sx };
+
+    $ENV_CLASS->{selected}{path} .= ' :path';
+    $ENV_CLASS->{selected}{path} .= "[$index]" if $num;
+
+    grep {
+        push @$arr, $_->{path};
+    } @{$self->{xdom}};
+
+    return $arr->[$index] if $num;
+    # return bless { xdom => $arr, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
+    return $arr;
+}
+
+sub nAttr {
+    my $self          = shift;
+    my $index         = shift;
+    my $num;
+    my $arr           = [];
+    { no warnings; $num = 1 if $index =~ m/\d+/sx };
+
+    $ENV_CLASS->{selected}{path} .= ' :attr';
+    $ENV_CLASS->{selected}{path} .= "[$index]" if $num;
+
+    grep {
+        push @$arr, $_->{attr};
+    } @{$self->{xdom}};
+
+    return $arr->[$index] if $num;
+    # return bless { xdom => $arr, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
+    return $arr;
+}
+
+sub nOrder {
+    my $self          = shift;
+    my $index         = shift;
+    my $num;
+    my $arr           = [];
+    { no warnings; $num = 1 if $index =~ m/\d+/sx };
+
+    $ENV_CLASS->{selected}{path} .= ' :order';
+    $ENV_CLASS->{selected}{path} .= "[$index]" if $num;
+
+    grep {
+        push @$arr, $_->{order};
+    } @{$self->{xdom}};
+
+    return $arr->[$index] if $num;
+    # return bless { xdom => $arr, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
+    return $arr;
+}
 
 sub inner {
   my $self          = shift;
@@ -333,12 +429,16 @@ sub inner {
   my $arr           = [];
   { no warnings; $num = 1 if $index =~ m/\d+/sx };
 
+  $ENV_CLASS->{selected}{path} .= ' :inner';
+  $ENV_CLASS->{selected}{path} .= "[$index]" if $num;
+
   grep {
-      push @$arr, $_->{content};
+      push @$arr, @{$_->{content}};
   } @{$self->{xdom}};
 
   return $arr->[$index] if $num;
-  return $arr;
+  return bless { xdom => $arr, xpath => $ENV_CLASS->{selected}{path} }, ref $self;
+  # return $arr;
 }
 
 sub val {&inner}
