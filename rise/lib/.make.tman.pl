@@ -10,10 +10,11 @@ use lib qw|
 
 use rise {
     debug    => 1,
-    info    => 0,
+    info    => 1,
     compile => [qw'
-		puma
-		ftp
+        tman/fmm
+		tman/plugin/puma
+		tman/plugin/ftp
     ']
 };
 # MakeBot

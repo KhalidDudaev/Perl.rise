@@ -34,11 +34,10 @@ examle:
     start;
 In ***tman*** includes default task named ***default***.
 Command **`start`** starts the default task
-###
-syntax **`task`** function:
+### syntax **`task`** function:
 
     task 'taskname1' => sub {...};
-    task 'taskname2' => sub {...};
+    task 'taskname2' => ['taskname1'];
     #or..
     task 'taskname3' => ['taskname1', 'taskname2', ...];
 
