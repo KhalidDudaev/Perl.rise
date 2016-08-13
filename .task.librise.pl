@@ -16,7 +16,7 @@ plugin 'notify';
 task 'compile' => sub {
     tman->src('C:/_DATA_EXT/_data/works/Development/_PERL/_lib/librise/**/*.puma')
 		->puma({ debug => 1, info  => 0 })
-    	->dst('C:/_DATA_EXT/_data/works/Development/_PERL/_lib/librise/')
+	    ->dst('C:/_DATA_EXT/_data/works/Development/_PERL/_lib/librise/')
 		->notify('puma compile ...' . tman->ref_path . tman->dst_file);
 };
 
