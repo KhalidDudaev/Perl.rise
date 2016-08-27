@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use utf8;
 use	rise::core::object::class::ext;
+# use	parent 'rise::core::object::class::ext';
 use rise::core::ops::commands;
 use feature 'say';
 #use Data::Dump 'dump';

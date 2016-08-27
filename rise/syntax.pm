@@ -228,6 +228,7 @@ sub confirm {
 		'_including',
 		'_optimize9',
         '_unwrap_header_code',
+        '_unwrap_variable',
 
 	];
 
@@ -495,7 +496,8 @@ sub confirm {
 
 	token excluding					=> q/POD|DATA|END|comment|regex|text/;
 	token including					=> q/%%%TEXT_ number %%%/;
-	token wrap_code					=> q/%%%CLASS_CODE_ name_ex %%%/;
+	# token wrap_code					=> q/%%%CLASS_CODE_ name_ex %%%/;
+	# token wrap_variable				=> q/%%%CLASS_CODE_ name_ex %%%/;
 
 
 	token EOP 						=> q/(?:\n\n|\Z)/;
@@ -633,6 +635,7 @@ sub confirm {
 	token paren_R					=> q/\)/;
     token wrap_code                 => q/%%%WRAP_CODE_.*?%%%/;
     token wrap_header_code          => q/%%%WRAP_HEADER_CODE_.*?%%%/;
+    token wrap_variable             => q/%%%WRAP_VARIABLE_.*?%%%/;
 
 	################################################## rules ####################################################
 	#rule _									=> q/<all>/;
@@ -646,7 +649,8 @@ sub confirm {
 	rule _inherits							=> q/<inherits> <name>/;
 	rule _implements						=> q/<implements> <name_list>/;
 
-	rule _class								=> q/[<accessmod_class>] <class> <name> [<content>] <block_brace>/;
+	# rule _class								=> q/[<accessmod_class>] <class> <name> [<content>] <block_brace>/;
+	rule _class								=> q/[<accessmod_class>] <class> <name> [<code_args>] [<content>] <block_brace>/;
 	rule _abstract							=> q/<abstract> <name> [<content>] <block_brace>/;
 	rule _interface							=> q/<interface> <name> [<content>] <block_brace>/;
 	rule _interface_set						=> q/[<accessmod_class>] <object_members> <name> <op_end>/;
@@ -739,6 +743,7 @@ sub confirm {
 	rule _including							=> q/<including>/;
 	rule _unwrap_code						=> q/<all>/;
 	rule _unwrap_header_code				=> q/<all>/;
+    rule _unwrap_variable					=> q/<all>/;
 
 	rule _commentC							=> q/<comment_C>/;
 
@@ -792,6 +797,7 @@ sub confirm {
 
 	action _unwrap_code						=> \&_syntax_unwrap_code;
 	action _unwrap_header_code				=> \&_syntax_unwrap_header_code;
+    action _unwrap_variable				    => \&_syntax_unwrap_variable;
 
 	action _op_regex						=> \&_syntax_op_regex;
 
@@ -903,6 +909,13 @@ sub _syntax_unwrap_header_code {
 	my $res				= '';
 	1 while $all =~ s/%%%WRAP_HEADER_CODE_(\w+(?:::\w+)*)%%%/var('wrap_header_code')->{$1}/gsxe;
 	return $all;
+}
+
+sub _syntax_unwrap_variable {
+    my $all				= &all;
+    my $res				= '';
+    1 while $all =~ s/%%%WRAP_VARIABLE_(\w+(?:::\w+)*)%%%/var('wrap_variable')->{$1}/gsxe;
+    return $all;
 }
 
 #-------------------------------------------------------------------------------------< inject | using | inherits | implements
@@ -1749,8 +1762,8 @@ sub _syntax_variable {
 	# $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings; $op_end";
 	$res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;";
 
-    var('wrap_code')->{$parent_class.'::'.$name} = $res;
-	$res = '%%%WRAP_CODE_' . $parent_class.'::'.$name . '%%% ' . $op_end;
+    var('wrap_variable')->{$parent_class.'::'.$name} = $res;
+	$res = '%%%WRAP_VARIABLE_' . $parent_class.'::'.$name . '%%% ' . $op_end;
 
     return $res;
 }
@@ -1858,6 +1871,7 @@ sub __object {
 	my ($self, $object, $rule_name, $confs)			= @_;
 	my $accmod			= $confs->{accessmod};
 	my $name			= &name;
+	my $code_args		= &code_args;
 	my $args_attr		= &content;
 	my $block 			= &block_brace;
 
@@ -1872,6 +1886,8 @@ sub __object {
 	my $extends			= '';
 	my $implements		= '';
 	my $res				= '';
+
+    # print $code_args;
 
 	if ($parent_class) {
 		var('members')->{$parent_class} .= ' '.$accmod.'-'.$object.'-'.$name;
@@ -1896,7 +1912,7 @@ sub __object {
 	$block 				= parse($self, $block, &grammar, [@{var 'parser_'.$object}], { parent => $name });
 	# $block 				= parse($self, $block, &grammar, [@{var 'parser_code'}], { parent => $name });
 
-	$res				= "{ package ${name};".$sps1."use rise::core::object::${object};". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $confs) . $sps4.$block."}";
+	$res				= "{ package ${name};".$sps1."use rise::core::object::${object};". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $code_args, $confs) . $sps4.$block."}";
 	# $res				= "{ package ${name};".$sps1."use strict; use warnings; use rise::core::object::class;". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $confs) . $sps4.$block."}";
 	var('wrap_code')->{$name} = $res;
 	$res = '%%%WRAP_CODE_' . $name . '%%%';
@@ -1908,6 +1924,7 @@ sub __object_header {
 	my $self			= shift;
 	my $obj_type		= shift;
 	my $name			= shift;
+    my $code_args       = shift;
     my $confs           = shift;
     my $parent_class	= $confs->{parent} || 'main';
     my $res;
@@ -1921,6 +1938,14 @@ sub __object_header {
 		abstract	=> "",
 		interface	=> " __PACKAGE__->interface_join;"
 	};
+
+    # print $code_args;
+
+    if ($code_args) {
+        my $code            = ' var ' . $code_args . '; sub __CLASS_ARGS__ { my $self = shift; '.$code_args.' = @_; };';
+        $code 				= parse($self, $code, &grammar, [@{var 'parser_variable'}], { parent => $name });
+        $header->{class}	.= $code;
+    }
 
     if (exists var('exports')->{$name}) {
         my $exports         = dump(var('exports')->{$name});
