@@ -1568,7 +1568,7 @@ sub __object_header {
     }
 
 	if ($self->{debug}) {
-		$header->{class}	.= " __PACKAGE__->interface_confirm; sub __OBJLIST__ {'".(var('members')->{$name}||'')."'}...";
+		$header->{class}	.= " __PACKAGE__->interface_confirm; sub __CLASS_MEMBERS__ {'".(var('members')->{$name}||'')."'}...";
 		$header->{abstract} .= " __PACKAGE__->interface_join;";
 	}
 

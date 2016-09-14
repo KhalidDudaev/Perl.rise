@@ -3,7 +3,7 @@
 
     use Term::ReadKey;
 
-    { package rise::lib::fileMonitor; use strict; use warnings; use rise::core::ops::extends 'rise::core::object::class','rise::lib';   BEGIN { no strict 'refs'; *{'rise::lib::fileMonitor::'.$_} = \&{'rise::lib::IMPORT::'.$_} for keys %rise::lib::IMPORT::; }; sub super { $rise::lib::fileMonitor::ISA[1] } my $self = 'rise::lib::fileMonitor'; sub self { $self }; BEGIN { __PACKAGE__->__RISE_COMMANDS } __PACKAGE__->interface_confirm; sub __OBJLIST__ {'public-function-MakeTask public-function-tasks public-function-start private-function-Monitor private-function-RKey private-function-RMode private-var-monitor'}
+    { package rise::lib::fileMonitor; use strict; use warnings; use rise::core::ops::extends 'rise::core::object::class','rise::lib';   BEGIN { no strict 'refs'; *{'rise::lib::fileMonitor::'.$_} = \&{'rise::lib::IMPORT::'.$_} for keys %rise::lib::IMPORT::; }; sub super { $rise::lib::fileMonitor::ISA[1] } my $self = 'rise::lib::fileMonitor'; sub self { $self }; BEGIN { __PACKAGE__->__RISE_COMMANDS } __PACKAGE__->interface_confirm; sub __CLASS_MEMBERS__ {'public-function-MakeTask public-function-tasks public-function-start private-function-Monitor private-function-RKey private-function-RMode private-var-monitor'}
 
         # use Data::Dump 'dump';
 

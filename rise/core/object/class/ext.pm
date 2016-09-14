@@ -88,9 +88,9 @@ sub import { no strict "refs";
 	# say "caller -> $caller";
 	# say "self   -> $self";
 
-	if (exists &{$self."::__OBJLIST__"}){
+	if (exists &{$self."::__CLASS_MEMBERS__"}){
 		$self->interface_confirm;
-		# $self->interface_confirm($self->__OBJLIST__);
+		# $self->interface_confirm($self->__CLASS_MEMBERS__);
 	}
 
 	if (exists &{$self."::__EXPORT__"}){
@@ -135,7 +135,7 @@ sub interface_confirm {
 	no warnings;
 	my $caller				= caller(1);
 	my $self				= shift;
-	my $memberlist			= $self->__OBJLIST__;
+	my $memberlist			= $self->__CLASS_MEMBERS__;
 	my $interfacelist		= \%{$self.'::INTERFACE'};
 	my @objnames 			= keys %$interfacelist;
 	my $obj_name;

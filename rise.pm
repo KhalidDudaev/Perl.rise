@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use utf8;
 
+use DateTime;
 #use ExtUtils::Installed;
 use Time::HiRes qw(time);
 # use Clone 'clone';
@@ -37,6 +38,12 @@ my $syntax;
 my $file;
 my $inst;
 my $modules;
+
+my $dt                              = DateTime->now();
+# my $auth_set                        = 'unknown';
+my $ver_set                         = $dt->year . '.' . sprintf("%02d", $dt->month) . sprintf("%02d", $dt->day) . $dt->hms('');
+
+# $conf->{VERSION}                    = $ver_set if $conf->{VERSION} eq 'auto';
 
 #__init();
 
@@ -79,7 +86,9 @@ sub __init {
 	# $rise::grammar::info_rule	= {};
 	# print dump $conf;
 	#$parser						= new dialect::Parser ({ info => $conf->{info} });
-	$file						= new rise::lib::fs::fileWorker;
+    $conf->{VERSION}                    = $ver_set if $conf->{VERSION} eq 'auto';
+
+    $file						= new rise::lib::fs::fileWorker;
 	$grammar					= new rise::grammar $conf;
 	$syntax						= new rise::syntax $conf;
 
@@ -90,8 +99,6 @@ sub __init {
 	#$inst    					= new ExtUtils::Installed;
 	#$parser						= $syntax->parser;
 	#$modules 					= join ( " ", $inst->modules);
-
-
 }
 
 sub __confs_load {
@@ -233,6 +240,7 @@ sub compile { #print "#### COMPILE ####\n";
 
 	if ($code_source) {
 		# $grammar->clear;
+        $grammar->{FNAME}      = $fname_source;
 		&__syntax->{RULE}		= $grammar->compile_RBNF(&__syntax->{RULE});
 		($code_dest, $info)		= $grammar->parse($code_source, &__syntax);
 		$code_dest .= "\n1;";
@@ -251,6 +259,7 @@ sub compile { #print "#### COMPILE ####\n";
 	# $rise::grammar::parser_count	= '';
 
 	# return $code_dest if !$fname_dest;
+    # $syntax->confirm;
 	return {code => $code_dest, fname => $fname_dest, info => $info};
 }
 

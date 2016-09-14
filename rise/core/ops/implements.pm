@@ -64,7 +64,7 @@ sub interface_join {
 #	my $obj_accmod;
 #	#my $obj_tmpl;
 #
-#	#$objlist 				= $class->__OBJLIST__;
+#	#$objlist 				= $class->__CLASS_MEMBERS__;
 #	#$objlist->{variable}	= $class->__VARLIST__;
 #	
 #	foreach my $object (@objnames) {
@@ -91,7 +91,7 @@ sub interface_join {
 #	
 #	
 #	
-#	$objlist->{objlist}	= $class->__OBJLIST__;
+#	$objlist->{objlist}	= $class->__CLASS_MEMBERS__;
 #	#$objlist->{variable}	= $class->__VARLIST__;
 #	
 #	foreach my $name (@objnames) {

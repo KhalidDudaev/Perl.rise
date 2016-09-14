@@ -33,7 +33,7 @@ sub interface_confirm {
 	my $obj_accmod;
 	#my $obj_tmpl;
 
-	$objlist 				= $class->__OBJLIST__;
+	$objlist 				= $class->__CLASS_MEMBERS__;
 	#$objlist->{variable}	= $class->__VARLIST__;
 	
 	foreach my $object (@objnames) {

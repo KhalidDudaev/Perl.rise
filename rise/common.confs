@@ -1,4 +1,6 @@
 {
+    AUTHORITY       => 'unknown',
+    VERSION         => 'auto',
 	command 		=> @_ || 'framework',
 	source			=> {
 		fpath		=> '',

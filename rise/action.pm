@@ -602,7 +602,7 @@ sub _syntax_object {
 
 	$extends			= "use rise::core::ops::extends $base_class$parent_class$list_extends;";
 	
-	#return "{ package <name>; use strict; use warnings;...${extends}...${accmod}...__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".($self->var('members')->{$name}||'')."'}...";
+	#return "{ package <name>; use strict; use warnings;...${extends}...${accmod}...__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __CLASS_MEMBERS__ {'".($self->var('members')->{$name}||'')."'}...";
 	return "{ package <name>; use strict; use warnings;...${extends}...${accmod}..." . __object_header($object, $name || '');
 }
 
@@ -611,7 +611,7 @@ sub __object_header {
 	my $obj_type		= shift;
 	my $name			= shift;
 	my $header			= {
-		class		=> "__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } my \$<kw_self> = '<name>'; sub <kw_self> { \$<kw_self> } sub __OBJLIST__ {'".($self->var('members')->{$name}||'')."'}...",
+		class		=> "__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } my \$<kw_self> = '<name>'; sub <kw_self> { \$<kw_self> } sub __CLASS_MEMBERS__ {'".($self->var('members')->{$name}||'')."'}...",
 		abstract	=> "__PACKAGE__->interface_join;",
 		interface	=> "__PACKAGE__->interface_join;"
 	};
@@ -696,10 +696,10 @@ sub _syntax_class {
 	#$$implements			= "use rise::core::ops::implements  '"
 	
 	#return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' }...";
-	#return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".($self->var('members')->{$name}||'')."'}...";
-	#return "{ package <name>; ".$self->var('env')."->{caller}{parent} = '${parent_name}'; ".$self->var('env')."->{caller}{name} = __PACKAGE__; ".$self->var('env')."->{caller}{type} = 'class'; ...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".($self->var('members')->{$name}||'')."'}...";
-	return "{ package <name>; use strict; use warnings;...${extends}...${accmod}...__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } sub <kw_self> { '<name>' } sub __OBJLIST__ {'".($self->var('members')->{$name}||'')."'}...";
-	#return "{ package <name>; my \$__caller__ = '<name>';...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __OBJLIST__ {'".($self->var('members')->{$name}||'')."'}...";
+	#return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __CLASS_MEMBERS__ {'".($self->var('members')->{$name}||'')."'}...";
+	#return "{ package <name>; ".$self->var('env')."->{caller}{parent} = '${parent_name}'; ".$self->var('env')."->{caller}{name} = __PACKAGE__; ".$self->var('env')."->{caller}{type} = 'class'; ...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __CLASS_MEMBERS__ {'".($self->var('members')->{$name}||'')."'}...";
+	return "{ package <name>; use strict; use warnings;...${extends}...${accmod}...__PACKAGE__->interface_confirm; sub super { \$<name>::ISA[1] } sub <kw_self> { '<name>' } sub __CLASS_MEMBERS__ {'".($self->var('members')->{$name}||'')."'}...";
+	#return "{ package <name>; my \$__caller__ = '<name>';...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub this { '<name>' } sub __CLASS_MEMBERS__ {'".($self->var('members')->{$name}||'')."'}...";
 	
 }
 
@@ -764,7 +764,7 @@ sub _syntax_class_OFF {
 	#$extends				= "use rise::core::ops::extends '" . $parent_list . "'$class_ext";
 	#$$implements			= "use rise::core::ops::implements  '"
 	
-	return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub <kw_self> { '<name>' } sub __OBJLIST__ {'".($self->var('members')->{$name}||'')."'}...";
+	return "{ package <name>;...${accmod} use strict; use warnings;...${extends}...${implements} sub super { \$<name>::ISA[1] } sub <kw_self> { '<name>' } sub __CLASS_MEMBERS__ {'".($self->var('members')->{$name}||'')."'}...";
 	
 }
 
