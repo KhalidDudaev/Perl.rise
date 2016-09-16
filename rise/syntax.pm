@@ -1702,6 +1702,7 @@ sub _syntax_variable_observe {
 
 	token 'var_all'		=> $members_list||1;
 	rule _variable_boost	=> q/(_NOT:sigils|\.|\:)(_NOT:sub\s)<var_all>/;
+	# rule _variable_boost	=> q/(_NOT:\$self\.|\.|\:)(_NOT:sub\s)<var_all>/;
 
 	return "$accmod <kw_variable> $name";
 	# return "...<kw_variable>...$name";
@@ -1726,11 +1727,13 @@ sub _syntax_variable_boost {
 	if ($members_list && $name =~ m/\b(?:$members_list)\b/gsx) {
     # if (($members_list && $name =~ m/\b(?:$members_list)\b/gsx) || $name =~ m/\bself\b/gsx) {
 		$sigil				= "\$";
+		# $sigil				= '$self.';
 		$varboost			= "__VARBOOSTED__";
 		#print "VAR $parent_class->$name | fnlist - *$members_list* \n";
 	}
 
 	return "${sigil}${name}";
+	# return '$self.'.$name;
 }
 
 sub _syntax_variable_optimize		{ '<kw_variable> ' }
@@ -1791,7 +1794,10 @@ sub _syntax_variable_compile {
 	$op_end				= " \$$name".&op_end." " if !&op_end;
 
 	# $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings; $op_end";
-	$res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;";
+
+	# $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;";
+    $res = "no warnings; sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} my \$self = shift; \$self->{$name}; }; use warnings;";
+    $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;" if &accessmod eq 'local';
 
     var('wrap_variable')->{$parent_class.'::'.$name} = $res;
 	$res = '%%%WRAP_VARIABLE_' . $parent_class.'::'.$name . '%%% ' . $op_end;
@@ -1977,6 +1983,8 @@ sub __object {
     # $accmod				= __accessmod($self, $object.'_'.$accmod, $parent_class, $name);
 
 	$block 				=~ s/\{(.*)\}/$1/gsx;
+    $block 				= 'sub new { my ($this, @class_args) = @_;  my $class = ref ($this) || $this; my $self = {}; $self = bless $self, $class;'.$block.' return $self; }';
+
 	#$block 				= parse($self, $block, &grammar, ['_variable_boost', '_variable_optimize'], { parent => $parent_class });
 	$block 				= parse($self, $block, &grammar, [@{var 'parser_'.$object}], { parent => $name });
 	# $block 				= parse($self, $block, &grammar, [@{var 'parser_code'}], { parent => $name });
