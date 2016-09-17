@@ -40,8 +40,8 @@ sub import {
 
         # { no strict 'refs'; *{$parent.'::__CLASS_SELF__'} = $self; }
         # $parent_self->new if exists &{$parent_short.'::__CLASS_CODE__'};
-        $parent_self->__CLASS_CODE__ if exists &{$parent.'::__CLASS_CODE__'};
-        # &{$parent.'::__CLASS_CODE__'}($child_self); # if exists &{$parent.'::__CLASS_CODE__'};
+        # $parent_self->__CLASS_CODE__ if exists &{$parent.'::__CLASS_CODE__'};
+        &{$parent.'::__CLASS_CODE__'}($child); # if exists &{$parent.'::__CLASS_CODE__'};
 
         # &{$parent.'::__CLASS_CODE__'}($self);
 

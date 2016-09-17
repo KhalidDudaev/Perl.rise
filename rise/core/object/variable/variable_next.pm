@@ -32,9 +32,9 @@ sub import { no strict;
     my $this        = bless {}, $self;
 
 
-	print ">>>>>>>> parent: $parent | self: $self | obj: $obj | class: $obj | name: $name | ref: $ref <<<<<<<<<\n";
+	# print ">>>>>>>> parent: $parent | self: $self | obj: $obj | class: $obj | name: $name | ref: $ref <<<<<<<<<\n";
 
-	*{$obj.'::'.$name} = $this->value if $accmod eq 'public';
+	*{$obj.'::'.$name} = $this->value($ref) if $accmod eq 'public';
     #
 	# *{$obj.'::'.$name} = sub () :lvalue {
 	# 	#$__VALUE__->{$obj.'::'.$name};
@@ -69,7 +69,8 @@ sub import { no strict;
 
 sub value ():lvalue {
     my $self = shift;
-    sub () :lvalue { $__VALUE__->{$self}; }
+    my $ref = shift;
+    sub () :lvalue { $__VALUE__->{$self}{$ref}; }
 }
 
 #sub private_var {
