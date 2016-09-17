@@ -262,7 +262,8 @@ sub confirm {
 
 		'_including',
 		'_optimize9',
-        '_unwrap_header_code',
+        '_unwrap_code_header',
+        '_unwrap_code_footer',
         '_unwrap_variable',
 
 	];
@@ -673,7 +674,7 @@ sub confirm {
 	token paren_L					=> q/\(/;
 	token paren_R					=> q/\)/;
     token wrap_code                 => q/%%%WRAP_CODE_.*?%%%/;
-    token wrap_header_code          => q/%%%WRAP_HEADER_CODE_.*?%%%/;
+    token wrap_code_header          => q/%%%WRAP_CODEHEADER_.*?%%%/;
     token wrap_variable             => q/%%%WRAP_VARIABLE_.*?%%%/;
 
 	################################################## rules ####################################################
@@ -785,7 +786,8 @@ sub confirm {
 	rule _optimize9							=> q/<regex_pattern_block>/;
 	rule _including							=> q/<including>/;
 	rule _unwrap_code						=> q/<all>/;
-	rule _unwrap_header_code				=> q/<all>/;
+	rule _unwrap_code_header				=> q/<all>/;
+	rule _unwrap_code_footer				=> q/<all>/;
     rule _unwrap_variable					=> q/<all>/;
 
 	rule _commentC							=> q/<comment_C>/;
@@ -843,7 +845,8 @@ sub confirm {
 	action _variable_call				    => \&_syntax_variable_call;
 
 	action _unwrap_code						=> \&_syntax_unwrap_code;
-	action _unwrap_header_code				=> \&_syntax_unwrap_header_code;
+	action _unwrap_code_header				=> \&_syntax_unwrap_code_header;
+	action _unwrap_code_footer				=> \&_syntax_unwrap_code_footer;
     action _unwrap_variable				    => \&_syntax_unwrap_variable;
 
 	action _op_regex						=> \&_syntax_op_regex;
@@ -951,10 +954,17 @@ sub _syntax_unwrap_code {
 	return $all;
 }
 
-sub _syntax_unwrap_header_code {
+sub _syntax_unwrap_code_header {
 	my $all				= &all;
 	my $res				= '';
-	1 while $all =~ s/%%%WRAP_HEADER_CODE_(\w+(?:::\w+)*)%%%/var('wrap_header_code')->{$1}/gsxe;
+	1 while $all =~ s/%%%WRAP_CODEHEADER_(\w+(?:::\w+)*)%%%/var('wrap_code_header')->{$1}/gsxe;
+	return $all;
+}
+
+sub _syntax_unwrap_code_footer {
+	my $all				= &all;
+	my $res				= '';
+	1 while $all =~ s/%%%WRAP_CODEFOOTER_(\w+(?:::\w+)*)%%%/var('wrap_code_footer')->{$1}/gsxe;
 	return $all;
 }
 
@@ -1386,8 +1396,8 @@ sub _syntax_function_compile {
     # $header             = "use rise::core::object::function;";
     # $header             = "use rise::core::object::function; no warnings qw/redefine prototype/;";
     $header             = "use rise::core::object::function;$override";
-    var('wrap_header_code')->{$name} = $header;
-    $header = '%%%WRAP_HEADER_CODE_' . $name . '%%%';
+    var('wrap_code_header')->{$name} = $header;
+    $header = '%%%WRAP_CODEHEADER_' . $name . '%%%';
 
     $block 				= parse($self, $block, &grammar, [@{var 'parser_code_function'}], { parent => $name });
 
@@ -1550,8 +1560,8 @@ sub _syntax_thread_compile {
     # $header             = "use rise::core::object::function;";
     # $header             = "use rise::core::object::function; no warnings qw/redefine prototype/;";
     $header             = "use rise::core::object::thread;$override";
-    var('wrap_header_code')->{$name} = $header;
-    $header = '%%%WRAP_HEADER_CODE_' . $name . '%%%';
+    var('wrap_code_header')->{$name} = $header;
+    $header = '%%%WRAP_CODEHEADER_' . $name . '%%%';
 
 	$res				= "${anon_code_open}${anon_code}{ package ${name}; ${header}${s1}sub ${trd_name}${s2}${attr}${s3}{ ${accmod} my \$thr; \$thr = threads->create(sub{${arguments}${s4}${block}}, \@_); { no strict; no warnings; \@{${parent_class}::THREAD::${trd_name}}[\$thr->tid] = \$thr; } return \$thr; }}${anon_code_close}";
 	# $res				= "${anon_code_open}${anon_code}{ package ${name}; ${header}${s1}sub ${trd_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
@@ -1659,8 +1669,8 @@ sub _syntax_thread_off {
 
     # $header             = "my \$thr;${s1}{ no strict; no warnings; \$thr = \\\@{'${parent_class}::THREAD::${fn_name}'}; } push \@{\$thr}, threads->create";
     $header             = "my \$thr;${s1} \$thr = threads->create";
-    var('wrap_header_code')->{$name} = $header;
-    $header = '%%%WRAP_HEADER_CODE_' . $name . '%%%';
+    var('wrap_code_header')->{$name} = $header;
+    $header = '%%%WRAP_CODEHEADER_' . $name . '%%%';
 
     # print "\n#### ${parent_class}::THREAD::${fn_name} ####\n";
 
@@ -2114,9 +2124,9 @@ sub __object {
 	$block 				= parse($self, $block, &grammar, [@{var 'parser_'.$object}], { parent => $name });
 	# $block 				= parse($self, $block, &grammar, [@{var 'parser_code'}], { parent => $name });
 
-    var('wrap_header_code')->{$name.'_CLASS_SELF'} = $class_self;
-    $class_self = '%%%WRAP_HEADER_CODE_' . $name.'_CLASS_SELF' . '%%% ';
-    $block 				= 'sub __CLASS_CODE__ { '.$class_self.$block.' }';
+    var('wrap_code_header')->{$name.'_CLASS_SELF_H'} = 'my $__CLASS_SELF__ = shift;';
+    var('wrap_code_footer')->{$name.'_CLASS_SELF_F'} = 'return $__CLASS_SELF__;';
+    $block 				= 'sub __CLASS_CODE__ { %%%WRAP_CODEHEADER_' . $name.'_CLASS_SELF_H%%% '.$block.'%%%WRAP_CODEFOOTER_' . $name.'_CLASS_SELF_F%%% }';
 
 	$res				= "{ package ${name};".$sps1."use rise::core::object::${object};". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $class_args, $confs) . $sps4.$block."}";
 	# $res				= "{ package ${name};".$sps1."use strict; use warnings; use rise::core::object::class;". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $confs) . $sps4.$block."}";
@@ -2178,8 +2188,8 @@ sub __object_header {
 		$header->{abstract} .= " __PACKAGE__->interface_join;";
 	}
 
-    var('wrap_header_code')->{$name} = $header->{$obj_type};
-    $res = '%%%WRAP_HEADER_CODE_' . $name . '%%% ';
+    var('wrap_code_header')->{$name} = $header->{$obj_type};
+    $res = '%%%WRAP_CODEHEADER_' . $name . '%%% ';
 
 	return $res;
 }
