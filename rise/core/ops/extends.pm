@@ -20,21 +20,22 @@ sub import {
     # print $child_short . "\n";
 
 	foreach my $parent (@parents) {
-        # my $self = bless {}, $parent;
-        $parent_short = $parent; $parent_short =~ s/^main:://sx;
-        # print $class . "\n";
-		$path		= $parent;
-		$path		=~ s/::/\//g;
+        $parent = 'main::'.$parent if $parent !~ m/^main\:\:.*?$/sx;
+        ($parent_short) = $parent =~ m/^main\:\:(.*?)$/sx;
+        my $self = bless {}, $parent;
+        print $parent . "\n";
+		$path		= $parent_short;
+		$path		=~ s/\:\:/\//g;
 		# warn "Class '$child' tried to inherit from itself\n" if $child eq $parent;
 
         die $err if $child_short eq $parent_short;
 		# require $path.".pm" if !grep($parent->isa($parent), ($child, @parents));
-		# require $path.".pm" if !$parent->isa($parent);
-        require $path.".pm";
+		require $path.".pm" if !$parent->isa($parent);
+        # require $path.".pm";
 
-        # { no strict 'refs'; *{$parent.'::__SELF__'} = $self; }
-        # $self->new if exists &{$parent.'::__CLASS_CODE__'};
-        # $self->__CLASS_CODE__ if exists &{$parent.'::__CLASS_CODE__'};
+        # { no strict 'refs'; *{$parent.'::__CLASS_SELF__'} = $self; }
+        # $self->new if exists &{$parent_short.'::__CLASS_CODE__'};
+        $parent->__CLASS_CODE__ if exists &{$parent.'::__CLASS_CODE__'};
 
         # &{$parent.'::__CLASS_CODE__'}($self);
 
@@ -48,7 +49,7 @@ sub import {
 
 	#$class->interface_confirm if exists &{$class.'::interface_confirm'};
 
-    { no strict 'refs'; push @{"$child::ISA"}, @parents; };
+    { no strict 'refs'; push @{"$child\:\:ISA"}, @parents; };
 }
 
 #sub interface_join {

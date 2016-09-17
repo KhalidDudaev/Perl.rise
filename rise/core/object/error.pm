@@ -47,7 +47,7 @@ my $ERROR		= {
 	# ARRAY_HASH				=> [ [ 0, 1 ], '"ERROR ARRAY OR HASH:\nNot ARRAY value \"$name\" at"' ],
 	ARRAY_HASH				=> [ [ 0, 1 ], '"ERROR ARRAY OR HASH OP: \"$name\"\nNot ARRAY or HASH value or error expression at"' ],
 	SCALAR					=> [ [ 0, 1 ], '"ERROR SCALAR OP: \"$name\"\nNot SCALAR value or error expression at"' ],
-	PRINT					=> [ [ 0, 1 ], '"ERROR PRINT OP: Use of uninitialized value print at"' ],
+	PRINT					=> [ [ 1, 2 ], '"WARNING PRINT OP: Use of uninitialized value print at"' ],
 
 
 };
@@ -131,19 +131,23 @@ sub __error {
 	die $err_msg;
 }
 
-sub __RISE_ERR {
+sub __RISE_ERR { die __RISE_ERRWARN(shift, 'ERROR', @_) }
+sub __RISE_WARN { warn __RISE_ERRWARN(shift, 'WARNING', @_) }
+
+sub __RISE_ERRWARN {
 	my $class		= shift;
+    my $msgtitle    = shift;
 	my $err			= shift;
 	my $name		= shift;
 
 	my $err_conf	= $ERROR->{$err};
 	my $level		= $err_conf->[0];
 	my $level_count	= 1;
-	my $parent		= (caller($level->[0]))[0];
+	# my $parent		= (caller($level->[0]))[0];
 	my ($child, $file, $line, $func); # = (caller($level->[1]));
 	# my $fext		= $class->{source}{fext};
 	my $fext		= 'puma'; #$class->{source}{fext};
-	my $err_msg		= "################################## ERROR #####################################\n";
+	my $err_msg		= "################################## $msgtitle #####################################\n";
 
 
 	($child, $file, $line, $func) = (caller($level->[1]));
@@ -160,7 +164,7 @@ sub __RISE_ERR {
 
 	$err_msg .= "\n##############################################################################\n\n";
 
-	die $err_msg;
+	return $err_msg;
 	#confess $err_msg;
 }
 

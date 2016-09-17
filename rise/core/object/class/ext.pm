@@ -44,8 +44,8 @@ sub new {
     $class->__CLASS_ARGS__(@_) if exists &{$class.'::__CLASS_ARGS__'};          # получаем аргументы класса
     # print "### $class ###\n";
     my $self = bless {}, $class;                                       				# обьявляем класс и его свойства
-    # { no strict 'refs'; ${$class.'::__SELF__'} = $self; }
-    $self->__CLASS_CODE__ if exists &{$class.'::__CLASS_CODE__'};
+    # { no strict 'refs'; ${$class.'::__CLASS_SELF__'} = $self; }
+    $self = $self->__CLASS_CODE__ if exists &{$class.'::__CLASS_CODE__'};
 
     return $self;
 }

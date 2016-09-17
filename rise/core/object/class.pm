@@ -27,7 +27,10 @@ sub import { no strict "refs";
 	my $caller              = caller(0);
 	my $self                = shift;
 	my ($parent)			= $caller =~ /(?:(\w+(?:::\w+)*)::)?(\w+)$/;
-	push @{$caller.'::ISA'}, $parent, 'rise::core::object::class::ext';
+
+    # print "### $caller - $parent ###\n";
+
+	push (@{$caller.'::ISA'}, ($parent, 'rise::core::object::class::ext')) if $parent;
 	*{$caller."::super"}	= sub {${$caller.'::ISA'}[2]};
 	*{$caller."::self"}		= sub {$caller};
 

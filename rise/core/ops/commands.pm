@@ -2,7 +2,7 @@ package rise::core::ops::commands;
 
 use strict;
 use warnings;
-use feature 'say';
+# use feature 'say';
 use utf8;
 
 use parent qw/
@@ -115,13 +115,16 @@ sub line (;$){
 	return $title . $char x ($length - length($title));
 }
 
-# sub say {
-# 	__PACKAGE__->__RISE_ERR('PRINT') if !$_[0] && $_[0] ne '';
-# 	local $\ = "";
-# 	print @_ , "\n";
-# }
+sub say {
+	# __PACKAGE__->__RISE_ERR('PRINT') if (!$_[0] && $_[0] ne '');
+    # my $t = 0;
+    # $t = 1 if $_[0] eq '';
+	__PACKAGE__->__RISE_WARN('PRINT') unless $_[0];
+	local $\ = "";
+	print @_ , "\n";
+}
 
-sub say { say @_ }
+# sub say { say @_ }
 
 sub msg (;$$){
 	my $text		= shift || 'NO TEXT';

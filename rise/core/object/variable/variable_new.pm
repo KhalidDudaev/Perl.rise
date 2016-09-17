@@ -9,14 +9,14 @@ $VERSION = '0.001';
 #sub import { no strict;
 #    my $child		= caller(0);
 #	my $parent		= $child;
-#	
+#
 #	#$parent			=~ s/\:\:CODE\:\:/::/;
-#	
+#
 #	#print ">>>>>>>> $child <<<<<<<<<\n";
-#	
+#
 #	*{$child} = \&{$child."::code"};
 #}
- 
+
 my %access = (
 	private		=> \&private_var,
 	protected	=> \&protected_var,
@@ -32,36 +32,36 @@ my $__VALUE__		= {};
 #my $v;
 
 my $ref			= 'v';
- 
+
 sub import { no strict; no warnings;
 	my $self = shift;
 	my($obj)			= caller(0);
-	
+
 	#bless {} => $self;
-	
+
 	#$class_name = $class;
 	#my $ref = shift;
 	my ($ref, $accessmod, $type, $type_regex) = @_;
 	my ($class_name, $var_name)	= $obj =~ /(?:(.*?)::)?(\w+)$/;
-	
+
 	my $parent = $class_name;
 	$parent			=~ s/(?:(.*?)::)\w+$/$1/;
-	
+
 	#$__VALUE__->{$obj} = $ref;
-	
+
 	push @{$obj.'::ISA'}, ('rise::core::object::variable', 'rise::core::object::variable::variable_new');
 	#push (@{$obj}, 'rise::core::object::variable');
-	push (@{$class_name.'::ISA'}, $parent) if $parent && $parent ne 'main'; 
-	
+	push (@{$class_name.'::ISA'}, $parent) if $parent && $parent ne 'main';
+
 	#print ">>>>>>>> parent: $parent | self: $self | obj: $obj | class: $class_name | name: $var_name | accmod: $accessmod <<<<<<<<<\n";
 	#*{$class} = \&value;
-	
+
 	my $r			= qr/^$class_name\b/o;
-	
+
 	*{$obj} = VARIABLE($self, $class_name, $var_name, $accessmod, $ref, $r);
 
 	#*{$obj} = CONSTANT($self, $class_name, $var_name, $accessmod, $ref, $r);
-	
+
 	#*{$obj} = sub () :lvalue {
 	#	$$ref;
 	#};# if $accessmod eq 'public';
@@ -73,13 +73,13 @@ sub import { no strict; no warnings;
 	#*{$obj} = sub () :lvalue { protected($self, $class_name,$var_name) unless (caller->isa($class_name));
 	#	$$ref;
 	#} if $accessmod eq 'protected';
-	
+
 	#return *{$class} = sub () :lvalue { $access{$accessmod}->($class,$var_name); $__VALUE__->{$class} } if $accessmod ne 'public';
 	#return *{$class} = sub () :lvalue { $__VALUE__->{$class} }; # if $accessmod eq 'public';
-	
+
 	#eval "";
 	#*{$class} = sub () :lvalue { ${$class.'::'.$var_name} };
-	
+
 }
 
 sub val { #no strict 'refs';
@@ -93,21 +93,21 @@ sub VARIABLE { no strict 'refs';
 	my $v;
 	my ($self, $class_name, $var_name, $accessmod, $ref, $r) = @_;
 	my $obj = $class_name.'::'.$var_name;
-	
+
 	print ">>>>>>>> accmod: $accessmod <<<<<<<<<\n";
-	
+
 	$__VALUE__->{$obj} = $ref;
 	#$ref = \$v;
 	$v = $ref;
-	
+
 	return  sub () :lvalue { private($self, $class_name,$var_name) unless (caller eq $class_name || caller =~ m/$r/o);
 		$$v;
 	} if $accessmod eq 'private';
-	
+
 	return  sub () :lvalue { protected($self, $class_name,$var_name) unless (caller->isa($class_name));
 		$$v;
 	} if $accessmod eq 'protected';
-	
+
 	return sub () :lvalue {
 		$$v;
 	};# if $accessmod eq 'public';
@@ -115,17 +115,17 @@ sub VARIABLE { no strict 'refs';
 }
 
 sub CONSTANT {
-	
+
 	my ($self, $class_name, $var_name, $accessmod, $ref, $r) = @_;
-	
+
 	return  sub () { private($self, $class_name,$var_name) unless (caller eq $class_name || caller =~ m/$r/o);
 		$$ref;
 	} if $accessmod eq 'private';
-	
+
 	return  sub () { protected($self, $class_name,$var_name) unless (caller->isa($class_name));
 		$$ref;
 	} if $accessmod eq 'protected';
-	
+
 	return sub () {
 		$$ref;
 	};# if $accessmod eq 'public';
