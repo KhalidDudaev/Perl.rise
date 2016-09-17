@@ -758,7 +758,7 @@ sub confirm {
 	# rule _op_regex							=> q/<spec_name> <op_regex> <regex_pattern_txt>/;
 	# rule _op_regex							=> q/<equal> <spec_name> <op_regex> (REGEX_MATH|REGEX_REPLASE)/;
 	# rule _op_regex							=> q/<equal> <spec_name> <op_regex_m>/;
-	rule _op_scalar							=> q/(_NOT:(OR:\-\>op_dot)) <op_scalar>/;
+	rule _op_scalar							=> q/(_NOT:(OR:\-\>op_dot))<op_scalar>/;
 	# rule _op_scalar							=> q/(_NOT:(OR:\-\>op_dot))<op_scalar> <string>\,/;
 	# rule _op_scalar							=> q/<op_scalar> <string>\,/;
     # rule _op_array							=> q/<op_array>/;
@@ -767,7 +767,7 @@ sub confirm {
     # rule _op_arref_block					=> q/<op_arref_block> <block_brace>/;
     rule _op_sort_blockless					=> q/<op_sort_blockless>/;
     rule _op_array_block					=> q/<op_array_block> \{/;
-    rule _op_array_hash 					=> q/(_NOT:(OR:\-\>op_dot)) <op_array_hash>/;
+    rule _op_array_hash 					=> q/(_NOT:(OR:\-\>op_dot))<op_array_hash>/;
     rule _op_for_each                       => q/(<op_for_each>|<op_for_each_cond>)/;
 
     # rule _context                           => q/(_NOT:sigils)\b_\b/;
@@ -1251,7 +1251,7 @@ sub _syntax_function_call {
 	$members_list		=~ s/$tk_accmod//gsx;
 	$members_list		=~ s/\-function\-//gsx;
 	$members_list		=~ s/^\s+(.*?)\s+$/$1/sx;
-	$members_list		=~ s/\s/\|/gsx;
+    $members_list		=~ s/\s/\\b\|\\b/gsx;
 
 	if ($members_list && $name =~ m/\b(?:$members_list)\b/sx) {
 		$this			= '__PACKAGE__,';
@@ -1285,7 +1285,9 @@ sub _syntax_function_compile {
 	my $fn_list;
 	my $res                = '';
     my $isExport           = 0;
-	my $retval				= '';
+	my $retval			   = '';
+    my $members_var;
+    my $members_list;
 
 
 	if (!$name){
@@ -1301,11 +1303,21 @@ sub _syntax_function_compile {
 	}
 
 	if ($name){
-		var('members')->{$parent_class} .= ' '.$accmod.'-function-'.$name;
-		var('members')->{$parent_class} =~ s/^\s+//;
+        ############################################# add variable to class members ###############################################
+    	$members_var		= $accmod.'-function-'.$name;
+    	$members_list	    = var('members')->{$parent_class}||'';
+    	$members_list		=~ s/\s+/\\b\|\\b/gsx;
+
+        # warn "ERROR FUNCTION: function $name redefined in class $parent_class\n" if $members_var =~ m/\b$members_list\b/gsx;
+        var('members')->{$parent_class} .= ' ';
+    	var('members')->{$parent_class} .= ' '.$members_var; # if $members_var !~ /\b$members_list\b/gsx;  # if $accmod ne 'local';
+    	var('members')->{$parent_class} =~ s/^\s+//;
+
 		# var('members')->{$parent_class.'::'.$name} .= var('members')->{$parent_class}; # for recursion caller
-		var('members')->{$parent_class.'::'.$name} .= ' '.$accmod.'-function-'.$name; # for recursion caller
+		var('members')->{$parent_class.'::'.$name} .= ' ';
+		var('members')->{$parent_class.'::'.$name} .= ' '.$members_var; # for recursion caller
         var('members')->{$parent_class.'::'.$name} =~ s/^\s+//;
+        ############################################################################################################################
 	}
 
 
@@ -1426,7 +1438,7 @@ sub _syntax_thread_call {
 	$members_list		=~ s/$tk_accmod//gsx;
 	$members_list		=~ s/\-thread\-//gsx;
     $members_list		=~ s/^\s+(.*?)\s+$/$1/sx;
-	$members_list		=~ s/\s/\|/gsx;
+	$members_list		=~ s/\s/\\b\|\\b/gsx;
 
     if ($members_list && $name =~ m/\b(?:$members_list)\b/sx) {
 		$this			= '__PACKAGE__,';
@@ -1725,11 +1737,11 @@ sub _syntax_variable_observe {
 	my $members_var		= $accmod.'-var-'.$name;
 	my $members_list	= var('members')->{$parent_class} || '';
 
-    $members_list		=~ s/\s/\|/gsx;
+    $members_list		=~ s/\s+/\\b\|\\b/gsx;
 
-    warn "ERROR VARIABLE: variable $name redefined in class $parent_class\n" if $members_var =~ /$members_list/gsx;
+    warn "ERROR VARIABLE: variable $name redefined in class $parent_class\n" if $members_var =~ /\b$members_list\b/gsx;
 
-	var('members')->{$parent_class} .= ' '.$members_var if $members_var !~ /$members_list/gsx;  # if $accmod ne 'local';
+	var('members')->{$parent_class} .= ' '.$members_var if $members_var !~ /\b$members_list\b/gsx;  # if $accmod ne 'local';
 	# var('members')->{$parent_class} .= ' local-var-self' if 'local-var-self' !~ /$members_list/gsx;
 	var('members')->{$parent_class} =~ s/^\s+//;
     $members_list = var('members')->{$parent_class};
@@ -1792,16 +1804,19 @@ sub _syntax_variable_compile_class {
 	my $local_var		= '';
 	my $op_end			= '';
 
-	my $members_var		= $accmod.'-var-'.$name;
-	my $members_list	= var('members')->{$parent_class}||'';
     my $res;
 
-	# $members_list		=~ s/\s/\|/gsx;
-    #
-    # warn "ERROR VARIABLE: variable $name redefined in class $parent_class\n" if $members_var =~ /$members_list/gsx;
-    #
-	# var('members')->{$parent_class} .= ' '.$members_var if $members_var !~ /$members_list/gsx;  # if $accmod ne 'local';
-	# var('members')->{$parent_class} =~ s/^\s+//;
+    ############################################# add variable to class members ###############################################
+	my $members_var		= $accmod.'-var-'.$name;
+	my $members_list	= var('members')->{$parent_class}||'';
+
+	$members_list		=~ s/\s+/\\b\|\\b/gsx;
+
+    # warn "ERROR VARIABLE: variable $name redefined in class $parent_class\n" if $members_var =~ m/\b$members_list\b/gsx;
+
+	var('members')->{$parent_class} .= ' '.$members_var if $members_var !~ /\b$members_list\b/gsx;  # if $accmod ne 'local';
+	var('members')->{$parent_class} =~ s/^\s+//;
+    ############################################################################################################################
 
     if ($accmod =~ s/export//sx){
 
@@ -1860,17 +1875,19 @@ sub _syntax_variable_compile_function {
 	my $boost_vars		= '';
 	my $local_var		= '';
 	my $op_end			= '';
-
-	my $members_var		= $accmod.'-var-'.$name;
-	my $members_list	= var('members')->{$parent_class}||'';
     my $res;
 
-	# $members_list		=~ s/\s/\|/gsx;
-    #
-    # warn "ERROR VARIABLE: variable $name redefined in class $parent_class\n" if $members_var =~ /$members_list/gsx;
-    #
-	# var('members')->{$parent_class} .= ' '.$members_var if $members_var !~ /$members_list/gsx;  # if $accmod ne 'local';
-	# var('members')->{$parent_class} =~ s/^\s+//;
+    ############################################# add variable to class members ###############################################
+	my $members_var		= $accmod.'-var-'.$name;
+	my $members_list	= var('members')->{$parent_class}||'';
+
+	$members_list		=~ s/\s+/\\b\|\\b/gsx;
+
+    # warn "ERROR VARIABLE: variable $name redefined in class $parent_class\n" if $members_var =~ m/\b$members_list\b/gsx;
+
+	var('members')->{$parent_class} .= ' '.$members_var if $members_var !~ /\b$members_list\b/gsx;  # if $accmod ne 'local';
+	var('members')->{$parent_class} =~ s/^\s+//;
+    ############################################################################################################################
 
     if ($accmod =~ s/export//sx){
 
@@ -1931,7 +1948,7 @@ sub _syntax_variable_call {
 	$members_list		=~ s/$tk_accmod//gsx;
 	$members_list		=~ s/\-var\-//gsx;
 	$members_list		=~ s/^\s+(.*?)\s+$/$1/sx;
-	$members_list		=~ s/\s/\|/gsx;
+	$members_list		=~ s/\s/\\b\|\\b/gsx;
 
 	if ($members_list && $name =~ m/\b(?:$members_list)\b/sx && $name !~ m/WRAP\_VARIABLE\_$name/sx) {
 		$this			= '$';
@@ -2126,7 +2143,7 @@ sub __object {
 
     var('wrap_code_header')->{$name.'_CLASS_SELF_H'} = 'my $__CLASS_SELF__ = shift;';
     var('wrap_code_footer')->{$name.'_CLASS_SELF_F'} = 'return $__CLASS_SELF__;';
-    $block 				= 'sub __CLASS_CODE__ { %%%WRAP_CODEHEADER_' . $name.'_CLASS_SELF_H%%% '.$block.'%%%WRAP_CODEFOOTER_' . $name.'_CLASS_SELF_F%%% }';
+    $block 				= '__PACKAGE__->__CLASS_CODE__; sub __CLASS_CODE__ { %%%WRAP_CODEHEADER_' . $name.'_CLASS_SELF_H%%% '.$block.'%%%WRAP_CODEFOOTER_' . $name.'_CLASS_SELF_F%%% }';
 
 	$res				= "{ package ${name};".$sps1."use rise::core::object::${object};". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $class_args, $confs) . $sps4.$block."}";
 	# $res				= "{ package ${name};".$sps1."use strict; use warnings; use rise::core::object::class;". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $confs) . $sps4.$block."}";
