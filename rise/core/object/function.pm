@@ -14,6 +14,7 @@ sub import { no strict 'refs';
 	my $self				= shift;
 	my ($parent, $fn_name)	= $obj =~ /(?:(\w+(?:::\w+)*)::)?(\w+)$/;
 
+    # { no strict 'refs'; ${$obj.'::__SELF__'} = $self; }
 	# $fn_name = 'code';
 
 	# say '--------- func ---------';

@@ -312,9 +312,12 @@ sub parse {
 	map {
 		# if ( $self->{info_rule}{$rule_name} ){
 			my $rule_name = $_;
-			my $cnt			= 23 - length $rule_name;
+			my $cnt			= 30 - length $rule_name;
 			my $indent		= 4 - length ($self->{info_rule}{$rule_name}||'');
 			# $self->{info_all} .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $self->{info_rule}{$rule_name} . " ] : PASSED\n";
+
+            # print "#### $cnt ####\n";
+
 			$self->{info_all} .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $self->{info_rule}{$rule_name} . " ] : PASSED\n" if $self->{info_rule}{$rule_name};
 		# }
 	} @{$self->{rule_order}}; #keys %$info_rule;

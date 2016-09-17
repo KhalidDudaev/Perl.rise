@@ -17,17 +17,27 @@ sub import {
     my $child_short = $child; $child_short =~ s/^main:://sx;
     my $err         = "ERROR EXTENDS: Recursive inheritance detected in class '$child_short'";
 
-    print $child_short . "\n";
+    # print $child_short . "\n";
 
 	foreach my $parent (@parents) {
+        # my $self = bless {}, $parent;
         $parent_short = $parent; $parent_short =~ s/^main:://sx;
-        print $parent_short . "\n";
+        # print $class . "\n";
 		$path		= $parent;
 		$path		=~ s/::/\//g;
 		# warn "Class '$child' tried to inherit from itself\n" if $child eq $parent;
 
         die $err if $child_short eq $parent_short;
-		require $path.".pm" if !grep($parent->isa($parent), ($child, @parents));
+		# require $path.".pm" if !grep($parent->isa($parent), ($child, @parents));
+		# require $path.".pm" if !$parent->isa($parent);
+        require $path.".pm";
+
+        # { no strict 'refs'; *{$parent.'::__SELF__'} = $self; }
+        # $self->new if exists &{$parent.'::__CLASS_CODE__'};
+        # $self->__CLASS_CODE__ if exists &{$parent.'::__CLASS_CODE__'};
+
+        # &{$parent.'::__CLASS_CODE__'}($self);
+
 		#interface_join($parent, $child) if (exists &{$parent.'::obj_type'} && ($parent->obj_type eq 'ABSTRACT' || $parent->obj_type eq 'INTERFACE'));
 
 		#print ">>>>>>>>>> $parent <<<<<<<<<<\n";
@@ -38,7 +48,7 @@ sub import {
 
 	#$class->interface_confirm if exists &{$class.'::interface_confirm'};
 
-    { no strict 'refs'; push @{"$child\::ISA"}, @parents; };
+    { no strict 'refs'; push @{"$child::ISA"}, @parents; };
 }
 
 #sub interface_join {

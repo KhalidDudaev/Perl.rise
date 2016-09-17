@@ -42,8 +42,20 @@ sub new {
     my $class         = shift;
     $class            = ref $class || $class;                                   # получаем имя класса, если передана ссылка то извлекаем имя класса
     $class->__CLASS_ARGS__(@_) if exists &{$class.'::__CLASS_ARGS__'};          # получаем аргументы класса
-    return bless {}, $class;                                       				# обьявляем класс и его свойства
+    # print "### $class ###\n";
+    my $self = bless {}, $class;                                       				# обьявляем класс и его свойства
+    # { no strict 'refs'; ${$class.'::__SELF__'} = $self; }
+    $self->__CLASS_CODE__ if exists &{$class.'::__CLASS_CODE__'};
+
+    return $self;
 }
+
+# sub new {
+#     my $class         = shift;
+#     $class            = ref $class || $class;                                   # получаем имя класса, если передана ссылка то извлекаем имя класса
+#     $class->__CLASS_ARGS__(@_) if exists &{$class.'::__CLASS_ARGS__'};          # получаем аргументы класса
+#     return bless {}, $class;                                       				# обьявляем класс и его свойства
+# }
 
 # sub __bind_args {
 #     my $self        = shift;
