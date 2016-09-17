@@ -29,15 +29,18 @@ sub import { no strict;
 
     my ($obj)		= caller(0);
 	my $r			= qr/^$obj.*$/o;
+    my $this        = bless {}, $self;
 
 
-	# print ">>>>>>>> parent: $parent | self: $self | obj: $obj | class: $obj | name: $name <<<<<<<<<\n";
+	print ">>>>>>>> parent: $parent | self: $self | obj: $obj | class: $obj | name: $name | ref: $ref <<<<<<<<<\n";
 
-	*{$obj.'::'.$name} = sub () :lvalue {
-		#$__VALUE__->{$obj.'::'.$name};
-		#${$obj.'::'.$name};
-		$$ref;
-	} if $accmod eq 'public';
+	*{$obj.'::'.$name} = $this->value if $accmod eq 'public';
+    #
+	# *{$obj.'::'.$name} = sub () :lvalue {
+	# 	#$__VALUE__->{$obj.'::'.$name};
+	# 	# ${$obj.'::'.$name};
+	# 	$$ref;
+	# } if $accmod eq 'public';
 
 	*{$obj.'::'.$name} = sub () :lvalue {
 		#print ">>>>>>>>>>>>> self: $self | caller: $caller | class: $class_name | name: $var_name\n";
@@ -64,6 +67,10 @@ sub import { no strict;
 
 }
 
+sub value ():lvalue {
+    my $self = shift;
+    sub () :lvalue { $__VALUE__->{$self}; }
+}
 
 #sub private_var {
 #	my ($self, $class, $name)			= @_;

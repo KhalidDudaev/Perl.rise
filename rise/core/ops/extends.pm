@@ -13,29 +13,35 @@ sub import {
 	my @parents		= @_;
 	my $path;
     my $parent_short;
+    my $child_short;
 
-    my $child_short = $child; $child_short =~ s/^main:://sx;
+    $child = 'main::'.$child if $child !~ m/^main\:\:.*?$/sx;
+    ($child_short) = $child =~ m/^main\:\:(.*?)$/sx;
+
+    my $child_self = bless {}, $child;
+
     my $err         = "ERROR EXTENDS: Recursive inheritance detected in class '$child_short'";
 
-    # print $child_short . "\n";
+    # print "### child -> $child_self \n";
 
 	foreach my $parent (@parents) {
         $parent = 'main::'.$parent if $parent !~ m/^main\:\:.*?$/sx;
         ($parent_short) = $parent =~ m/^main\:\:(.*?)$/sx;
-        my $self = bless {}, $parent;
-        print $parent . "\n";
+        my $parent_self = bless {}, $parent;
+        # print $parent . "\n";
 		$path		= $parent_short;
 		$path		=~ s/\:\:/\//g;
 		# warn "Class '$child' tried to inherit from itself\n" if $child eq $parent;
 
         die $err if $child_short eq $parent_short;
 		# require $path.".pm" if !grep($parent->isa($parent), ($child, @parents));
-		require $path.".pm" if !$parent->isa($parent);
-        # require $path.".pm";
+		# require $path.".pm" if !$parent->isa($parent);
+        require $path.".pm";
 
         # { no strict 'refs'; *{$parent.'::__CLASS_SELF__'} = $self; }
-        # $self->new if exists &{$parent_short.'::__CLASS_CODE__'};
-        $parent->__CLASS_CODE__ if exists &{$parent.'::__CLASS_CODE__'};
+        # $parent_self->new if exists &{$parent_short.'::__CLASS_CODE__'};
+        $parent_self->__CLASS_CODE__ if exists &{$parent.'::__CLASS_CODE__'};
+        # &{$parent.'::__CLASS_CODE__'}($child_self); # if exists &{$parent.'::__CLASS_CODE__'};
 
         # &{$parent.'::__CLASS_CODE__'}($self);
 
