@@ -45,7 +45,9 @@ sub new {
     # print "### $class ###\n";
     my $self = bless {}, $class;                                       				# обьявляем класс и его свойства
     # { no strict 'refs'; ${$class.'::__CLASS_SELF__'} = $self; }
-    $self = $self->__CLASS_CODE__ if exists &{$class.'::__CLASS_CODE__'};
+    $self->__CLASS_CODE__ if exists &{$class.'::__CLASS_CODE__'};
+
+    # $self->__CLASS_SELF__ if exists &{$class.'::__CLASS_SELF__'};
 
     return $self;
 }

@@ -1852,7 +1852,7 @@ sub _syntax_variable_compile_class {
 
 	# $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings; $op_end";
 
-	$res = "${var_type} ${local_var}sub $name ():lvalue; { no strict; no warnings; *$name = sub ():lvalue { ${accmod} my \$self = shift || \$__CLASS_SELF__; \$self->{$name} }; }";
+	$res = "${var_type} ${local_var}sub $name ():lvalue; { no strict; no warnings; *$name = sub ():lvalue { ${accmod} my \$self = shift || __PACKAGE__->{\'SELF\'}; \$self->{$name} }; }";
     # $res = "no warnings; sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} my \$self = shift; \$self->{$name}; }; use warnings;";
     # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;" if &accessmod eq 'local';
     # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;";
@@ -2141,8 +2141,8 @@ sub __object {
 	$block 				= parse($self, $block, &grammar, [@{var 'parser_'.$object}], { parent => $name });
 	# $block 				= parse($self, $block, &grammar, [@{var 'parser_code'}], { parent => $name });
 
-    var('wrap_code_header')->{$name.'_CLASS_SELF_H'} = 'my $__CLASS_SELF__ = shift;';
-    var('wrap_code_footer')->{$name.'_CLASS_SELF_F'} = 'return $__CLASS_SELF__;';
+    var('wrap_code_header')->{$name.'_CLASS_SELF_H'} = '__PACKAGE__->{\'SELF\'} = shift;';
+    var('wrap_code_footer')->{$name.'_CLASS_SELF_F'} = 'return __PACKAGE__->{\'SELF\'};';
     $block 				= '__PACKAGE__->__CLASS_CODE__; sub __CLASS_CODE__ { %%%WRAP_CODEHEADER_' . $name.'_CLASS_SELF_H%%% '.$block.'%%%WRAP_CODEFOOTER_' . $name.'_CLASS_SELF_F%%% }';
 
 	$res				= "{ package ${name};".$sps1."use rise::core::object::${object};". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $class_args, $confs) . $sps4.$block."}";
