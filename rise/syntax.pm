@@ -1251,7 +1251,7 @@ sub _syntax_function_call {
 	$members_list		=~ s/$tk_accmod//gsx;
 	$members_list		=~ s/\-function\-//gsx;
 	$members_list		=~ s/^\s+(.*?)\s+$/$1/sx;
-    $members_list		=~ s/\s/\\b\|\\b/gsx;
+    $members_list		=~ s/\s+/\|/gsx;
 
 	if ($members_list && $name =~ m/\b(?:$members_list)\b/sx) {
 		$this			= '__PACKAGE__,';
@@ -1438,7 +1438,7 @@ sub _syntax_thread_call {
 	$members_list		=~ s/$tk_accmod//gsx;
 	$members_list		=~ s/\-thread\-//gsx;
     $members_list		=~ s/^\s+(.*?)\s+$/$1/sx;
-	$members_list		=~ s/\s/\\b\|\\b/gsx;
+	$members_list		=~ s/\s+/\|/gsx;
 
     if ($members_list && $name =~ m/\b(?:$members_list)\b/sx) {
 		$this			= '__PACKAGE__,';
@@ -1969,7 +1969,7 @@ sub _syntax_constant_compile {
     my $members_list	= var('members')->{$parent_class}||'';
     my $res;
 
-    $members_list		=~ s/\s/\|/gsx;
+    $members_list		=~ s/\s/\\b\|\\b/gsx;
 
 	var('members')->{$parent_class} .= ' '.$members_const if $accmod ne 'local' and $members_const !~ /$members_list/;
 	var('members')->{$parent_class} =~ s/^\s+//;
