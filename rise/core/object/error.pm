@@ -131,8 +131,12 @@ sub __error {
 	die $err_msg;
 }
 
-sub __RISE_ERR {
+sub __RISE_ERR { die __RISE_ERRWARN(shift, 'ERROR', @_) }
+sub __RISE_WARN { warn __RISE_ERRWARN(shift, 'WARNING', @_) }
+
+sub __RISE_ERRWARN {
 	my $class		= shift;
+    my $msgtitle    = shift;
 	my $err			= shift;
 	my $name		= shift;
 
@@ -143,12 +147,14 @@ sub __RISE_ERR {
 	my ($child, $file, $line, $func); # = (caller($level->[1]));
 	# my $fext		= $class->{source}{fext};
 	my $fext		= 'puma'; #$class->{source}{fext};
-	my $err_msg		= "################################## ERROR #####################################\n";
+	my $err_msg		= "################################## $msgtitle #####################################\n";
 
 
 	($child, $file, $line, $func) = (caller($level->[1]));
 	($class, $file, $func) = __err_filter($class, $file, $func, $fext);
 	$err_msg .= eval $err_conf->[1];
+
+    print "parent:[$parent] child:[$child] file:[$file] line:[$line] func:[$func]\n";
 
 	while ($file && $line && $child ne 'main') {
 		$err_msg .= eval '"\n-> line $line in $file"';
@@ -160,7 +166,7 @@ sub __RISE_ERR {
 
 	$err_msg .= "\n##############################################################################\n\n";
 
-	die $err_msg;
+	return $err_msg;
 	#confess $err_msg;
 }
 
