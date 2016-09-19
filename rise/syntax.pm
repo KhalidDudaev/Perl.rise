@@ -1813,7 +1813,7 @@ sub _syntax_variable_compile_class {
 	$members_list		=~ s/\s+/\\b\|\\b/gsx;
 
     # warn "ERROR VARIABLE: variable $name redefined in class $parent_class\n" if $members_var =~ m/\b$members_list\b/gsx;
-
+    var('members')->{$parent_class} .= ' ';
 	var('members')->{$parent_class} .= ' '.$members_var if $members_var !~ /\b$members_list\b/gsx;  # if $accmod ne 'local';
 	var('members')->{$parent_class} =~ s/^\s+//;
     ############################################################################################################################
@@ -1971,6 +1971,7 @@ sub _syntax_constant_compile {
 
     $members_list		=~ s/\s/\\b\|\\b/gsx;
 
+    var('members')->{$parent_class} .= ' ';
 	var('members')->{$parent_class} .= ' '.$members_const if $accmod ne 'local' and $members_const !~ /$members_list/;
 	var('members')->{$parent_class} =~ s/^\s+//;
 
@@ -2118,6 +2119,7 @@ sub __object {
     ($class_args, $args_attr) = $args_attr =~ m/^(\(.*?\))?\s*(.*?)$/sx;
 
 	if ($parent_class) {
+        var('members')->{$parent_class} .= ' ';
 		var('members')->{$parent_class} .= ' '.$accmod.'-'.$object.'-'.$name;
 		var('members')->{$parent_class} =~ s/^\s+//;
 		$name				= $parent_class . '::' . $name;
@@ -2143,7 +2145,7 @@ sub __object {
 
     var('wrap_code_header')->{$name.'_CLASS_SELF_H'} = '__PACKAGE__->{\'SELF\'} = shift;';
     var('wrap_code_footer')->{$name.'_CLASS_SELF_F'} = 'return __PACKAGE__->{\'SELF\'};';
-    $block 				= '__PACKAGE__->__CLASS_CODE__; sub __CLASS_CODE__ { %%%WRAP_CODEHEADER_' . $name.'_CLASS_SELF_H%%% '.$block.'%%%WRAP_CODEFOOTER_' . $name.'_CLASS_SELF_F%%% }';
+    $block 				= '( bless {} )->__CLASS_CODE__; sub __CLASS_CODE__ { %%%WRAP_CODEHEADER_' . $name.'_CLASS_SELF_H%%% '.$block.'%%%WRAP_CODEFOOTER_' . $name.'_CLASS_SELF_F%%% }';
 
 	$res				= "{ package ${name};".$sps1."use rise::core::object::${object};". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $class_args, $confs) . $sps4.$block."}";
 	# $res				= "{ package ${name};".$sps1."use strict; use warnings; use rise::core::object::class;". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $confs) . $sps4.$block."}";

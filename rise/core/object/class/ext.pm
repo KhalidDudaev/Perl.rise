@@ -21,6 +21,7 @@ my $ENV_CLASS		= {
 };
 
 my @ARGS_CLASS;
+my $self_current = {};
 # my $ARGS_CLASS      = [];
 
 # sub __set_args {
@@ -32,6 +33,7 @@ my @ARGS_CLASS;
 
 
 sub __objtype {'CLASS'};
+sub self_current ():lvalue { $self_current->{+shift} };
 
 # sub new {
 #   my $class         = ref $_[0] || $_[0];                                     # получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
@@ -43,11 +45,16 @@ sub new {
     $class            = ref $class || $class;                                   # получаем имя класса, если передана ссылка то извлекаем имя класса
     $class->__CLASS_ARGS__(@_) if exists &{$class.'::__CLASS_ARGS__'};          # получаем аргументы класса
     # print "### $class ###\n";
-    my $self = bless {}, $class;                                       				# обьявляем класс и его свойства
-    # { no strict 'refs'; ${$class.'::__CLASS_SELF__'} = $self; }
-    $self->__CLASS_CODE__ if exists &{$class.'::__CLASS_CODE__'};
 
+    my $self = bless {}, $class;                                                # обьявляем класс и его свойства
+
+    # $self->{'SELF'} = $self;
+    # $self->self_current = $self;
+    # { no strict 'refs'; ${$class.'::__CLASS_SELF__'} = $self; }
+
+    # $self->__CLASS_CODE__ if exists &{$class.'::__CLASS_CODE__'};
     # $self->__CLASS_SELF__ if exists &{$class.'::__CLASS_SELF__'};
+    # $self->{'SELF'} = $self;
 
     return $self;
 }

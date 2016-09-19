@@ -206,7 +206,7 @@ sub compile { #print "#### COMPILE ####\n";
 	my $title					= $fname_source;
 	my $code_dest;
 	my $code_source;
-	my $info;
+	my $info                    = '';
 	my($path_current)			= $0 =~ m/^(.*?)\w+(?:\.\w+)*$/sx;
 
 	my $path_source				= $this->{source}{fpath}	|| $path_current;

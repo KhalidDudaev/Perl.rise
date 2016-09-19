@@ -135,33 +135,35 @@ sub __RISE_ERR { die __RISE_ERRWARN(shift, 'ERROR', @_) }
 sub __RISE_WARN { warn __RISE_ERRWARN(shift, 'WARNING', @_) }
 
 sub __RISE_ERRWARN {
-	my $class		= shift;
-    my $msgtitle    = shift;
-	my $err			= shift;
-	my $name		= shift;
+	my $class		   = shift;
+    my $msgtitle       = shift;
+	my $err            = shift;
+	my $name		   = shift;
 
-	my $err_conf	= $ERROR->{$err};
-	my $level		= $err_conf->[0];
-	my $level_count	= 1;
-	my $parent		= (caller($level->[0]))[0];
+	my $err_conf       = $ERROR->{$err};
+	my $level		   = $err_conf->[0];
+	my $level_count	   = 1;
+    my $level_correct  = 3;
+	my $parent		   = (caller($level->[0]+$level_correct))[0];
 	my ($child, $file, $line, $func); # = (caller($level->[1]));
-	# my $fext		= $class->{source}{fext};
-	my $fext		= 'puma'; #$class->{source}{fext};
-	my $err_msg		= "################################## $msgtitle #####################################\n";
+	# my $fext		   = $class->{source}{fext};
+	my $fext		   = 'puma'; #$class->{source}{fext};
+	my $err_msg		   = "################################## $msgtitle #####################################\n";
 
 
-	($child, $file, $line, $func) = (caller($level->[1]));
+	($child, $file, $line, $func) = (caller($level->[1] + $level_correct));
 	($class, $file, $func) = __err_filter($class, $file, $func, $fext);
 	$err_msg .= eval $err_conf->[1];
 
-    print "parent:[$parent] child:[$child] file:[$file] line:[$line] func:[$func]\n";
+    print "child:[$child] file:[$file] line:[$line] func:[$func]\n";
 
 	while ($file && $line && $child ne 'main') {
 		$err_msg .= eval '"\n-> line $line in $file"';
-		($child, $file, $line, $func) = (caller($level->[1] + $level_count));# if $child eq 'main';
+		($child, $file, $line, $func) = (caller($level->[1] + $level_correct + $level_count));# if $child eq 'main';
 		($class, $file, $func) = __err_filter($class, $file, $func, $fext);
 		# $err_msg .= eval '"\n-> line $line in $file"' if $file && $line && $child ne 'main';
 		$level_count++;
+        print "child:[$child] file:[$file] line:[$line] func:[$func]\n";
 	}
 
 	$err_msg .= "\n##############################################################################\n\n";
