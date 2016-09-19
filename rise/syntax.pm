@@ -223,49 +223,48 @@ sub confirm {
 
 		'_nonamedblock',
 		@{var 'parser_namespace'},
-		'_unwrap_code',
-		'_op_regex',
+        '_unwrap_code',
+        '_op_regex',
 
-		'_op_scalar',
+        '_op_scalar',
 
         # '_op_array',
-		# '_op_hash',
+        # '_op_hash',
 
         '_op_sort_blockless',
         '_op_array_block',
         '_op_array_hash',
 
-		# '_op_array1',
-		# '_op_array2',
-		# '_op_array21',
-		# '_op_array3',
-		# '_op_reverse',
+        # '_op_array1',
+        # '_op_array2',
+        # '_op_array21',
+        # '_op_array3',
+        # '_op_reverse',
         # '_context',
 
         '_op_for_each',
-		'_op_dot',
+        '_op_dot',
         '_concat',
-		'_optimize4',
+        '_optimize4',
 
-		'_optimize6',
-		'_optimize7',
-		'_optimize71',
-		'_optimize8',
-		'_function_call_post1',
-		'_function_call_post2',
-		'_thread_call_post1',
-		'_thread_call_post2',
-		#'_function_boost_post1',
-		#'_function_boost_post2',
-		#'_variable_boost_post',
-		#'_optimize5',
+        '_optimize6',
+        '_optimize7',
+        '_optimize71',
+        '_optimize8',
+        '_function_call_post1',
+        '_function_call_post2',
+        '_thread_call_post1',
+        '_thread_call_post2',
+        #'_function_boost_post1',
+        #'_function_boost_post2',
+        #'_variable_boost_post',
+        #'_optimize5',
 
-		'_including',
-		'_optimize9',
+        '_including',
+        '_optimize9',
         '_unwrap_code_header',
         '_unwrap_code_footer',
         '_unwrap_variable',
-
 	];
 
 	keyword namespace				=> 'namespace';
@@ -1151,7 +1150,7 @@ sub _syntax_while {
     my $tk_self_name	= token 'self_name';
 	my $tk_sigils		= token 'sigils';
 
-    $condition			=~ s/^($tk_sigils)?($tk_self_name)/'__RISE_R2A '.($1||'&').$2/sxe;
+    $condition			=~ s/^($tk_sigils)?($tk_self_name)/'__RISE_R2A '.($1||'').$2/sxe;
 
     # $block 				= parse($self, $block, &grammar, [@{var 'parser_loops'}], { parent => $parent_class });
 
@@ -1802,6 +1801,7 @@ sub _syntax_variable_compile_class {
 	my $parent_class	= $confs->{parent};
 	my $boost_vars		= '';
 	my $local_var		= '';
+    my $wrap_local      = '';
 	my $op_end			= '';
 
     my $res;
@@ -1834,10 +1834,12 @@ sub _syntax_variable_compile_class {
 
 	$accmod = __accessmod($self, 'var_'.$accmod, $parent_class, $name);
 	#$accmod				= eval var($accmod.'_var');
+    # $accmod = '';
 
 	if (&accessmod eq 'local') {
 		#$accmod			= '';
 		$local_var		= "local *$name; ";
+        $wrap_local     = 'local';
 	}
 	($var_type, $var_type_args)	= $variable_type =~ m/^\:\s*(\w+)(?:\((.*?)\))?$/;
 
@@ -1852,13 +1854,14 @@ sub _syntax_variable_compile_class {
 
 	# $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings; $op_end";
 
-	$res = "${var_type} ${local_var}sub $name ():lvalue; { no strict; no warnings; *$name = sub ():lvalue { ${accmod} my \$self = shift || __PACKAGE__->{\'SELF\'}; \$self->{$name} }; }";
+	$res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift || \$__CLASS_SELF__; \$self->{'$name'} ||= \$__CLASS_SELF__->{'$name'}; \$self->{'$name'} }; use warnings;";
+	$res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;" if $local_var;
     # $res = "no warnings; sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} my \$self = shift; \$self->{$name}; }; use warnings;";
     # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;" if &accessmod eq 'local';
     # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;";
 
-    var('wrap_variable')->{$parent_class.'::'.$name} = $res;
-	$res = '%%%WRAP_VARIABLE_' . $parent_class.'::'.$name . '%%% ' . $op_end;
+    var('wrap_variable')->{$wrap_local.$parent_class.'::'.$name} = $res;
+	$res = '%%%WRAP_VARIABLE_'.$wrap_local . $parent_class.'::'.$name . '%%% ' . $op_end;
 
     return $res;
 }
@@ -2143,9 +2146,9 @@ sub __object {
 	$block 				= parse($self, $block, &grammar, [@{var 'parser_'.$object}], { parent => $name });
 	# $block 				= parse($self, $block, &grammar, [@{var 'parser_code'}], { parent => $name });
 
-    var('wrap_code_header')->{$name.'_CLASS_SELF_H'} = '__PACKAGE__->{\'SELF\'} = shift;';
-    var('wrap_code_footer')->{$name.'_CLASS_SELF_F'} = 'return __PACKAGE__->{\'SELF\'};';
-    $block 				= '( bless {} )->__CLASS_CODE__; sub __CLASS_CODE__ { %%%WRAP_CODEHEADER_' . $name.'_CLASS_SELF_H%%% '.$block.'%%%WRAP_CODEFOOTER_' . $name.'_CLASS_SELF_F%%% }';
+    # var('wrap_code_header')->{$name.'_CLASS_SELF_H'} = '__PACKAGE__->{\'SELF\'} = shift;';
+    # var('wrap_code_footer')->{$name.'_CLASS_SELF_F'} = 'return __PACKAGE__->{\'SELF\'};';
+    # $block 				= '( bless {} )->__CLASS_CODE__; sub __CLASS_CODE__ { %%%WRAP_CODEHEADER_' . $name.'_CLASS_SELF_H%%% '.$block.'%%%WRAP_CODEFOOTER_' . $name.'_CLASS_SELF_F%%% }';
 
 	$res				= "{ package ${name};".$sps1."use rise::core::object::${object};". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $class_args, $confs) . $sps4.$block."}";
 	# $res				= "{ package ${name};".$sps1."use strict; use warnings; use rise::core::object::class;". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $confs) . $sps4.$block."}";
@@ -2171,7 +2174,7 @@ sub __object_header {
 
 	my $header			= {
         namespace   => "use rise::core::object::namespace;",
-		class		=> 'our $AUTHORITY = "'.$auth.'"; sub AUTHORITY {"'.$auth.'"}; our $VERSION = "'.$ver.'"; sub VERSION {"'.$ver.'"};',
+		class		=> 'our $AUTHORITY = "'.$auth.'"; sub AUTHORITY {"'.$auth.'"}; our $VERSION = "'.$ver.'"; sub VERSION {"'.$ver.'"}; my $__CLASS_SELF__ = __PACKAGE__->new;',
 		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; ",
 		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
 		# class		=> " BEGIN { no strict 'refs'; *{'".$name."::'.\$_} = \\&{'".$parent_class."::IMPORT::'.\$_} for keys \%".$parent_class."::IMPORT::; }; sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",

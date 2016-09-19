@@ -25,8 +25,9 @@ sub import {
     # print "### child -> $child_self \n";
 
 	foreach my $parent (@parents) {
-        $parent = 'main::'.$parent if $parent !~ m/^main\:\:.*?$/sx;
-        ($parent_short) = $parent =~ m/^main\:\:(.*?)$/sx;
+        # $parent = 'main::'.$parent if $parent !~ m/^main\:\:.*?$/sx;
+        $parent_short = $parent; $parent_short =~ s/^main\:\://sx;
+        # ($parent_short) = $parent =~ m/^main\:\:(.*?)$/sx;
         my $parent_self = bless {}, $parent;
         # print $parent . "\n";
 		$path		= $parent_short;
@@ -38,10 +39,11 @@ sub import {
 		# require $path.".pm" if !$parent->isa($parent);
         require $path.".pm";
 
-        # { no strict 'refs'; *{$parent.'::__CLASS_SELF__'} = $self; }
+        # { no strict 'refs'; ${$parent.'::__CLASS_SELF__'} = $self; }
         # $parent_self->new if exists &{$parent_short.'::__CLASS_CODE__'};
         # $parent_self->__CLASS_CODE__ if exists &{$parent.'::__CLASS_CODE__'};
-        &{$parent.'::__CLASS_CODE__'}($child); # if exists &{$parent.'::__CLASS_CODE__'};
+        # &{$parent.'::__CLASS_CODE__'}($child) if exists &{$parent.'::__CLASS_CODE__'};
+        # &{$parent.'::__SET_SELF__'}(bless {}, $child) if exists &{$parent.'::__SET_SELF__'};
 
         # &{$parent.'::__CLASS_CODE__'}($self);
 

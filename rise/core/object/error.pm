@@ -143,7 +143,7 @@ sub __RISE_ERRWARN {
 	my $err_conf       = $ERROR->{$err};
 	my $level		   = $err_conf->[0];
 	my $level_count	   = 1;
-    my $level_correct  = 3;
+    my $level_correct  = 0;
 	my $parent		   = (caller($level->[0]+$level_correct))[0];
 	my ($child, $file, $line, $func); # = (caller($level->[1]));
 	# my $fext		   = $class->{source}{fext};
@@ -155,7 +155,7 @@ sub __RISE_ERRWARN {
 	($class, $file, $func) = __err_filter($class, $file, $func, $fext);
 	$err_msg .= eval $err_conf->[1];
 
-    print "child:[$child] file:[$file] line:[$line] func:[$func]\n";
+    # print "child:[$child] file:[$file] line:[$line] func:[$func]\n";
 
 	while ($file && $line && $child ne 'main') {
 		$err_msg .= eval '"\n-> line $line in $file"';
@@ -163,7 +163,7 @@ sub __RISE_ERRWARN {
 		($class, $file, $func) = __err_filter($class, $file, $func, $fext);
 		# $err_msg .= eval '"\n-> line $line in $file"' if $file && $line && $child ne 'main';
 		$level_count++;
-        print "child:[$child] file:[$file] line:[$line] func:[$func]\n";
+        # print "child:[$child] file:[$file] line:[$line] func:[$func]\n";
 	}
 
 	$err_msg .= "\n##############################################################################\n\n";
@@ -176,6 +176,7 @@ sub __err_filter {
 	my ($class, $file, $func, $fext) = @_;
 	$file			=~ s/\.pm/\.$fext/gsx;
 	$file			=~ s/.*?(\/\w+\/\w+\/\w+\.\w+)$/..$1/gsx;
+    $file			=~ s/\\/\//gsx;
 	$func			=~ s/.*::(\w+)$/$1/;
 	$class			=~ s/::$func$//;
 	return ($class, $file, $func);
