@@ -2040,8 +2040,8 @@ sub _syntax_vers {
 sub _syntax_namespace {
 	my ($self, $rule_name, $confs)			= @_;
 	my $name			= &name;
-	# my $parent_name		= $confs->{parent} || 'main';
-	my $parent_name		= $confs->{parent};
+	my $parent_name		= $confs->{parent} || 'main';
+	# my $parent_name		= $confs->{parent};
 	my $block 			= &block_brace;
 	my ($s1,$s2,$s3,$s4) = (&sps1,&sps2,&sps3,&sps4);
 

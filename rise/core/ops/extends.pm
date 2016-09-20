@@ -25,19 +25,19 @@ sub import {
     # print "### child -> $child_self \n";
 
 	foreach my $parent (@parents) {
-        # $parent = 'main::'.$parent if $parent !~ m/^main\:\:.*?$/sx;
+        $parent = 'main::'.$parent if $parent !~ m/^main\:\:.*?$/sx;
         $parent_short = $parent; $parent_short =~ s/^main\:\://sx;
         # ($parent_short) = $parent =~ m/^main\:\:(.*?)$/sx;
-        my $parent_self = bless {}, $parent;
-        # print $parent . "\n";
+        # my $parent_self = bless {}, $parent;
+        # print $parent_short . "\n";
 		$path		= $parent_short;
 		$path		=~ s/\:\:/\//g;
 		# warn "Class '$child' tried to inherit from itself\n" if $child eq $parent;
 
         die $err if $child_short eq $parent_short;
-		# require $path.".pm" if !grep($parent->isa($parent), ($child, @parents));
+		require $path.".pm" if !grep($parent->isa($parent), ($child, @parents));
 		# require $path.".pm" if !$parent->isa($parent);
-        require $path.".pm";
+        # require $path.".pm";
 
         # { no strict 'refs'; ${$parent.'::__CLASS_SELF__'} = $self; }
         # $parent_self->new if exists &{$parent_short.'::__CLASS_CODE__'};

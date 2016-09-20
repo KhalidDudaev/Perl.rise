@@ -33,7 +33,7 @@ my $self_current = {};
 
 
 sub __objtype {'CLASS'};
-sub self_current ():lvalue { $self_current->{+shift} };
+# sub self_current ():lvalue { $self_current->{+shift} };
 
 # sub new {
 #   my $class         = ref $_[0] || $_[0];                                     # получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
