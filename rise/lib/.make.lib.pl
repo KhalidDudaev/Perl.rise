@@ -10,7 +10,7 @@ use rise {
     debug    => 1,
     info    => 1,
     compile => [qw'
-		tman
+		txt
     ']
 };
 # MakeBot

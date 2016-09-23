@@ -17,6 +17,7 @@ our $VERSION = '0.001';
 use rise::lib::fs::fileWorker;
 use rise::grammar;
 use rise::syntax;
+# use rise::lib::txt;
 #use dialect::syntax_pmd;
 #use dialect::syntax_dxml;
 #use dialect::Keywords;

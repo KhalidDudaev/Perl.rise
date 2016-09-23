@@ -120,7 +120,7 @@ sub confirm {
 
     var ('parser_variable_function')			= [
         '_variable_list',
-		'_variable_observe',
+		# '_variable_observe',
 		# '_variable_boost',
 		'_variable_optimize',
 		'_variable_compile_function',
@@ -1247,10 +1247,12 @@ sub _syntax_function_call {
 	# my $method			= '__METHOD__';
 	my $members_list	= var('members')->{$parent_class}||'';
 
-	$members_list		=~ s/$tk_accmod//gsx;
-	$members_list		=~ s/\-function\-//gsx;
-	$members_list		=~ s/^\s+(.*?)\s+$/$1/sx;
-    $members_list		=~ s/\s+/\|/gsx;
+	# $members_list		=~ s/$tk_accmod//gsx;
+	# $members_list		=~ s/\-function\-//gsx;
+	# $members_list		=~ s/^\s+(.*?)\s+$/$1/sx;
+    # $members_list		=~ s/\s+/\|/gsx;
+
+    $members_list = join '\b|\b', $members_list =~ m/function-(\w+)/gsx;
 
 	if ($members_list && $name =~ m/\b(?:$members_list)\b/sx) {
 		$this			= '__PACKAGE__,';
@@ -1389,6 +1391,7 @@ sub _syntax_function_compile {
 	$self_args =~ s/^\,//;
 
 	$arguments			= &kw_local." ".&kw_variable." ($self_args) = ($args_def);" if $self_args;
+	# $arguments			= &kw_public." ".&kw_variable." ($self_args) = ($args_def);" if $self_args;
 	$arguments			= parse($self, $arguments, &grammar, [@{var 'parser_variable_function'}], { parent => $name });
 
 	if ($type) {
@@ -1869,7 +1872,7 @@ sub _syntax_variable_compile_class {
 sub _syntax_variable_compile_function {
 	my ($self, $rule_name, $confs)			= @_;
 
-	my $accmod			= &accessmod || var 'accessmod';
+	# my $accmod			= &accessmod || var 'accessmod';
 	my $name			= &name;
 	my $variable_type	= &variable_type;
 	my $var_type		= '';
@@ -1880,8 +1883,9 @@ sub _syntax_variable_compile_function {
 	my $op_end			= '';
     my $res;
 
-    ############################################# add variable to class members ###############################################
-	my $members_var		= $accmod.'-var-'.$name;
+    ############################################ add variable to class members ###############################################
+	# my $members_var		= $accmod.'-var-'.$name;
+	my $members_var		= &kw_public.'-var-'.$name;
 	my $members_list	= var('members')->{$parent_class}||'';
 
 	$members_list		=~ s/\s+/\\b\|\\b/gsx;
@@ -1890,29 +1894,30 @@ sub _syntax_variable_compile_function {
 
 	var('members')->{$parent_class} .= ' '.$members_var if $members_var !~ /\b$members_list\b/gsx;  # if $accmod ne 'local';
 	var('members')->{$parent_class} =~ s/^\s+//;
-    ############################################################################################################################
+    ###########################################################################################################################
 
-    if ($accmod =~ s/export//sx){
+    # if ($accmod =~ s/export//sx){
+    #
+    #     my @export_tags                 = $accmod =~ m/\:\w+/gsx;
+    #
+    #     push @export_tags, ':import' if !$accmod;
+    #     $accmod                         = 'public';
+    #
+    #     foreach my $t ($name, ':all', ':var', @export_tags){ no strict 'refs';
+    #         var('exports')->{$parent_class}{$t} .= ' '.$name;
+    # 		var('exports')->{$parent_class}{$t} =~ s/^\s+//;
+    # 		var('exports')->{$parent_class.'::'.$name}{$t} .= var('exports')->{$parent_class}{$t}; # for recursion caller
+    #     }
+    # }
 
-        my @export_tags                 = $accmod =~ m/\:\w+/gsx;
-
-        push @export_tags, ':import' if !$accmod;
-        $accmod                         = 'public';
-
-        foreach my $t ($name, ':all', ':var', @export_tags){ no strict 'refs';
-            var('exports')->{$parent_class}{$t} .= ' '.$name;
-    		var('exports')->{$parent_class}{$t} =~ s/^\s+//;
-    		var('exports')->{$parent_class.'::'.$name}{$t} .= var('exports')->{$parent_class}{$t}; # for recursion caller
-        }
-    }
-
-	$accmod = __accessmod($self, 'var_'.$accmod, $parent_class, $name);
+	# $accmod = __accessmod($self, 'var_'.$accmod, $parent_class, $name);
 	#$accmod				= eval var($accmod.'_var');
 
-	if (&accessmod eq 'local') {
-		#$accmod			= '';
-		$local_var		= "local *$name; ";
-	}
+	# if (&accessmod eq 'local') {
+	# 	#$accmod			= '';
+	# 	$local_var		= "local *$name; ";
+	# }
+
 	($var_type, $var_type_args)	= $variable_type =~ m/^\:\s*(\w+)(?:\((.*?)\))?$/;
 
 	$var_type_args		= ", ".$var_type_args if $var_type_args;
@@ -1930,7 +1935,8 @@ sub _syntax_variable_compile_function {
     # $res = "no warnings; sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} my \$self = shift; \$self->{$name}; }; use warnings;";
     # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;" if &accessmod eq 'local';
 
-    $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;";
+    # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;";
+    $res = "my \$$name; ${var_type}no warnings; sub $name ():lvalue; *$name = sub ():lvalue { \$$name }; use warnings;";
 
     var('wrap_variable')->{$parent_class.'::'.$name} = $res;
 	$res = '%%%WRAP_VARIABLE_' . $parent_class.'::'.$name . '%%% ' . $op_end;
@@ -1948,12 +1954,16 @@ sub _syntax_variable_call {
 	# my $method			= '__METHOD__';
 	my $members_list	= var('members')->{$parent_class}||'';
 
-	$members_list		=~ s/$tk_accmod//gsx;
-	$members_list		=~ s/\-var\-//gsx;
-	$members_list		=~ s/^\s+(.*?)\s+$/$1/sx;
-	$members_list		=~ s/\s/\\b\|\\b/gsx;
+	# $members_list		=~ s/$tk_accmod//gsx;
+	# $members_list		=~ s/\-var\-//gsx;
+	# $members_list		=~ s/^\s+(.*?)\s+$/$1/sx;
+	# $members_list		=~ s/\s/\\b\|\\b/gsx;
 
-	if ($members_list && $name =~ m/\b(?:$members_list)\b/sx && $name !~ m/WRAP\_VARIABLE\_$name/sx) {
+    $members_list = join '\b|\b', $members_list =~ m/var-(\w+)/gsx;
+
+    # print $members_list . "\n";
+
+	if ($members_list && $name =~ m/\b(?:$members_list)\b/sx && $name !~ m/WRAP\_VARIABLE\_/sx) {
 		$this			= '$';
 		# print ">>> $parent_class->$name | fnlist - *$members_list* \n";
 	}
@@ -2040,8 +2050,8 @@ sub _syntax_vers {
 sub _syntax_namespace {
 	my ($self, $rule_name, $confs)			= @_;
 	my $name			= &name;
-	my $parent_name		= $confs->{parent} || 'main';
-	# my $parent_name		= $confs->{parent};
+	# my $parent_name		= $confs->{parent} || 'main';
+	my $parent_name		= $confs->{parent};
 	my $block 			= &block_brace;
 	my ($s1,$s2,$s3,$s4) = (&sps1,&sps2,&sps3,&sps4);
 
@@ -2108,7 +2118,8 @@ sub __object {
 	my ($sps1,$sps2,$sps3,$sps4) = (&sps1,&sps2,&sps3,&sps4);
 
 	my $base_class		= "'rise::core::object::$object'";
-	my $parent_class	= $confs->{parent} || 'main';
+	# my $parent_class	= $confs->{parent} || 'main';
+	my $parent_class	= $confs->{parent};
 
 	my $list_extends	= '';
 	my $list_implements	= '';
@@ -2116,7 +2127,6 @@ sub __object {
 	my $extends			= '';
 	my $implements		= '';
 	my $res				= '';
-    my $class_self      = 'my $__CLASS_SELF__ = shift;';
 
     # print $class_args;
     ($class_args, $args_attr) = $args_attr =~ m/^(\(.*?\))?\s*(.*?)$/sx;
@@ -2164,7 +2174,7 @@ sub __object_header {
 	my $name			= shift;
     my $class_args      = shift;
     my $confs           = shift;
-    my $parent_class	= $confs->{parent} || 'main';
+    # my $parent_class	= $confs->{parent} || 'main';
     my $res;
     my $fname                               = $self->{FNAME};
 
@@ -2174,7 +2184,7 @@ sub __object_header {
 
 	my $header			= {
         namespace   => "use rise::core::object::namespace;",
-		class		=> 'our $AUTHORITY = "'.$auth.'"; sub AUTHORITY {"'.$auth.'"}; our $VERSION = "'.$ver.'"; sub VERSION {"'.$ver.'"}; my $__CLASS_SELF__ = __PACKAGE__->new;',
+		class		=> 'our $AUTHORITY = "'.$auth.'"; sub AUTHORITY {"'.$auth.'"}; our $VERSION = "'.$ver.'"; sub VERSION {"'.$ver.'"}; my $__CLASS_SELF__ = bless {}; ',
 		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; ",
 		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
 		# class		=> " BEGIN { no strict 'refs'; *{'".$name."::'.\$_} = \\&{'".$parent_class."::IMPORT::'.\$_} for keys \%".$parent_class."::IMPORT::; }; sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",

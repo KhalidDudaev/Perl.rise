@@ -4,50 +4,53 @@ use warnings;
 use utf8;
 
 use Carp;
+# use rise::lib::txt;
 
 our $VERSION = '0.01';
 
 #our $INHERIT = 0;
+# my $t     = new rise::lib::txt;
+
 my $VARS		= {};
 my $ERROR		= {
-	class_priv				=> [ [ 1, 2 ], '"ERROR CLASS:\nCan\'t access class \"$parent\" at\n-> line $line in $file"' ],
-	class_priv_inherit		=> [ [ 1, 3 ], '"ERROR CLASS:\nCan\'t access class \"$parent\" at\n-> line $line in $file"' ],
-	class_prot				=> [ [ 1, 2 ], '"ERROR CLASS:\nClass \"$parent\" only extends at\n-> line $line in $file"' ],
-	class_inherits			=> [ [ 1, 1 ], '"ERROR CLASS:\nextends or implements syntaxis erorr in class \"$parent\" at"' ],
+	class_priv				=> [ [ 1, 2 ], 'ERROR CLASS','"Can\'t access class \"$parent\" at\n-> line $line in $file"' ],
+	class_priv_inherit		=> [ [ 1, 3 ], 'ERROR CLASS','"Can\'t access class \"$parent\" at\n-> line $line in $file"' ],
+	class_prot				=> [ [ 1, 2 ], 'ERROR CLASS','"Class \"$parent\" only extends at\n-> line $line in $file"' ],
+	class_inherits			=> [ [ 1, 1 ], 'ERROR CLASS','"extends or implements syntaxis erorr in class \"$parent\" at"' ],
 
-	abstract_prot			=> [ [ 1, 2 ], '"ERROR ABSTRACT:\nAbstract class \"$parent\" only extends at"' ],
-	abstract_priv			=> [ [ 1, 1 ], '"ERROR ABSTRACT:\nAn abstract class \"$parent\" cannot be private at"' ],
-	abstract_publ			=> [ [ 1, 1 ], '"ERROR ABSTRACT:\nAn abstract class \"$parent\" cannot be public at"' ],
+	abstract_prot			=> [ [ 1, 2 ], 'ERROR ABSTRACT','"Abstract class \"$parent\" only extends at"' ],
+	abstract_priv			=> [ [ 1, 1 ], 'ERROR ABSTRACT','"An abstract class \"$parent\" cannot be private at"' ],
+	abstract_publ			=> [ [ 1, 1 ], 'ERROR ABSTRACT','"An abstract class \"$parent\" cannot be public at"' ],
 
-	interface_prot			=> [ [ 1, 2 ], '"ERROR INTERFACE:\nInterface \"$parent\" only extends at"' ],
-	interface_priv			=> [ [ 1, 1 ], '"ERROR INTERFACE:\nAn interface \"$parent\" cannot be private at"' ],
-	interface_publ			=> [ [ 1, 1 ], '"ERROR INTERFACE:\nAn interface \"$parent\" cannot be public at"' ],
+	interface_prot			=> [ [ 1, 2 ], 'ERROR INTERFACE','"Interface \"$parent\" only extends at"' ],
+	interface_priv			=> [ [ 1, 1 ], 'ERROR INTERFACE','"An interface \"$parent\" cannot be private at"' ],
+	interface_publ			=> [ [ 1, 1 ], 'ERROR INTERFACE','"An interface \"$parent\" cannot be public at"' ],
 
-	INTERFACE_CONFIRM		=> [ [ 1, 1 ], '"ERROR INTERFACE:\n$msg_error"' ],
+	INTERFACE_CONFIRM		=> [ [ 1, 1 ], 'ERROR INTERFACE','"$msg_error"' ],
 
-	code_priv				=> [ [ 1, 2 ], '"ERROR FUNCTION:\nCan\'t access function \"$name\" from \"$class\" at"' ],
-	code_prot				=> [ [ 1, 2 ], '"ERROR FUNCTION:\nFunction \"$name\" from \"$class\" only inheritable at"' ],
+	code_priv				=> [ [ 1, 2 ], 'ERROR FUNCTION','"Can\'t access function \"$name\" from \"$class\" at"' ],
+	code_prot				=> [ [ 1, 2 ], 'ERROR FUNCTION','"Function \"$name\" from \"$class\" only inheritable at"' ],
 
-	CODE_PRIVATE			=> [ [ 0, 1 ], '"ERROR FUNCTION:\nCan\'t access function \"$name\" from \"$class\" at"' ],
-	CODE_PROTECTED			=> [ [ 0, 1 ], '"ERROR FUNCTION:\nFunction \"$name\" from \"$class\" only inheritable at"' ],
+	CODE_PRIVATE			=> [ [ 0, 1 ], 'ERROR FUNCTION','"Can\'t access function \"$name\" from \"$class\" at"' ],
+	CODE_PROTECTED			=> [ [ 0, 1 ], 'ERROR FUNCTION','"Function \"$name\" from \"$class\" only inheritable at"' ],
 
-	var_priv				=> [ [ 1, 2 ], '"ERROR VARIABLE:\nCan\'t access variable \"$name\" from \"$class\" at"' ],
-	var_prot				=> [ [ 1, 2 ], '"ERROR VARIABLE:\nVariable \"$name\" from \"$class\" only inheritable at"' ],
+	var_priv				=> [ [ 1, 2 ], 'ERROR VARIABLE','"Can\'t access variable \"$name\" from \"$class\" at"' ],
+	var_prot				=> [ [ 1, 2 ], 'ERROR VARIABLE','"Variable \"$name\" from \"$class\" only inheritable at"' ],
 
-	VAR_PRIVATE				=> [ [ 0, 1 ], '"ERROR VARIABLE:\nCan\'t access variable \"$name\" from \"$class\" at"' ],
-	VAR_PROTECTED			=> [ [ 0, 1 ], '"ERROR VARIABLE:\nVariable \"$name\" from \"$class\" only inheritable at"' ],
+	VAR_PRIVATE				=> [ [ 0, 1 ], 'ERROR VARIABLE','"Can\'t access variable \"$name\" from \"$class\" at"' ],
+	VAR_PROTECTED			=> [ [ 0, 1 ], 'ERROR VARIABLE','"Variable \"$name\" from \"$class\" only inheritable at"' ],
 
-	VAR_CAST				=> [ [ 1, 2 ], '"ERROR TYPE:\nYou can only assign a value type \"$name\" at"' ],
-	VAR_CAST_UNDEFINE		=> [ [ 1, 2 ], '"ERROR TYPE:\nUndefine value type \"$name\" at"' ],
+	VAR_CAST				=> [ [ 1, 2 ], 'ERROR TYPE','"You can only assign a value type \"$name\" at"' ],
+	VAR_CAST_UNDEFINE		=> [ [ 1, 2 ], 'ERROR TYPE','"Undefine value type \"$name\" at"' ],
 
 
-	PRIVATE					=> [ [ 0, 1 ], '"ERROR ACCESS:\nCan\'t access function \"$name\" from \"$class\" at"' ],
-	PROTECTED				=> [ [ 0, 1 ], '"ERROR ACCESS:\nFunction \"$name\" from \"$class\" only inheritable at"' ],
+	PRIVATE					=> [ [ 0, 1 ], 'ERROR ACCESS','"Can\'t access function \"$name\" from \"$class\" at"' ],
+	PROTECTED				=> [ [ 0, 1 ], 'ERROR ACCESS','"Function \"$name\" from \"$class\" only inheritable at"' ],
 
 	# ARRAY_HASH				=> [ [ 0, 1 ], '"ERROR ARRAY OR HASH:\nNot ARRAY value \"$name\" at"' ],
-	ARRAY_HASH				=> [ [ 0, 1 ], '"ERROR ARRAY OR HASH OP: \"$name\"\nNot ARRAY or HASH value or error expression at"' ],
-	SCALAR					=> [ [ 0, 1 ], '"ERROR SCALAR OP: \"$name\"\nNot SCALAR value or error expression at"' ],
-	PRINT					=> [ [ 0, 1 ], '"ERROR PRINT OP: Use of uninitialized value print at"' ],
+	ARRAY_HASH				=> [ [ 0, 1 ], 'ERROR ARRAY OR HASH OP', '"\"$name\"\nNot ARRAY or HASH value or error expression at"' ],
+	SCALAR					=> [ [ 0, 1 ], 'ERROR SCALAR OP', '"\"$name\"\nNot SCALAR value or error expression at"' ],
+	PRINT					=> [ [ 0, 1 ], 'ERROR PRINT OP', '"Use of uninitialized value print at"' ],
 
 
 };
@@ -131,7 +134,7 @@ sub __error {
 	die $err_msg;
 }
 
-sub __RISE_ERR { die __RISE_ERRWARN(shift, 'ERROR', @_) }
+sub __RISE_ERR  { die __RISE_ERRWARN(shift, 'ERROR', @_) }
 sub __RISE_WARN { warn __RISE_ERRWARN(shift, 'WARNING', @_) }
 
 sub __RISE_ERRWARN {
@@ -143,29 +146,28 @@ sub __RISE_ERRWARN {
 	my $err_conf       = $ERROR->{$err};
 	my $level		   = $err_conf->[0];
 	my $level_count	   = 1;
-    my $level_correct  = 0;
-	my $parent		   = (caller($level->[0]+$level_correct))[0];
+	my $parent		   = (caller($level->[0]))[0];
 	my ($child, $file, $line, $func); # = (caller($level->[1]));
 	# my $fext		   = $class->{source}{fext};
 	my $fext		   = 'puma'; #$class->{source}{fext};
-	my $err_msg		   = "################################## $msgtitle #####################################\n";
+	my $err_msg		   = "################################## $err_conf->[1] #####################################\n";
+    my $err_msg_add    = '';
 
-
-	($child, $file, $line, $func) = (caller($level->[1] + $level_correct));
+	($child, $file, $line, $func) = (caller($level->[1]));
 	($class, $file, $func) = __err_filter($class, $file, $func, $fext);
-	$err_msg .= eval $err_conf->[1];
+	$err_msg .= eval $err_conf->[2];
 
     # print "child:[$child] file:[$file] line:[$line] func:[$func]\n";
 
 	while ($file && $line && $child ne 'main') {
-		$err_msg .= eval '"\n-> line $line in $file"';
-		($child, $file, $line, $func) = (caller($level->[1] + $level_correct + $level_count));# if $child eq 'main';
+		$err_msg_add = eval ('"\n-> line $line in $file"') . $err_msg_add;
+		($child, $file, $line, $func) = (caller($level->[1] + $level_count));# if $child eq 'main';
 		($class, $file, $func) = __err_filter($class, $file, $func, $fext);
 		# $err_msg .= eval '"\n-> line $line in $file"' if $file && $line && $child ne 'main';
 		$level_count++;
         # print "child:[$child] file:[$file] line:[$line] func:[$func]\n";
 	}
-
+    $err_msg .= $err_msg_add;
 	$err_msg .= "\n##############################################################################\n\n";
 
 	return $err_msg;

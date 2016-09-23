@@ -121,12 +121,13 @@ sub import { no strict "refs";
 
 		if ($_[0] && $_[0] ne ':noimport') {
 			for (@_){
+                # *{$self."::IMPORT::".$_} =
 				$self->export(&{$self."::__EXPORT__"}->{$_});
 			}
 		}
 	}
 
-	__IMPORT__($caller, @_) if exists &__IMPORT__;
+	# __IMPORT__($caller, @_) if exists &__IMPORT__;
 }
 
 # sub self { args('self', @_) }
@@ -138,16 +139,22 @@ sub import { no strict "refs";
 # }
 
 sub export { no strict "refs"; no warnings;
+	# my $__PARENT_CLASS__	= (caller(0))[0];
 	my $__CALLER_CLASS__	= (caller(1))[0];
 	my $self                = shift;
 	my $exports				= shift;
 
+    # say '--------- classext ---------';
+    # # say "parent -> $__PARENT_CLASS__";
+    # say "caller -> $__CALLER_CLASS__";
+    # say "self   -> $self";
+
 	foreach my $func (@$exports){
 		# *{$__CALLER_CLASS__ . "::$_"} = \&{"$self::$_"};
 		# *{$__CALLER_CLASS__ . "::IMPORT::$_"} = \&{"$self::$_"};
-
-		*{$__CALLER_CLASS__ . "::$func"} = sub { &{"$self::$func"}($self, @_) };
-		*{$__CALLER_CLASS__ . "::IMPORT::$func"} = sub { &{"$self::$func"}($self, @_) };
+        # *{$__CALLER_CLASS__ . "::".$func}         = sub {&{$__PARENT_CLASS__."::IMPORT::".$_}($self, @_)};
+		*{$__CALLER_CLASS__ . "::$func"}          = sub { &{"$self::$func"}($self, @_) };
+		*{$__CALLER_CLASS__ . "::IMPORT::$func"}  = sub { &{"$self::$func"}($self, @_) };
 	}
 }
 

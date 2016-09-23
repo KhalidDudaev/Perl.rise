@@ -20,9 +20,7 @@ my $cenv					= {};
 my @export_list 			= qw/
 	dump
 	clone
-	line
 	say
-	msg
 	_
 	a
 	b
@@ -105,15 +103,15 @@ sub false { !!0; };
 sub toList ($){@{$_[0]}}
 
 
-sub line (;$){
-	my $args		= shift;
-	my $char		= $args->{char} || '#';
-	my $title		= $args->{title} || '';
-	my $length		= $args->{length} || 75;
-
-	$title			= $char x 3 . '[ ' . $title . ' ]' if $title;
-	return $title . $char x ($length - length($title));
-}
+# sub line (;$){
+# 	my $args		= shift;
+# 	my $char		= $args->{char} || '#';
+# 	my $title		= $args->{title} || '';
+# 	my $length		= $args->{length} || 75;
+#
+# 	$title			= $char x 3 . '[ ' . $title . ' ]' if $title;
+# 	return $title . $char x ($length - length($title));
+# }
 
 sub say {
 	# __PACKAGE__->__RISE_ERR('PRINT') if (!$_[0] && $_[0] ne '');
@@ -126,17 +124,17 @@ sub say {
 
 # sub say { say @_ }
 
-sub msg (;$$){
-	my $text		= shift || 'NO TEXT';
-	my $title		= shift || 'NO TITLE';
-
-	# $title			= '### ' . $title . ' ';
-	# $title			= $title . line('#', 80 - length($title));
-
-	say line { title => $title };
-	say $text;
-	say line;
-}
+# sub msg (;$$){
+# 	my $text		= shift || 'NO TEXT';
+# 	my $title		= shift || 'NO TITLE';
+#
+# 	# $title			= '### ' . $title . ' ';
+# 	# $title			= $title . line('#', 80 - length($title));
+#
+# 	say line { title => $title };
+# 	say $text;
+# 	say line;
+# }
 
 sub clone {
 	my $var = shift;

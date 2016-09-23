@@ -15,8 +15,8 @@ sub import {
     my $parent_short;
     my $child_short;
 
-    $child = 'main::'.$child if $child !~ m/^main\:\:.*?$/sx;
-    ($child_short) = $child =~ m/^main\:\:(.*?)$/sx;
+    # $child = 'main::'.$child if $child !~ m/^main\:\:.*?$/sx;
+    $child_short = $child; $child_short =~ s/^main\:\://sx;
 
     my $child_self = bless {}, $child;
 
@@ -25,7 +25,7 @@ sub import {
     # print "### child -> $child_self \n";
 
 	foreach my $parent (@parents) {
-        $parent = 'main::'.$parent if $parent !~ m/^main\:\:.*?$/sx;
+        # $parent = 'main::'.$parent if $parent !~ m/^main\:\:.*?$/sx;
         $parent_short = $parent; $parent_short =~ s/^main\:\://sx;
         # ($parent_short) = $parent =~ m/^main\:\:(.*?)$/sx;
         # my $parent_self = bless {}, $parent;
