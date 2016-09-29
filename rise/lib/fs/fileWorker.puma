@@ -11,7 +11,7 @@ namespace rise.lib.fs {
         var path                    = new rise.lib.fs.pathWorker;
         var fhelper                 = new rise.lib.fs.fileHelper;
 
-        public var binmode          = 0;
+        public var binmod          = 0;
 
         function cmd_sel (c) {
         	var cmddp = {
@@ -24,17 +24,20 @@ namespace rise.lib.fs {
 
         public function file(cmd, name, data) {
             var res;
-        	data = join('',<data>) if ref data eq 'Fh';
             name = self.cmd_sel(cmd) ~ self.path.toAbs(name);
+        	data = join('',<data>) if ref data eq 'Fh';
 
-            // self.fh->open(name) || die "cannot open file $@";
-            self.fh->open(name);
-            self.fh->binmode() if self.binmode;
+            // self.fh.open(name) || die "cannot open file $@";
+            self.fh.open(name);
+            self.fh.binmod() if self.binmod;
 
-            res = join('', [self.fh->getlines()])  if cmd eq 'read';
-            res = self.fh->write(data)           if cmd eq 'write';
-            res = self.fh->write(data)           if cmd eq 'append';
-            self.fh->close;
+            if (cmd eq 'read'){
+                res = join('', [self.fh.getlines()]) || __PACKAGE__.__RISE_ERR('FILE', self.path.filename(name));
+            }
+
+            res = self.fh.write(data)           if cmd eq 'write';
+            res = self.fh.write(data)           if cmd eq 'append';
+            self.fh.close;
             return res;
         }
 

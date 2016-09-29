@@ -10,7 +10,11 @@ use rise {
     debug    => 1,
     info    => 1,
     compile => [qw'
-		txt
+        fs
+		fs/dirWorker
+		fs/fileWorker
+		fs/infoWorker
+		fs/pathWorker
     ']
 };
 # MakeBot

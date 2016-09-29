@@ -51,6 +51,7 @@ my $ERROR		= {
 	ARRAY_HASH				=> [ [ 0, 1 ], 'ERROR ARRAY OR HASH OP', '"\"$name\"\nNot ARRAY or HASH value or error expression at"' ],
 	SCALAR					=> [ [ 0, 1 ], 'ERROR SCALAR OP', '"\"$name\"\nNot SCALAR value or error expression at"' ],
 	PRINT					=> [ [ 0, 1 ], 'ERROR PRINT OP', '"Use of uninitialized value print at"' ],
+	FILE					=> [ [ 1, 2 ], 'ERROR FILE','"Can\'t open file \"$name\" at"' ],
 
 
 };
