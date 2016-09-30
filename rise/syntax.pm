@@ -1865,7 +1865,10 @@ sub _syntax_variable_compile_class {
 	$op_end				= " $name".&op_end." " if !&op_end;
 
 	# $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings; $op_end";
-    $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { ${accmod} \$__CLASS_SELF__->{'$name'} }; use warnings;";
+    $res = "${var_type} ${local_var}sub ${name} ():lvalue; no warnings; *__${name}__ = sub ():lvalue { ${accmod} my \$self = shift; \$self->{'${name}'} }; *${name} = sub ():lvalue { ${accmod} \$__CLASS_SELF__->{'${name}'} }; use warnings;";
+
+    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = ref \$_[0] || \$_[0] || \$__CLASS_SELF__;  \$self->{'$name'} }; use warnings;";
+    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { ${accmod} \$__CLASS_SELF__->{'$name'} }; use warnings;";
     # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift; if (\$self) { *$name = sub ():lvalue { ${accmod} \$self = shift || \$__CLASS_SELF__; \$self->{'$name'}; }; } \$self ||= \$__CLASS_SELF__; \$self->{'$name'} ||= \$__CLASS_SELF__->{'$name'}; \$self->{'$name'} }; use warnings;";
     # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift || \$__CLASS_SELF__; \$self->{'$name'} ||= \$__CLASS_SELF__->{'$name'}; *$name = sub ():lvalue { ${accmod} my \$self = shift || \$__CLASS_SELF__; \$self->{'$name'} }; \$self->{'$name'} }; use warnings;";
     # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift || \$__CLASS_SELF__; \$self->{'$name'} ||= \$__CLASS_SELF__->{'$name'}; \$self->{'$name'} }; use warnings;";
@@ -2197,7 +2200,7 @@ sub __object_header {
 
 	my $header			= {
         namespace   => "use rise::core::object::namespace;",
-		class		=> 'our $AUTHORITY = "'.$auth.'"; sub AUTHORITY {"'.$auth.'"}; our $VERSION = "'.$ver.'"; sub VERSION {"'.$ver.'"}; my $__CLASS_SELF__ = bless {}; sub __CLASS_SELF__ { $__CLASS_SELF__ } ',
+		class		=> 'our $AUTHORITY = "'.$auth.'"; sub AUTHORITY {"'.$auth.'"}; our $VERSION = "'.$ver.'"; sub VERSION {"'.$ver.'"}; my $__CLASS_SELF__ = bless {}; sub __CLASS_SELF__ ():lvalue { $__CLASS_SELF__ } ',
 		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; ",
 		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
 		# class		=> " BEGIN { no strict 'refs'; *{'".$name."::'.\$_} = \\&{'".$parent_class."::IMPORT::'.\$_} for keys \%".$parent_class."::IMPORT::; }; sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",

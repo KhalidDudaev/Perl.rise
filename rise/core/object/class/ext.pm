@@ -45,18 +45,34 @@ sub __objtype {'CLASS'};
 sub new {
     my $class         = shift;
     $class            = ref $class || $class;                                   # получаем имя класса, если передана ссылка то извлекаем имя класса
+    my $caller              = caller(0);
     my $self = bless {}, $class;
+    # my $accmod      = '';
+    # my ($parent)			= $caller =~ /(?:(\w+(?:::\w+)*)::)?(\w+)$/;
+
+    # $parent ||= 'main';
                                                     # обьявляем класс и его свойства
+
+    # __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'v2') unless (caller eq 'Imp' || caller =~ m/^Imp\b/o);
     $self->__CLASS_ARGS__(@_) if exists &{$class.'::__CLASS_ARGS__'};          # получаем аргументы класса
 
-    # print "### $class - $self ###\n";
+    # print "### $class - $caller ###\n";
 
     map { no strict; no warnings;
         my ($m_accmod, $m_type, $m_name, $m_cast, $m_cast_args)	= $_ =~ m/(\w+)\-(\w+)\-(\w+)(?:\s*\:\s*(\w+)(?:\((.*?)\))?)?/;
+        # print "### $m_accmod - $m_type - $m_name ###\n";
+        # $accmod = __accessmod($self, 'var_'.$m_accmod, $parent, $m_name);
         __PACKAGE__->__RISE_CAST($m_cast, \$self->{$m_name}, $m_cast_args) if $m_cast;
-        $self->{$m_name} = $self->__CLASS_SELF__->{$m_name} if $m_name;
-        *{$class.'::'.$m_name} = sub ():lvalue { my $self = shift; $self->{$m_name} } if $m_type eq 'var';
+        $self->{$m_name} = $self->__CLASS_SELF__->{$m_name} if $m_name &&  exists &{$class.'::__CLASS_SELF__'};
+
+        *{$class.'::'.$m_name} = *{$class.'::__'.$m_name.'__'} if $m_type eq 'var';
+
+        # *{$class.'::'.$m_name} = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', $m_name) unless (caller eq $class || caller =~ m/^$class\b/o); my $self = shift; $self->{$m_name} } if $m_type eq 'var' && $m_accmod eq 'private';
+        # *{$class.'::'.$m_name} = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PROTECTED', $m_name) unless caller->isa($class); my $self = shift; $self->{$m_name} } if $m_type eq 'var' && $m_accmod eq 'protected';
+        # *{$class.'::'.$m_name} = sub ():lvalue { my $self = shift; $self->{$m_name} } if $m_type eq 'var' && $m_accmod eq 'public';
     } split(/\s+/, $self->__CLASS_MEMBERS__) if exists &{$class.'::__CLASS_MEMBERS__'};
+
+    # $self->__CLASS_SELF__ = $self if exists &{$class.'::__CLASS_SELF__'};
 
     # $self->{'SELF'} = $self;
     # $self->self_current = $self;
@@ -251,6 +267,24 @@ sub public_class {}
 
 sub extends_error {
 	shift->__RISE_ERR('class_inherits');
+}
+
+sub __accessmod {
+	my ($self, $accmod, $parent_class, $name)			= @_;
+	return '' if !$self->{debug};
+	my %access = (
+
+		code_private	=> '__PACKAGE__->__RISE_ERR(\'CODE_PRIVATE\', \''.$name.'\') unless (caller eq \''.$parent_class.'\' || caller =~ m/^' . $parent_class . '\b/o);',
+		code_protected	=> '__PACKAGE__->__RISE_ERR(\'CODE_PROTECTED\', \''.$name.'\') unless caller->isa(\''.$parent_class.'\');',
+		code_public		=> '',
+
+		var_private		=> '__PACKAGE__->__RISE_ERR(\'VAR_PRIVATE\', \''.$name.'\') unless (caller eq \''.$parent_class.'\' || caller =~ m/^' . $parent_class . '\b/o);',
+		var_protected	=> '__PACKAGE__->__RISE_ERR(\'VAR_PROTECTED\', \''.$name.'\') unless caller->isa(\''.$parent_class.'\');',
+		var_public		=> '',
+		var_local		=> '',
+	);
+
+	return $access{$accmod};
 }
 
 sub DESTROY {}
