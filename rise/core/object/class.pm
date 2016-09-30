@@ -30,7 +30,7 @@ sub import { no strict "refs";
 
     $parent                 ||= 'main';
 
-    # print "### $caller - $parent ###\n";
+    # print "### $caller - $parent - $self ###\n";
 
     push (@{$caller.'::ISA'}, ($parent, 'rise::core::object::class::ext'));
 	# push @{$caller.'::ISA'}, $parent if $parent;

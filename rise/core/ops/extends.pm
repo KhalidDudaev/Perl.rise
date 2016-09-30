@@ -35,9 +35,21 @@ sub import {
 		# warn "Class '$child' tried to inherit from itself\n" if $child eq $parent;
 
         die $err if $child_short eq $parent_short;
+
+        # map { no strict;
+        #     my ($m_name, $m_type, $m_type_args)	= $_ =~ m/(\w+)(?:\s*\:\s*(\w+)(?:\((.*?)\))?)?/;
+        #     __PACKAGE__->__RISE_CAST($m_type, \$parent->{$m_name}, $m_type_args) if $m_type;
+        #     $child->{$m_name} = $parent->__CLASS_SELF__->{$m_name} if $m_name;
+        #
+        #     print ">>>>>>>>>> $m_name - $child->{$m_name} <<<<<<<<<<\n" if $m_name;
+        #
+        # } split(/\s*\b\w+\-\w+\-/, $parent->__CLASS_MEMBERS__) if exists &{$parent.'::__CLASS_MEMBERS__'};
+
+
 		require $path.".pm" if !grep($parent->isa($parent), ($child, @parents));
 		# require $path.".pm" if !$parent->isa($parent);
         # require $path.".pm";
+
 
         # { no strict 'refs'; ${$parent.'::__CLASS_SELF__'} = $self; }
         # $parent_self->new if exists &{$parent_short.'::__CLASS_CODE__'};

@@ -42,28 +42,28 @@ my $ENV_CLASS		= {
 #}
 
 sub var { no strict;
-			
+
 	my $self		= shift;
 	#my $accmod		= shift;
-	
+
 	#my $name		= $args->{name};
 	#my $accmod		= $args->{accmod};
-	
+
 	($accessmod, $type, $type_regex) = @_;
-			
+
     my ($obj)		= caller(0);
 	my ($class_name, $var_name)	= $obj =~ /(?:(.*?)::)?(\w+)$/;
 	my $r						= qr/^$class_name\b/o;
 	my $parent = $class_name;
 	$parent			=~ s/(?:(.*?)::)\w+$/$1/;
-	
+
 	#print ">>>>>>>> accmod: $accessmod | self: $self | obj: $obj | class: $class_name | name: $var_name <<<<<<<<<\n";
 	my $vvv;
-	
+
 	*{$obj} = sub () :lvalue {
 		#$__VALUE__->{$obj.'::'.$name};
 		$vvv;
-	} if $accessmod eq 'public';	
+	} if $accessmod eq 'public';
 
 	*{$obj} = sub () :lvalue { #my $self = __PACKAGE__;
 		#print ">>>>>>>>>>>>> self: $self | caller: $caller | class: $class_name | name: $var_name\n";
@@ -71,38 +71,38 @@ sub var { no strict;
 		#$__VALUE__->{$obj.'::'.$name};
 		$vvv;
 	} if $accessmod eq 'private';
-	
+
 	*{$obj} = sub () :lvalue { #my $self = __PACKAGE__;
 		#print ">>>>>>>>>>>>> self: $self | caller: $caller | class: $class_name | name: $var_name\n";
 		__PACKAGE__->__error('PROTECTED', $class_name, $var_name, caller) unless caller->isa($class_name);
 		#$__VALUE__->{$obj.'::'.$name};
 		$vvv;
 	} if $accessmod eq 'protected';
-	
 
-	
+
+
 	#*{$obj.'::obj_type'} = sub {'SCALAR'};
-	
-	
+
+
 	#goto &{$obj};
-	
+
 }
 
 #sub var { no strict 'refs'; no warnings;
 #	my $self = shift;
 #	my($obj)			= caller(0);
-#	
+#
 #	($accessmod, $type, $type_regex) = @_;
 #	my ($class_name, $var_name)	= $obj =~ /(?:(.*?)::)?(\w+)$/;
-#	
+#
 #	my $parent = $class_name;
 #	$parent			=~ s/(?:(.*?)::)\w+$/$1/;
-#	
+#
 #	#push (@{$obj}, 'rise::core::object::variable');
-#	push (@{$class_name.'::ISA'}, $parent) if $parent ne 'main'; 
-#	
+#	push (@{$class_name.'::ISA'}, $parent) if $parent ne 'main';
+#
 #	#print ">>>>>>>> parent: $parent | self: $self | obj: $obj | class: $class_name | name: $var_name <<<<<<<<<\n";
-#	
+#
 #	*{$obj} = sub () :lvalue { $__VALUE__->{$class_name} };# if $accessmod eq 'public';
 #	*{$obj} = sub () :lvalue { my $self = __PACKAGE__;
 #		#print ">>>>>>>>>>>>> self: $self | caller: $caller | class: $class_name | name: $var_name\n";
@@ -110,9 +110,9 @@ sub var { no strict;
 #		#$__VALUE__->{$obj.'::'.$var_name};
 #		${$obj.'::'.$var_name};
 #	} if $accessmod eq 'private';
-#	
+#
 #	*{$obj} = sub () :lvalue { protected_var($self, $class_name,$var_name); $__VALUE__->{$class_name} } if $accessmod eq 'protected';
-#	
+#
 #	goto &{$obj};
 #}
 
@@ -121,7 +121,7 @@ sub value() :lvalue { no strict; $access{$accessmod}->($class_name,$var_name);
 }
 
 sub access {
-	
+
 }
 
 sub obj_type {'variable'};
@@ -141,14 +141,14 @@ sub type { no strict;
 #	my $class_caller	= shift || '???';
 #	my $parent			= shift;
 #	my $caller			= shift;
-#	
+#
 #	print "\n###############################\
 #class			- $class
 #class_caller		- $class_caller
 #parent			- $parent
 #caller			- $caller
 ################################\n" if $class_caller ne '???';
-#	
+#
 #	$parent =~ m/^$class.*$/ or $class->_error($ERROR->{var_priv});
 #	#$class->can($caller) or $class->_error($ERROR->{var_priv});
 #}
@@ -158,15 +158,15 @@ sub type { no strict;
 #	my $class_caller	= shift || '???';
 #	my $parent			= shift;
 #	my $caller			= shift;
-#	
+#
 #	print "\n###############################\
 #class			- $class
 #class_caller		- $class_caller
 #parent			- $parent
 #caller			- $caller
 ################################\n" if $class_caller ne '???';
-#	
-#	
+#
+#
 #	$parent->isa($class) or  $class->_error($ERROR->{var_prot});
 #}
 
@@ -189,4 +189,3 @@ sub public_var {}
 sub DESTROY {}
 
 1;
-

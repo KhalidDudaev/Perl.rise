@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use utf8;
 
-use parent 'rise::core::object::object';
+use parent 'rise::core::object::object', 'rise::core::object::variable';
 
 use feature 'say';
 use Data::Dump 'dump';
@@ -12,13 +12,15 @@ use Data::Dump 'dump';
 
 our $VERSION 	= '0.01';
 
-my $ENV_CLASS		= {
+our $ENV_CLASS		= {
 	this_class		=> 'rise::core::object::class::ext',
 	caller_class	=> 'CALLER',
 	caller_code		=> 'CODE',
 	caller_data		=> 'DATA',
     args            => []
 };
+
+# our $__VARS__           = {};
 
 my @ARGS_CLASS;
 my $self_current = {};
@@ -43,10 +45,18 @@ sub __objtype {'CLASS'};
 sub new {
     my $class         = shift;
     $class            = ref $class || $class;                                   # получаем имя класса, если передана ссылка то извлекаем имя класса
-    $class->__CLASS_ARGS__(@_) if exists &{$class.'::__CLASS_ARGS__'};          # получаем аргументы класса
-    # print "### $class ###\n";
+    my $self = bless {}, $class;
+                                                    # обьявляем класс и его свойства
+    $self->__CLASS_ARGS__(@_) if exists &{$class.'::__CLASS_ARGS__'};          # получаем аргументы класса
 
-    my $self = bless {}, $class;                                                # обьявляем класс и его свойства
+    # print "### $class - $self ###\n";
+
+    map { no strict; no warnings;
+        my ($m_accmod, $m_type, $m_name, $m_cast, $m_cast_args)	= $_ =~ m/(\w+)\-(\w+)\-(\w+)(?:\s*\:\s*(\w+)(?:\((.*?)\))?)?/;
+        __PACKAGE__->__RISE_CAST($m_cast, \$self->{$m_name}, $m_cast_args) if $m_cast;
+        $self->{$m_name} = $self->__CLASS_SELF__->{$m_name} if $m_name;
+        *{$class.'::'.$m_name} = sub ():lvalue { my $self = shift; $self->{$m_name} } if $m_type eq 'var';
+    } split(/\s+/, $self->__CLASS_MEMBERS__) if exists &{$class.'::__CLASS_MEMBERS__'};
 
     # $self->{'SELF'} = $self;
     # $self->self_current = $self;
@@ -108,6 +118,18 @@ sub import { no strict "refs";
 	# say '--------- classext ---------';
 	# say "caller -> $caller";
 	# say "self   -> $self";
+
+    # print "### $caller - $self ###\n";
+
+    # *{$self."::__VARS__"} = $__VARS__;
+
+    # $self = bless {}, $self;
+    # my $class_self = ${$self.'::__CLASS_SELF__'};
+
+    # map { no strict; no warnings;
+    #     my ($m_accmod, $m_type, $m_name, $m_cast, $m_cast_args)	= $_ =~ m/(\w+)\-(\w+)\-(\w+)(?:\s*\:\s*(\w+)(?:\((.*?)\))?)?/;
+    #     __PACKAGE__->__RISE_CAST($m_cast, \&{$self.'::__CLASS_SELF__'}->{$m_name}, $m_cast_args) if $m_cast;
+    # } split(/\s+/, $self->__CLASS_MEMBERS__) if exists &{$self.'::__CLASS_MEMBERS__'};
 
 	if (exists &{$self."::__CLASS_MEMBERS__"}){
 		$self->interface_confirm;

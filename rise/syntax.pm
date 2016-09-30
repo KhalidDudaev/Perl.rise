@@ -260,11 +260,11 @@ sub confirm {
         #'_variable_boost_post',
         #'_optimize5',
 
-        '_including',
-        '_optimize9',
         '_unwrap_code_header',
         '_unwrap_code_footer',
         '_unwrap_variable',
+        '_including',
+        '_optimize9',
 	];
 
 	keyword namespace				=> 'namespace';
@@ -395,7 +395,7 @@ sub confirm {
 	token not						=> q/\!/;
 	token equal						=> q/\=/;
 
-	token variable_type				=> q/\:\s*\w+(?:\s*block_paren)?/;
+	token member_type				=> q/\:\s*\w+(?:\s*block_paren)?/;
     # token spec_vars                 => q/(?:
     #     _|_|a|b|ARGV|\d+|\&|\{\^MATCH\}|\`|\{\^PREMATCH\}|\'|\{\^POSTMATCH\}|\+
     #     |\^N|\+|\-|\^R|\{\^RE_DEBUG_FLAGS\}|\{\^RE_TRIE_MAXBUF\}
@@ -738,8 +738,8 @@ sub confirm {
 	rule _variable_optimize					=> q/variable \$/;
 	#rule _variable_boost					=> q/((_NOT:sigils)(_NOT:sub)<spss>)<name>/;
 	#rule _variable_boost					=> q/(_NOT:__VARBOOSTED__)(_NOT:sigils)<name>/;
-	rule _variable_compile_class			=> q/[<accessmod>] <variable> <name> [<variable_type>] [<op_end>]/;
-	rule _variable_compile_function			=> q/[<accessmod>] <variable> <name> [<variable_type>] [<op_end>]/;
+	rule _variable_compile_class			=> q/[<accessmod>] <variable> <name> [<member_type>] [<op_end>]/;
+	rule _variable_compile_function			=> q/[<accessmod>] <variable> <name> [<member_type>] [<op_end>]/;
 	rule _constant_compile					=> q/[<accessmod>] <const> <name> = <content> <op_end>/;
     rule _variable_call					    => q/(_NOT:op_dot)<name>(NOT:%)/;
 
@@ -1395,8 +1395,16 @@ sub _syntax_function_compile {
 	$arguments			= parse($self, $arguments, &grammar, [@{var 'parser_variable_function'}], { parent => $name });
 
 	if ($type) {
-		$type				=~ s/\://sx;
-		$retval				= "my \$_RETVAL_; __PACKAGE__->__RISE_CAST($type, \\\$_RETVAL_); ";
+		# $type				=~ s/\://sx;
+        my ($fn_type, $fn_type_args)	= $type =~ m/\:\s*(\w+)(?:\((.*?)\))?/;
+
+        $fn_type_args ||= '';
+
+        # print "### TYPE >>> $type \n";
+        # print "### FN TYPE >>> $fn_type \n";
+        # print "### FN TYPE ARG >>> $fn_type_args \n";
+
+		$retval				= "my \$_RETVAL_; __PACKAGE__->__RISE_CAST('$fn_type', \\\$_RETVAL_, $fn_type_args); ";
 		$block 				=~ s/return(.*?)(\s*(?:\;|\}|\)|if))/\$_RETVAL_ = $1; return \$_RETVAL_$2/sx;
 		# $block 				=~ s/return(.*?)\;/\$_RETVAL_ = $1; return \$_RETVAL_;/sx;
 	}
@@ -1415,7 +1423,8 @@ sub _syntax_function_compile {
 
     $block 				= parse($self, $block, &grammar, [@{var 'parser_code_function'}], { parent => $name });
 
-	$res				= "${anon_code_open}${anon_code}{ package ${name}; ${header}${s1}sub ${fn_name}${s2}${s3}{ ${accmod} $retval${arguments}${s4}${block}}}${anon_code_close}";
+	$res				= "${anon_code_open}${anon_code}{ package ${name}; ${header}${s1}$retval sub ${fn_name}${s2}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
+	# $res				= "${anon_code_open}${anon_code}{ package ${name}; ${header}${s1}sub ${fn_name}${s2}${s3}{ ${accmod} $retval${arguments}${s4}${block}}}${anon_code_close}";
 	# $res				= "${anon_code_open}${anon_code}{ package ${name}; ${header}${s1}sub ${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
 	#$res				= "${anon_code_open}${anon_code}{ package ${name}; use rise::core::object::function::function_new; sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
 	# $res 				= parse($self, $res, &grammar, [@{var 'parser_code'}], { parent => $name });
@@ -1798,7 +1807,7 @@ sub _syntax_variable_compile_class {
 
 	my $accmod			= &accessmod || var 'accessmod';
 	my $name			= &name;
-	my $variable_type	= &variable_type;
+	my $member_type	= &member_type;
 	my $var_type		= '';
 	my $var_type_args	= '';
 	my $parent_class	= $confs->{parent};
@@ -1810,7 +1819,7 @@ sub _syntax_variable_compile_class {
     my $res;
 
     ############################################# add variable to class members ###############################################
-	my $members_var		= $accmod.'-var-'.$name;
+	my $members_var		= $accmod.'-var-'.$name.$member_type;
 	my $members_list	= var('members')->{$parent_class}||'';
 
 	$members_list		=~ s/\s+/\\b\|\\b/gsx;
@@ -1844,22 +1853,26 @@ sub _syntax_variable_compile_class {
 		$local_var		= "local *$name; ";
         $wrap_local     = 'local';
 	}
-	($var_type, $var_type_args)	= $variable_type =~ m/^\:\s*(\w+)(?:\((.*?)\))?$/;
 
+	($var_type, $var_type_args)	= $member_type =~ m/^\:\s*(\w+)(?:\((.*?)\))?$/;
 	$var_type_args		= ", ".$var_type_args if $var_type_args;
 	$var_type_args		||= '';
-
-	$var_type			= "__PACKAGE__->__RISE_CAST('$var_type', \\\$$name".$var_type_args."); " if $var_type;
+	# $var_type			= "__PACKAGE__->__RISE_CAST('$var_type', \\\$$name".$var_type_args."); " if $var_type;
+	$var_type			= "__PACKAGE__->__RISE_CAST('$var_type', \\\$__CLASS_SELF__->{'$name'}".$var_type_args."); " if $var_type;
 	$var_type			||= '';
 
 	# $op_end				= " \$$name".&op_end." " if !&op_end;
 	$op_end				= " $name".&op_end." " if !&op_end;
 
 	# $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings; $op_end";
-
-	$res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift || \$__CLASS_SELF__; \$self->{'$name'} ||= \$__CLASS_SELF__->{'$name'}; \$self->{'$name'} }; use warnings;";
-	$res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;" if $local_var;
+    $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { ${accmod} \$__CLASS_SELF__->{'$name'} }; use warnings;";
+    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift; if (\$self) { *$name = sub ():lvalue { ${accmod} \$self = shift || \$__CLASS_SELF__; \$self->{'$name'}; }; } \$self ||= \$__CLASS_SELF__; \$self->{'$name'} ||= \$__CLASS_SELF__->{'$name'}; \$self->{'$name'} }; use warnings;";
+    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift || \$__CLASS_SELF__; \$self->{'$name'} ||= \$__CLASS_SELF__->{'$name'}; *$name = sub ():lvalue { ${accmod} my \$self = shift || \$__CLASS_SELF__; \$self->{'$name'} }; \$self->{'$name'} }; use warnings;";
+    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift || \$__CLASS_SELF__; \$self->{'$name'} ||= \$__CLASS_SELF__->{'$name'}; \$self->{'$name'} }; use warnings;";
+    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift || \$__CLASS_SELF__; \$self->{'$name'} }; use warnings;";
     # $res = "no warnings; sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} my \$self = shift; \$self->{$name}; }; use warnings;";
+
+    $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;" if $local_var;
     # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;" if &accessmod eq 'local';
     # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;";
 
@@ -1874,7 +1887,7 @@ sub _syntax_variable_compile_function {
 
 	# my $accmod			= &accessmod || var 'accessmod';
 	my $name			= &name;
-	my $variable_type	= &variable_type;
+	my $member_type	= &member_type;
 	my $var_type		= '';
 	my $var_type_args	= '';
 	my $parent_class	= $confs->{parent};
@@ -1918,7 +1931,7 @@ sub _syntax_variable_compile_function {
 	# 	$local_var		= "local *$name; ";
 	# }
 
-	($var_type, $var_type_args)	= $variable_type =~ m/^\:\s*(\w+)(?:\((.*?)\))?$/;
+	($var_type, $var_type_args)	= $member_type =~ m/^\:\s*(\w+)(?:\((.*?)\))?$/;
 
 	$var_type_args		= ", ".$var_type_args if $var_type_args;
 	$var_type_args		||= '';
@@ -2184,7 +2197,7 @@ sub __object_header {
 
 	my $header			= {
         namespace   => "use rise::core::object::namespace;",
-		class		=> 'our $AUTHORITY = "'.$auth.'"; sub AUTHORITY {"'.$auth.'"}; our $VERSION = "'.$ver.'"; sub VERSION {"'.$ver.'"}; my $__CLASS_SELF__ = bless {}; ',
+		class		=> 'our $AUTHORITY = "'.$auth.'"; sub AUTHORITY {"'.$auth.'"}; our $VERSION = "'.$ver.'"; sub VERSION {"'.$ver.'"}; my $__CLASS_SELF__ = bless {}; sub __CLASS_SELF__ { $__CLASS_SELF__ } ',
 		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; ",
 		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
 		# class		=> " BEGIN { no strict 'refs'; *{'".$name."::'.\$_} = \\&{'".$parent_class."::IMPORT::'.\$_} for keys \%".$parent_class."::IMPORT::; }; sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
@@ -2192,6 +2205,7 @@ sub __object_header {
 		interface	=> " __PACKAGE__->interface_join;"
 	};
 
+    $header->{class}	.= "sub __CLASS_MEMBERS__ {q{".(var('members')->{$name}||'')."}}...";
     # print $class_args;
 
     if ($class_args) {
@@ -2213,8 +2227,9 @@ sub __object_header {
         # print dump var('exports')->{$name};
     }
 
+
 	if ($self->{debug} && $self->{$name}{extends}) {
-		$header->{class}	.= "sub __CLASS_MEMBERS__ {'".(var('members')->{$name}||'')."'}...";
+        # $header->{class}	.= "sub __CLASS_MEMBERS__ {'".(var('members')->{$name}||'')."'}...";
 		# $header->{class}	.= " BEGIN { sub __CLASS_MEMBERS__ {'".(var('members')->{$name}||'')."'}... };";
 		# $header->{class}	.= " __PACKAGE__->interface_confirm; sub __CLASS_MEMBERS__ {'".(var('members')->{$name}||'')."'}...";
 		$header->{abstract} .= " __PACKAGE__->interface_join;";
