@@ -1,0 +1,19 @@
+// text decoration lib
+public class rise.lib.txt {
+
+    export:simple function line (args) {
+    	var char		= args.{'char'} || '#';
+    	var title		= args.{'title'} || '';
+    	var len    		= args.{'length'} || 75;
+
+    	title			= char x 3 ~ ' ' ~ title ~ ' ' if title;
+    	return title ~ char x (len - length(title));
+    }
+
+    export:simple function box (text = 'NO TEXT', title = '', char = '#') {
+        say self.line ({ 'title' => title, 'char' => char });
+        say text;
+        say self.line ({ 'char' => char });
+    }
+
+}
