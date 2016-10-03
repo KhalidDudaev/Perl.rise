@@ -47,7 +47,7 @@ namespace rise.lib.fs {
 
         public function ext(fname) {
             fname      =~ s{^.*?(\w+(?:\.\w+)*)$}{$1}sx;
-            fname      =~ s{^(.*?)(?:\.(\w+))?$}{$2}sx;
+            fname      =~ s{^(.*?)(?:\.(\w+))?$}{$2||''}sxe;
             return fname;
         }
     }

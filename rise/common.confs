@@ -4,11 +4,11 @@
 	command 		=> @_ || 'framework',
 	source			=> {
 		fpath		=> '',
-		fext 		=> '.puma',
+		fext 		=> 'puma',
 	},
 	dest 			=> {
 		fpath		=> '',
-		fext 		=> '.pm',
+		fext 		=> 'pm',
 	},
 	start_dir		=> 'bin/',
 	end				=> 0,

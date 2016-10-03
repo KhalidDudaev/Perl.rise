@@ -15,6 +15,7 @@ our $VERSION = '0.001';
 
 #use dialect::Parents;
 use rise::lib::fs::fileWorker;
+use rise::lib::fs::pathWorker;
 use rise::grammar;
 use rise::syntax;
 # use rise::lib::txt;
@@ -37,6 +38,7 @@ my $grammar;
 my $parser;
 my $syntax;
 my $file;
+my $path;
 my $inst;
 my $modules;
 
@@ -90,6 +92,7 @@ sub __init {
     $conf->{VERSION}                    = $ver_set if $conf->{VERSION} eq 'auto';
 
     $file						= new rise::lib::fs::fileWorker;
+    $path						= new rise::lib::fs::pathWorker;
 	$grammar					= new rise::grammar $conf;
 	$syntax						= new rise::syntax $conf;
 
@@ -155,42 +158,28 @@ sub compile_list { #print "#### COMPILE ####\n";
 	my $assembly = '';
 	my $info;
 	my @app_stack = @$appname_source;
-
-	# my($path_current)				= $0 =~ m/^(.*?)\w+(?:\.\w+)*$/sx;
-	# my $path_source					= $this->{source}{fpath}	|| $path_current;
-	# my $path_dest					= $this->{dest}{fpath}		|| $path_current;
 	my $fname_source;
 	my $fname_dest;
-
-	# $fname_source					= $path_source	. $fname_source if $fname_source !~ m/[\\\/]/;
-	# $fname_dest						= $path_dest	. $fname_dest if $fname_dest !~ m/[\\\/]/;
-
+    my $fpath;
+    my $basename;
+    my $fext;
 
 	my $time_start_compile = time;
 
-	#if (__truefile($appname_source)){
-	# __message_box("compilation ". dump($appname_source)." ...");
-	#	$assembly = compile( $appname_source );
-	#	$info = $assembly->{info};
-	#	__message ("$info\n") if $info ;
-	#}
  	no strict 'refs';
-	# if (&__syntax->{VAR}{app_stack}) {
 		push @app_stack, @{&__syntax->{VAR}{app_stack}};
-	# }
 
 	foreach (@app_stack) {
 		# print $_;
 		if (__truefile($_)){
+            $fpath                  = $path->path($_);
+            $basename               = $path->basename($_);
+            $fext                   = $path->ext($_) || $this->{source}{fext};
+			$fname_source			= $fpath . $basename . '.' . $fext;
+			$fname_dest				= $fpath . $basename . '.' . $this->{dest}{fext};
 
-			$fname_source			= $_ . $this->{source}{fext};
-			$fname_dest				= $_ . $this->{dest}{fext};
-
-			# __message_box("compilation $_ ...");
-			#$info = compile($_)->{info};
 			$assembly = compile($fname_source, $fname_dest);
 			$info = $assembly->{info};
-			# __message ("$info\n") if $info;
 		}
 	}
 
@@ -208,35 +197,7 @@ sub compile { #print "#### COMPILE ####\n";
 	my $code_dest;
 	my $code_source;
 	my $info                    = '';
-	my($path_current)			= $0 =~ m/^(.*?)\w+(?:\.\w+)*$/sx;
 
-	my $path_source				= $this->{source}{fpath}	|| $path_current;
-	my $path_dest				= $this->{dest}{fpath}		|| $path_current;
-	my $fext					= $this->{source}{fext};
-
-	# my $grammar					= new rise::grammar {};
-
-	# $grammar->{info_rule}		= {};
-	# $grammar->{info_all}		= '';
-
-	# $rise::grammar::info_all	= '';
-	# $rise::grammar::info_rule	= {} if $rise::grammar::info_rule->{_class};
-	# $rise::grammar::info_rule	= {};
-	# print ">>> ".dump($rise::grammar::info_rule)."\n";
-
-
-
-	# $fname_source					= $path_source	. $fname_source if $fname_source !~ m/[\\\/]/;
-	# $fname_dest						= $path_dest	. $fname_dest if $fname_dest !~ m/[\\\/]/;
-
-	# say "$fname_source ...";
-
-	# if (!$fname_dest){
-	# 	($fname_dest)				= $fname_source =~ m/(.*?)$fext$/sx;
-	# 	$fname_dest					.= $this->{dest}{fext};
-	# }
-
-	# print $fname_source;
 	$code_source				= __file('read', $fname_source);
 
 	if ($code_source) {
@@ -251,16 +212,7 @@ sub compile { #print "#### COMPILE ####\n";
 	$info =~ s/\n$//gsx;
 	__msg_box ($info,'compilation ' . $title ) if $this->{info} == 2;
 	say 'compilation ' . $title . '...OK' if $this->{info};
-	# $grammar = {};
-	# $grammar->clear;
-	# print ">>> ".dump($grammar->{info_rule})."\n";
 
-	# $rise::grammar::info_rule	= {};
-	# print "### COUNT $rise::grammar::parser_count\n";
-	# $rise::grammar::parser_count	= '';
-
-	# return $code_dest if !$fname_dest;
-    # $syntax->confirm;
 	return {code => $code_dest, fname => $fname_dest, info => $info};
 }
 

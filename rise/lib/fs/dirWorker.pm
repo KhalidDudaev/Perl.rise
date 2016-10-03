@@ -1,11 +1,11 @@
 
 { package rise::lib::fs; use rise::core::object::namespace;   
 
-    { package rise::lib::fs::dirWorker; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.0929003752"; sub VERSION {"2016.0929003752"}; my $__CLASS_SELF__ = bless {};  
+    { package rise::lib::fs::dirWorker; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1003034341"; sub VERSION {"2016.1003034341"}; my $__CLASS_SELF__ = bless {}; sub __CLASS_SELF__ ():lvalue { $__CLASS_SELF__ } sub __CLASS_MEMBERS__ {q{private-function-listhelper  public-function-list  public-function-listf  public-function-listd  private-function-filter  private-function-filterExtract  public-function-isFile  public-function-isDir  public-var-slash}} 
 
-         sub slash ():lvalue; no warnings; *slash = sub ():lvalue { no strict;  my $self = shift || $__CLASS_SELF__; $self->{'slash'} ||= $__CLASS_SELF__->{'slash'}; $self->{'slash'} }; use warnings; 
+         sub slash ():lvalue; no warnings; *__slash__ = sub ():lvalue {  my $self = shift; $self->{'slash'} }; *slash = sub ():lvalue {  $__CLASS_SELF__->{'slash'} }; use warnings; 
 
-        { package rise::lib::fs::dirWorker::listhelper; use rise::core::object::function;sub listhelper { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'listhelper') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $path; no warnings; sub path ():lvalue; *path = sub ():lvalue { $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
+        { package rise::lib::fs::dirWorker::listhelper; use rise::core::object::function; sub listhelper { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'listhelper') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $path; no warnings; sub path ():lvalue; *path = sub ():lvalue { $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
             my $dlist; no warnings; sub dlist ():lvalue; *dlist = sub ():lvalue { $dlist }; use warnings;  $dlist = [];
              my $slash; no warnings; sub slash ():lvalue; *slash = sub ():lvalue { $slash }; use warnings;  ($slash) = __RISE_MATCH $path =~ m{(\\|\/)}sx;
 
@@ -20,7 +20,7 @@
             return $dlist;
         }}
 
-        { package rise::lib::fs::dirWorker::list; use rise::core::object::function; sub list {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $path; no warnings; sub path ():lvalue; *path = sub ():lvalue { $path }; use warnings; my $filtrItem; no warnings; sub filtrItem ():lvalue; *filtrItem = sub ():lvalue { $filtrItem }; use warnings;  ($self,$path,$filtrItem) = ($_[0],$_[1],$_[2]||'');
+        { package rise::lib::fs::dirWorker::list; use rise::core::object::function;  sub list {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $path; no warnings; sub path ():lvalue; *path = sub ():lvalue { $path }; use warnings; my $filtrItem; no warnings; sub filtrItem ():lvalue; *filtrItem = sub ():lvalue { $filtrItem }; use warnings;  ($self,$path,$filtrItem) = ($_[0],$_[1],$_[2]||'');
             my $res; no warnings; sub res ():lvalue; *res = sub ():lvalue { $res }; use warnings;  $res = [];
             my $dir; no warnings; sub dir ():lvalue; *dir = sub ():lvalue { $dir }; use warnings; 
             my $deep; no warnings; sub deep ():lvalue; *deep = sub ():lvalue { $deep }; use warnings;  $deep = 0;
@@ -70,15 +70,15 @@
             return $res;
         }}
 
-        { package rise::lib::fs::dirWorker::listf; use rise::core::object::function; sub listf {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $path; no warnings; sub path ():lvalue; *path = sub ():lvalue { $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
+        { package rise::lib::fs::dirWorker::listf; use rise::core::object::function;  sub listf {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $path; no warnings; sub path ():lvalue; *path = sub ():lvalue { $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
             return $self->list($path, 'file');
         }}
 
-        { package rise::lib::fs::dirWorker::listd; use rise::core::object::function; sub listd {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $path; no warnings; sub path ():lvalue; *path = sub ():lvalue { $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
+        { package rise::lib::fs::dirWorker::listd; use rise::core::object::function;  sub listd {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $path; no warnings; sub path ():lvalue; *path = sub ():lvalue { $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
             return $self->list($path, 'dir');
         }}
 
-        { package rise::lib::fs::dirWorker::filter; use rise::core::object::function;sub filter { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'filter') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $name; no warnings; sub name ():lvalue; *name = sub ():lvalue { $name }; use warnings; my $fltr; no warnings; sub fltr ():lvalue; *fltr = sub ():lvalue { $fltr }; use warnings;  ($self,$name,$fltr) = ($_[0],$_[1],$_[2]);
+        { package rise::lib::fs::dirWorker::filter; use rise::core::object::function; sub filter { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'filter') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $name; no warnings; sub name ():lvalue; *name = sub ():lvalue { $name }; use warnings; my $fltr; no warnings; sub fltr ():lvalue; *fltr = sub ():lvalue { $fltr }; use warnings;  ($self,$name,$fltr) = ($_[0],$_[1],$_[2]);
             $fltr        =~ s{([^\w\*\?])}{\\$1}gsx;
             $fltr        =~ s{\*\\\.\*}{*(?:\\.*)?}gsx;
             $fltr        =~ s{(?<![()])\?}{\\w}gsx;
@@ -87,7 +87,7 @@
             return __RISE_MATCH $name =~ m{^(?:$fltr)$}gsx;
         }}
 
-        { package rise::lib::fs::dirWorker::filterExtract; use rise::core::object::function;sub filterExtract { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'filterExtract') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $path; no warnings; sub path ():lvalue; *path = sub ():lvalue { $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
+        { package rise::lib::fs::dirWorker::filterExtract; use rise::core::object::function; sub filterExtract { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'filterExtract') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $path; no warnings; sub path ():lvalue; *path = sub ():lvalue { $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
              my $fltrD; no warnings; sub fltrD ():lvalue; *fltrD = sub ():lvalue { $fltrD }; use warnings; 
              my $fltrF; no warnings; sub fltrF ():lvalue; *fltrF = sub ():lvalue { $fltrF }; use warnings; 
              ($path, $fltrD, $fltrF) = m{^([^\*\?]+[\\\/])([\w\?\*\.\\\/]+[\\\/])*([^\\\/]*)?$}sx;
@@ -122,8 +122,8 @@
         #     return npath2;
         # }
 
-        { package rise::lib::fs::dirWorker::isFile; use rise::core::object::function; sub isFile {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $name; no warnings; sub name ():lvalue; *name = sub ():lvalue { $name }; use warnings;  ($self,$name) = ($_[0],$_[1]);  -e $name && !-d _ }}
-        { package rise::lib::fs::dirWorker::isDir; use rise::core::object::function; sub isDir {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $name; no warnings; sub name ():lvalue; *name = sub ():lvalue { $name }; use warnings;  ($self,$name) = ($_[0],$_[1]);   -d $name }}
+        { package rise::lib::fs::dirWorker::isFile; use rise::core::object::function;  sub isFile {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $name; no warnings; sub name ():lvalue; *name = sub ():lvalue { $name }; use warnings;  ($self,$name) = ($_[0],$_[1]);  -e $name && !-d _ }}
+        { package rise::lib::fs::dirWorker::isDir; use rise::core::object::function;  sub isDir {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $name; no warnings; sub name ():lvalue; *name = sub ():lvalue { $name }; use warnings;  ($self,$name) = ($_[0],$_[1]);   -d $name }}
 
     }
 }
