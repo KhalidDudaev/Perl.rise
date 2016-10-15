@@ -1,13 +1,18 @@
 
 namespace rise.lib.fs {
 
+    using rise.lib.fs.pathWorker;
+
     public class dirWorker {
 
         public var slash;
+        var path                    = new rise.lib.fs.pathWorker;
 
         function listhelper(path) {
             var dlist       = [];
             var (slash)     = path =~ m{(\\|\/)}sx;
+
+            __PACKAGE__.__RISE_ERR('ISDIR', path) unless self.path.isDir(path);
 
             slash           = self.slash || slash;
 
@@ -59,9 +64,9 @@ namespace rise.lib.fs {
                 // say 'filter F -> ' ~ fltrF;
 
                 foreach var item (self.listhelper(dir)) {
-                    push path, item ~ slash ~ fltrD ~ fltrF if self.isDir(item) && self.filter(item, fltrDC);
-                    push res, item if self.isDir(item) && isD && self.filter(item, fltrDC);
-                    push res, item if self.isFile(item) && isF && self.filter(item, fltrF) && (fltrDC eq '**' || !fltrDC);
+                    push path, item ~ slash ~ fltrD ~ fltrF if self.path.isDir(item) && self.filter(item, fltrDC);
+                    push res, item if self.path.isDir(item) && isD && self.filter(item, fltrDC);
+                    push res, item if self.path.isFile(item) && isF && self.filter(item, fltrF) && (fltrDC eq '**' || !fltrDC);
                     // say 'item -> ' ~ item;
                     // say 'path -> ' ~ dump path;
                 }
@@ -122,8 +127,8 @@ namespace rise.lib.fs {
         //     return npath2;
         // }
 
-        public function isFile (name) { -e name && !-d _ }
-        public function isDir  (name) { -d name }
+        // public function isFile (name) { -e name && !-d _ }
+        // public function isDir  (name) { -d name }
 
     }
 }

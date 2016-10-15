@@ -32,7 +32,7 @@ namespace rise.lib.fs {
             self.fh.binmod() if self.binmod;
 
             if (cmd eq 'read'){
-                res = join('', [self.fh.getlines()]) || __PACKAGE__.__RISE_ERR('FILE', self.path.filename(name));
+                res = join('', [self.fh.getlines()]) || __PACKAGE__.__RISE_ERR('ISFILE', self.path.filename(name));
             }
 
             res = self.fh.write(data)           if cmd eq 'write';

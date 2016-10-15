@@ -63,23 +63,23 @@ sub new {
         # print "### $m_accmod - $m_type - $m_name ###\n";
         # $accmod = __accessmod($self, 'var_'.$m_accmod, $parent, $m_name);
         __PACKAGE__->__RISE_CAST($m_cast, \$self->{$m_name}, $m_cast_args) if $m_cast;
-        $self->{$m_name} = $self->__CLASS_SELF__->{$m_name} if $m_name &&  exists &{$class.'::__CLASS_SELF__'};
+        $self->{$m_name} = $self->__RISE_SELF__->{$m_name} if $m_name &&  exists &{$class.'::__RISE_SELF__'};
 
-        *{$class.'::'.$m_name} = *{$class.'::__'.$m_name.'__'} if $m_type eq 'var';
+        *{$class.'::'.$m_name} = *{$class.'::__'.$m_name.'__'} if $m_type eq 'var' && $m_accmod eq 'public';
 
         # *{$class.'::'.$m_name} = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', $m_name) unless (caller eq $class || caller =~ m/^$class\b/o); my $self = shift; $self->{$m_name} } if $m_type eq 'var' && $m_accmod eq 'private';
         # *{$class.'::'.$m_name} = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PROTECTED', $m_name) unless caller->isa($class); my $self = shift; $self->{$m_name} } if $m_type eq 'var' && $m_accmod eq 'protected';
         # *{$class.'::'.$m_name} = sub ():lvalue { my $self = shift; $self->{$m_name} } if $m_type eq 'var' && $m_accmod eq 'public';
     } split(/\s+/, $self->__CLASS_MEMBERS__) if exists &{$class.'::__CLASS_MEMBERS__'};
 
-    # $self->__CLASS_SELF__ = $self if exists &{$class.'::__CLASS_SELF__'};
+    # $self->__RISE_SELF__ = $self if exists &{$class.'::__RISE_SELF__'};
 
     # $self->{'SELF'} = $self;
     # $self->self_current = $self;
-    # { no strict 'refs'; ${$class.'::__CLASS_SELF__'} = $self; }
+    # { no strict 'refs'; ${$class.'::__RISE_SELF__'} = $self; }
 
     # $self->__CLASS_CODE__ if exists &{$class.'::__CLASS_CODE__'};
-    # $self->__CLASS_SELF__ if exists &{$class.'::__CLASS_SELF__'};
+    # $self->__RISE_SELF__ if exists &{$class.'::__RISE_SELF__'};
     # $self->{'SELF'} = $self;
 
     return $self;
@@ -140,11 +140,11 @@ sub import { no strict "refs";
     # *{$self."::__VARS__"} = $__VARS__;
 
     # $self = bless {}, $self;
-    # my $class_self = ${$self.'::__CLASS_SELF__'};
+    # my $class_self = ${$self.'::__RISE_SELF__'};
 
     # map { no strict; no warnings;
     #     my ($m_accmod, $m_type, $m_name, $m_cast, $m_cast_args)	= $_ =~ m/(\w+)\-(\w+)\-(\w+)(?:\s*\:\s*(\w+)(?:\((.*?)\))?)?/;
-    #     __PACKAGE__->__RISE_CAST($m_cast, \&{$self.'::__CLASS_SELF__'}->{$m_name}, $m_cast_args) if $m_cast;
+    #     __PACKAGE__->__RISE_CAST($m_cast, \&{$self.'::__RISE_SELF__'}->{$m_name}, $m_cast_args) if $m_cast;
     # } split(/\s+/, $self->__CLASS_MEMBERS__) if exists &{$self.'::__CLASS_MEMBERS__'};
 
 	if (exists &{$self."::__CLASS_MEMBERS__"}){

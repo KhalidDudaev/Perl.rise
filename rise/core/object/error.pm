@@ -51,7 +51,8 @@ my $ERROR		= {
 	ARRAY_HASH				=> [ [ 0, 1 ], 'ERROR ARRAY OR HASH OP', '"\"$name\"\nNot ARRAY or HASH value or error expression at"' ],
 	SCALAR					=> [ [ 0, 1 ], 'ERROR SCALAR OP', '"\"$name\"\nNot SCALAR value or error expression at"' ],
 	PRINT					=> [ [ 0, 1 ], 'ERROR PRINT OP', '"Use of uninitialized value print at"' ],
-	FILE					=> [ [ 1, 2 ], 'ERROR FILE','"Can\'t open file \"$name\" at"' ],
+	ISFILE					=> [ [ 0, 1 ], 'ERROR FILE','"Can\'t open file \"$name\" at"' ],
+	ISDIR					=> [ [ 0, 1 ], 'ERROR DIR','"Can\'t open dir \"$name\" at"' ],
 
 
 };
@@ -168,6 +169,11 @@ sub __RISE_ERRWARN {
 		$level_count++;
         # print "child:[$child] file:[$file] line:[$line] func:[$func]\n";
 	}
+
+    $err_msg_add = eval ('"\n-> line $line in $file"') . $err_msg_add;
+    ($child, $file, $line, $func) = (caller($level->[1] + $level_count));# if $child eq 'main';
+
+
     $err_msg .= $err_msg_add;
 	$err_msg .= "\n##############################################################################\n\n";
 

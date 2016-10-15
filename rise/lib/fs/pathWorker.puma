@@ -31,7 +31,7 @@ namespace rise.lib.fs {
 
         public function path(fname) {
             var (p) = fname =~ m{^(.*?)[^\\\/]*$}sx;
-             return p;
+            return p;
         }
 
         public function filename(fname) {
@@ -50,5 +50,8 @@ namespace rise.lib.fs {
             fname      =~ s{^(.*?)(?:\.(\w+))?$}{$2||''}sxe;
             return fname;
         }
+
+        public function isFile (name) { -e name && !-d _ }
+        public function isDir  (name) { -d name }
     }
 }

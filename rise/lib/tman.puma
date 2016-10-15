@@ -1,6 +1,7 @@
 using rise.lib.fs;
 using rise.lib.tman.fmm;
 using Audio.Beep;
+using rise.lib.txt;
 
 namespace rise.lib {
 
@@ -8,6 +9,7 @@ namespace rise.lib {
 
         var fs            		= new rise.lib.fs;
 		var fmon				= new rise.lib.tman.fmm;
+        var txt					= new rise.lib.txt;
 		var snd					= new Audio.Beep;
 
 		var snd_OK				= "f'20 d25";
@@ -128,10 +130,10 @@ namespace rise.lib {
         export:simple function start (tname) {
 			tname ||= 'default';
 			say '';
-			say line { title => 'tman START' };
+			say self.txt.line ({ title => 'tman START' });
 
 			foreach var task (self.tstack.{tname}) {
-				say line { title => 'TASK: ' ~ task, char => '-' };
+				say self.txt.line ({ title => 'TASK: ' ~ task, char => '-' });
 				self.tcurrent		= task;
 				//self.init();
 				self.tcode.{task}();
@@ -145,7 +147,7 @@ namespace rise.lib {
 				// }
 			}
 			self.wstart = 0;
-			say line { title => 'tman END' };
+			say self.txt.line ({ title => 'tman END' });
 			say '';
         }
 
@@ -191,11 +193,12 @@ namespace rise.lib {
 			while(1){
 				self.src(path);
 				if (self.src_name){
-					// say line { title => 'WATCH', char => '~' };
+					// say self.txt.line ({ title => 'WATCH', char => '~' });
 					data.();
 				}
 				sleep 1;
 			}
 		}
+
     }
 }
