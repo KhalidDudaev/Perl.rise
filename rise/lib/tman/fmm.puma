@@ -13,7 +13,10 @@ namespace rise.lib.tman {
             var sname;
             var mname;
 
+            // say "monitor >>> " ~ spath;
+
             foreach sname ( self.fs.dir.listf(spath) ) {
+                // say "monitor >>> " ~ sname;
                 tdiff = time - self.fs.info.mtime(sname);
                 next if tdiff > diff;
                 mname = sname;

@@ -131,9 +131,21 @@ sub import { no strict "refs";
 	my $caller              = (caller(0))[0];
 	my $self                = shift;
 
-	# say '--------- classext ---------';
-	# say "caller -> $caller";
-	# say "self   -> $self";
+    # say '--------- class IMPORT ---------';
+    # say "caller -> $caller";
+    # say "self   -> $self";
+    # say dump *{$caller . "::IMPORT::"};
+    # # say dump *{$caller . "::"};
+    # say ' ';
+
+    # *{"$self"}          = *{"$caller::IMPORT"} if $caller;
+    # BEGIN {
+    # }
+    # foreach my $func (keys %{$caller . "::IMPORT::"}){
+    #     *{$self.'::'.$func} = \&{$caller.'::IMPORT::'.$func};
+    #     # *{$self.'::'.$func} = sub { &{$caller.'::IMPORT::'.$func}($self, @_) };
+    #     say *{$self.'::'.$func};
+    # }
 
     # print "### $caller - $self ###\n";
 
@@ -165,7 +177,10 @@ sub import { no strict "refs";
 		}
 	}
 
-	# __IMPORT__($caller, @_) if exists &__IMPORT__;
+
+
+
+	__IMPORT__($caller, @_) if exists &__IMPORT__;
 }
 
 # sub self { args('self', @_) }
@@ -182,18 +197,28 @@ sub export { no strict "refs"; no warnings;
 	my $self                = shift;
 	my $exports				= shift;
 
-    # say '--------- classext ---------';
+
+    # say '--------- class EXPORT ---------';
     # # say "parent -> $__PARENT_CLASS__";
     # say "caller -> $__CALLER_CLASS__";
     # say "self   -> $self";
+    # say dump *{$__CALLER_CLASS__ . "::IMPORT::"};
+    # say ' ';
+
+
 
 	foreach my $func (@$exports){
 		# *{$__CALLER_CLASS__ . "::$_"} = \&{"$self::$_"};
 		# *{$__CALLER_CLASS__ . "::IMPORT::$_"} = \&{"$self::$_"};
-        # *{$__CALLER_CLASS__ . "::".$func}         = sub {&{$__PARENT_CLASS__."::IMPORT::".$_}($self, @_)};
-		*{$__CALLER_CLASS__ . "::$func"}          = sub { &{"$self::$func"}($self, @_) };
-		*{$__CALLER_CLASS__ . "::IMPORT::$func"}  = sub { &{"$self::$func"}($self, @_) };
+
+        # *{$__CALLER_CLASS__ . "::$func"}          = sub { &{"$__PARENT_CLASS__::IMPORT::$func"}($self, @_)};
+
+        *{$__CALLER_CLASS__.'::'.$func}          = sub { &{$self.'::'.$func}($self, @_) };
+        *{$__CALLER_CLASS__.'::IMPORT::'.$func}  = sub { &{$self.'::'.$func}($self, @_) };
+        # *{$__CALLER_CLASS__.'::IMPORT::'.$func}  = \&{$__CALLER_CLASS__ . "::$func"};
 	}
+
+
 }
 
 sub interface_confirm {

@@ -1,5 +1,5 @@
 { package rise::lib::fs; use rise::core::object::namespace;   
-    { package rise::lib::fs::pathWorker; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1015032330"; sub VERSION {"2016.1015032330"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-cwd  public-function-toAbs  public-function-toRel  public-function-isAbs  public-function-isRel  public-function-path  public-function-filename  public-function-basename  public-function-ext  public-function-isFile  public-function-isDir}} 
+    { package rise::lib::fs::pathWorker; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1016042911"; sub VERSION {"2016.1016042911"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-cwd  public-function-toAbs  public-function-toRel  public-function-isAbs  public-function-isRel  public-function-path  public-function-filename  public-function-basename  public-function-ext}} 
 
         # public var slash          = '/';
 
@@ -51,8 +51,8 @@
             return $fname;
         }}
 
-        { package rise::lib::fs::pathWorker::isFile; use rise::core::object::function;  sub isFile {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $name; no warnings; sub name ():lvalue; *name = sub ():lvalue { $name }; use warnings;  ($self,$name) = ($_[0],$_[1]);  -e $name && !-d _ }}
-        { package rise::lib::fs::pathWorker::isDir; use rise::core::object::function;  sub isDir {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $name; no warnings; sub name ():lvalue; *name = sub ():lvalue { $name }; use warnings;  ($self,$name) = ($_[0],$_[1]);   -d $name }}
+        # public function isFile (name) { -e name && !-d _ }
+        # public function isDir  (name) { -d name }
     }
 }
 

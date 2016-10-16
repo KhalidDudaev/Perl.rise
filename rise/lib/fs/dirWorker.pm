@@ -1,18 +1,18 @@
 
 { package rise::lib::fs; use rise::core::object::namespace;   
 
-    use rise::lib::fs::pathWorker;
+    use rise::lib::fs::infoWorker;
 
-    { package rise::lib::fs::dirWorker; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1015032330"; sub VERSION {"2016.1015032330"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{private-function-listhelper  public-function-list  public-function-listf  public-function-listd  private-function-filter  private-function-filterExtract  public-var-slash  private-var-path}} 
+    { package rise::lib::fs::dirWorker; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1016042911"; sub VERSION {"2016.1016042911"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{private-function-listhelper  public-function-list  public-function-listf  public-function-listd  private-function-filter  private-function-filterExtract  public-var-slash  private-var-info}} 
 
          sub slash ():lvalue; no warnings; *__slash__ = sub ():lvalue {  my $self = shift; $self->{'slash'} }; *slash = sub ():lvalue {  $__RISE_SELF__->{'slash'} }; use warnings; 
-         sub path ():lvalue; no warnings; *__path__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'path') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); my $self = shift; $self->{'path'} }; *path = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'path') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); $__RISE_SELF__->{'path'} }; use warnings;  path = new rise::lib::fs::pathWorker;
+         sub info ():lvalue; no warnings; *__info__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'info') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); my $self = shift; $self->{'info'} }; *info = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'info') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); $__RISE_SELF__->{'info'} }; use warnings;  info = new rise::lib::fs::infoWorker::;
 
         { package rise::lib::fs::dirWorker::listhelper; use rise::core::object::function; sub listhelper { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'listhelper') unless (caller eq 'rise::lib::fs::dirWorker' || caller =~ m/^rise::lib::fs::dirWorker\b/o); my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $path; no warnings; sub path ():lvalue; *path = sub ():lvalue { $path }; use warnings;  ($self,$path) = ($_[0],$_[1]);
             my $dlist; no warnings; sub dlist ():lvalue; *dlist = sub ():lvalue { $dlist }; use warnings;  $dlist = [];
              my $slash; no warnings; sub slash ():lvalue; *slash = sub ():lvalue { $slash }; use warnings;  ($slash) = __RISE_MATCH $path =~ m{(\\|\/)}sx;
 
-            __PACKAGE__->__RISE_ERR('ISDIR', $path) unless $self->path->isDir($path);
+            __PACKAGE__->__RISE_ERR('ISDIR', $path) unless $self->info->isDir($path);
 
             $slash           = $self->slash || $slash;
 
@@ -64,9 +64,9 @@
                 # say 'filter F -> ' ~ fltrF;
 
                 { my $item; no warnings; sub item ():lvalue; *item = sub ():lvalue { $item }; use warnings;  foreach (@ {($self->listhelper($dir))}) { $item = $_;
-                    __RISE_PUSH $path, $item . $slash . $fltrD . $fltrF if $self->path->isDir($item) && $self->filter($item, $fltrDC);
-                    __RISE_PUSH $res, $item if $self->path->isDir($item) && $isD && $self->filter($item, $fltrDC);
-                    __RISE_PUSH $res, $item if $self->path->isFile($item) && $isF && $self->filter($item, $fltrF) && ($fltrDC eq '**' || !$fltrDC);
+                    __RISE_PUSH $path, $item . $slash . $fltrD . $fltrF if $self->info->isDir($item) && $self->filter($item, $fltrDC);
+                    __RISE_PUSH $res, $item if $self->info->isDir($item) && $isD && $self->filter($item, $fltrDC);
+                    __RISE_PUSH $res, $item if $self->info->isFile($item) && $isF && $self->filter($item, $fltrF) && ($fltrDC eq '**' || !$fltrDC);
                     # say 'item -> ' ~ item;
                     # say 'path -> ' ~ dump path;
                 }}

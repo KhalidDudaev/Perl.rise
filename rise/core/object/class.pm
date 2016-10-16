@@ -2,7 +2,7 @@ package rise::core::object::class;
 use strict;
 use warnings;
 use utf8;
-use	rise::core::object::class::ext;
+use	rise::core::object::class::helper;
 # use	parent 'rise::core::object::class::ext';
 use rise::core::ops::commands;
 use feature 'say';
@@ -32,6 +32,10 @@ sub import { no strict "refs";
 
     # print "### $caller - $parent - $self ###\n";
 
+    foreach my $func (keys %{$parent . "::IMPORT::"}){
+        *{$caller.'::'.$func} = \&{$parent.'::IMPORT::'.$func};
+    }
+
     push (@{$caller.'::ISA'}, ($parent, 'rise::core::object::class::ext'));
 	# push @{$caller.'::ISA'}, $parent if $parent;
 	# push @{$caller.'::ISA'}, 'rise::core::object::class::ext';
@@ -42,6 +46,7 @@ sub import { no strict "refs";
 	$caller->strict::import;
 	$caller->warnings::import;
 	$caller->utf8::import;
+    # $caller->import;
 	$caller->rise::core::ops::commands::init;
 }
 

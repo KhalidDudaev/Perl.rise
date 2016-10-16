@@ -13,7 +13,7 @@ our $VERSION = '0.01';
 
 my $VARS		= {};
 my $ERROR		= {
-	class_priv				=> [ [ 1, 2 ], 'ERROR CLASS','"Can\'t access class \"$parent\" at\n-> line $line in $file"' ],
+	class_priv				=> [ [ 2, 3 ], 'ERROR CLASS','"Can\'t access class \"$parent\" at\n-> line $line in $file"' ],
 	class_priv_inherit		=> [ [ 1, 3 ], 'ERROR CLASS','"Can\'t access class \"$parent\" at\n-> line $line in $file"' ],
 	class_prot				=> [ [ 1, 2 ], 'ERROR CLASS','"Class \"$parent\" only extends at\n-> line $line in $file"' ],
 	class_inherits			=> [ [ 1, 1 ], 'ERROR CLASS','"extends or implements syntaxis erorr in class \"$parent\" at"' ],

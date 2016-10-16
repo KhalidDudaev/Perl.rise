@@ -9,12 +9,15 @@ use lib qw|
 use rise {
     debug    => 1,
     info    => 1,
+    # compile => [qw'
+    #     fs
+	# 	fs/dirWorker
+	# 	fs/fileWorker
+	# 	fs/infoWorker
+	# 	fs/pathWorker
+    # ']
     compile => [qw'
-        fs
-		fs/dirWorker
-		fs/fileWorker
-		fs/infoWorker
-		fs/pathWorker
+        web
     ']
 };
 # MakeBot

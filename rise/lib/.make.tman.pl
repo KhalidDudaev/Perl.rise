@@ -12,9 +12,13 @@ use rise {
     debug    => 1,
     info    => 1,
     compile => [qw'
+        tman
         tman/fmm
 		tman/plugin/puma
 		tman/plugin/ftp
+		tman/plugin/notify
+		tman/plugin/copy
+		tman/plugin/rename
     ']
 };
 # MakeBot

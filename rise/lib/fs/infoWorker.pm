@@ -1,5 +1,5 @@
 { package rise::lib::fs; use rise::core::object::namespace;   
-    { package rise::lib::fs::infoWorker; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1015032330"; sub VERSION {"2016.1015032330"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-dev  public-function-ino  public-function-mode  public-function-nlink  public-function-uid  public-function-gid  public-function-rdev  public-function-size  public-function-atime  public-function-mtime  public-function-ctime  public-function-blksize  public-function-blocks}} 
+    { package rise::lib::fs::infoWorker; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1016042911"; sub VERSION {"2016.1016042911"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-dev  public-function-ino  public-function-mode  public-function-nlink  public-function-uid  public-function-gid  public-function-rdev  public-function-size  public-function-atime  public-function-mtime  public-function-ctime  public-function-blksize  public-function-blocks  public-function-isFile  public-function-isDir}} 
 
         { package rise::lib::fs::infoWorker::dev; use rise::core::object::function;  sub dev {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $fname; no warnings; sub fname ():lvalue; *fname = sub ():lvalue { $fname }; use warnings;  ($self,$fname) = ($_[0],$_[1]); 
             return (stat($fname))[0];
@@ -40,6 +40,8 @@
         { package rise::lib::fs::infoWorker::blocks; use rise::core::object::function;  sub blocks {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $fname; no warnings; sub fname ():lvalue; *fname = sub ():lvalue { $fname }; use warnings;  ($self,$fname) = ($_[0],$_[1]); 
             return (stat($fname))[12];
         }}
+        { package rise::lib::fs::infoWorker::isFile; use rise::core::object::function;  sub isFile {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $name; no warnings; sub name ():lvalue; *name = sub ():lvalue { $name }; use warnings;  ($self,$name) = ($_[0],$_[1]);  -e $name && !-d _ }}
+        { package rise::lib::fs::infoWorker::isDir; use rise::core::object::function;  sub isDir {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $name; no warnings; sub name ():lvalue; *name = sub ():lvalue { $name }; use warnings;  ($self,$name) = ($_[0],$_[1]);   -d $name }}
     }
 
 }

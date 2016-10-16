@@ -30,7 +30,7 @@ namespace rise.lib {
 		var src_path;
 		var src_name;
 		// var lsrc_name;
-		var dst_path;
+		// var dst_path;
 		var dst_name;
 		var dst_ext				= 'tman';
 		public var ref_path;
@@ -68,13 +68,16 @@ namespace rise.lib {
 			self.src_name			= self.fmon.monitor(path,1);
 
 			// say ">>> " ~ self.src_name;
+			// say ">>> " ~ self.src_path;
 
 			if (self.src_name) {
 				// self.lsrc_name			= self.src_name if self.src_name;
 				self.filename			= self.fs.path.filename(self.src_name);
 				self.basename			= self.fs.path.basename(self.src_name);
-				self.code_src			= self.fs.file.read(self.src_name) if self.src_name;
-				// self.dst_ext			= self.fs.path.ext(self.src_name);
+                self.dst_ext			= self.fs.path.ext(self.src_name);
+				self.code_src			= self.fs.file.read(self.src_name);
+
+                // self.dst_file		    = self.basename ~ '.' ~ self.dst_ext;
 			}
 
 			return self;
@@ -82,14 +85,14 @@ namespace rise.lib {
 
 		public function dst (path) {
 			if (self.src_name) {
-				self.dst_path		= path;
+				// self.dst_path		= path;
 
 				var dpath			= path ~ self.referPath();
 				var err				= '';
 
 				// say ">>> " ~ dpath;
 
-				if(!self.fs.dir.isDir(dpath)){
+				if(!self.fs.info.isDir(dpath)){
 					mkdir dpath or err = "ERROR: Cant make dir $dpath";
 					if (err) {
 						say err;
@@ -124,12 +127,13 @@ namespace rise.lib {
 		}
 
 		export:simple function tman () {
+            // say "tman OK";
 			return self;
 		}
 
         export:simple function start (tname) {
 			tname ||= 'default';
-			say '';
+			say ' ';
 			say self.txt.line ({ title => 'tman START' });
 
 			foreach var task (self.tstack.{tname}) {
@@ -148,7 +152,7 @@ namespace rise.lib {
 			}
 			self.wstart = 0;
 			say self.txt.line ({ title => 'tman END' });
-			say '';
+			say ' ';
         }
 
         export:simple function task (taskName, data) {
@@ -188,15 +192,15 @@ namespace rise.lib {
 		// 	self.tcode.{aname} = code;
 		// }
 
-		thread watch_go (path, data) {
+		thread watch_go (path, code) {
 			// say '### PATH: ' ~ path ~ ' | DATA: ' ~ dump data;
 			while(1){
 				self.src(path);
 				if (self.src_name){
 					// say self.txt.line ({ title => 'WATCH', char => '~' });
-					data.();
+					code.();
 				}
-				sleep 1;
+				// sleep 1;
 			}
 		}
 

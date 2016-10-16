@@ -40,6 +40,8 @@ namespace rise.lib.fs {
         public function blocks (fname) {
             return (stat(fname))[12];
         }
+        public function isFile (name) { -e name && !-d _ }
+        public function isDir  (name) { -d name }
     }
 
 }

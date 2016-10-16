@@ -51,7 +51,7 @@ namespace rise.lib.fs {
             return fname;
         }
 
-        public function isFile (name) { -e name && !-d _ }
-        public function isDir  (name) { -d name }
+        // public function isFile (name) { -e name && !-d _ }
+        // public function isDir  (name) { -d name }
     }
 }
