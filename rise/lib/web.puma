@@ -1,0 +1,143 @@
+
+using Plack::Util;
+using Plack::Loader;
+using CGI::Carp qw/fatalsToBrowser/;
+using rise.lib.fs.file;
+
+// using web::route;
+namespace rise.lib {
+
+    public class web {
+
+        var file                   = new rise.lib.fs.file;
+
+        var data;
+        public var env             = {};
+        public var routes           = { 'GET' => [], 'POST' => [], 'UPDATE' => [], 'DELETE' => [] };
+        var out;
+        var _qobj           = {};
+        var _tout;
+        var header;
+        var html;
+        var args;
+        var apptrue;
+
+        export:simple function wsay (data = '') {
+            self.out    ~= data;
+        }
+
+        export:simple function out (data = '') {
+            self.out    = data;
+        }
+
+        // export:simple function env {
+        //     return self.env;
+        // }
+
+        export:simple function req {
+            self.env.{QUERY_STRING} =~ s{\%22}{"}gsx;
+            self.env.{QUERY_STRING} =~ s{\%20}{ }gsx;
+            # _env->{QUERY_STRING} =~ s{\:}{=>}gsx;
+            return self.env.{QUERY_STRING};
+        }
+
+        export:simple function template (tname, params) {
+
+            var thtml           = self.file.read(tname);
+
+            thtml =~ s/ \[\[(\w+)\]\] / $params->{$1}||'' /gsxe;
+            # templ =~ s/(\<\w+\>)/\'1\'/gsx;
+            // thtml =~ s{\.\.\.}{\$self->tsay}gsx;
+            thtml =~ s{\.\.\.\s+(.*?)\;}{\$self->tsay($1);}gsx;
+            thtml =~ s{
+                \{\{(.*?)\}\}
+            }{
+                eval $self->_tag($1);
+                die "TEMPLATE CODE ERROR\n".$@ if $@;
+                $self->tout();
+            }gsxe;
+
+            return thtml;
+        }
+
+        function _tag (str) {
+            # str =~ s{\>\s*\<}{\>\.\<}gsx;
+            str =~ s{(\<\/?\w+\>)}{\'$1\'}gsx;
+            return str;
+        }
+
+        export:simple function tsay (data = '') {
+            self._tout ~= data;
+        }
+
+        export:simple function tout {
+            var t = self._tout;
+            self._tout = '';
+            return t;
+        }
+
+        export:simple function query {
+            var qstring = self.env.{'QUERY_STRING'};
+            qstring =~ s{\:}{=>}gsx;
+            self._qobj = eval qstring;
+        }
+
+        export:simple function start {
+
+            var psgi_app         = function (env, args) {
+                self.header.{'status'}         = 404;
+                self.header.{'type'}         = 'text/html';
+                self.html           = 'ERROR 404: Not Found';
+                self.env            = env;
+                self.args           = args;
+
+                # var app                   = self->__route_eq;
+                # self.html               = app->app if app;
+
+                self                   = self.__route_eq();
+                if (self.apptrue){
+                    self.header.{'status'}      = 200;
+                    self.html                   = self.app;
+                }
+
+                return [self.header.{'status'}, ['Content-Type'=> self.header.{'type'} ], [self.html]];
+            };
+
+            Plack::Loader.auto.run(psgi_app);
+        }
+
+        export:simple function set_header (data) {
+            self.header         = data;
+        }
+
+        export:simple function route (rmeth, data) {
+            push self.routes.{rmeth}, [data];
+        }
+
+        export:simple function get (route, controller) {
+            self.route('GET', [route, controller]);
+        }
+
+        export:simple function dmsg (data) {
+            use CGI;
+            say CGI::header();
+        	say "<br>################################################<br>";
+        	say data;
+        	say "<br>################################################<br>";
+        }
+
+        function __route_eq {
+            var app               = self;
+            app.apptrue             = 0;
+            foreach var r (self.routes.{self.env.{'REQUEST_METHOD'}}) {
+                if (self.env.{'REQUEST_URI'} =~ m{^(?:$r->[0])$}sx) {
+                    app = r.[1];
+                    app.apptrue                = 1;
+                    last;
+                };
+            }
+            return app;
+        }
+
+    }
+}
