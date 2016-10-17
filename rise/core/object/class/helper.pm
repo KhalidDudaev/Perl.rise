@@ -37,10 +37,6 @@ my $self_current = {};
 sub __objtype {'CLASS'};
 # sub self_current ():lvalue { $self_current->{+shift} };
 
-# sub new {
-#   my $class         = ref $_[0] || $_[0];                                     # получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
-#   return bless {}, $class;                                       				# обьявляем класс и его свойства
-# }
 
 sub new {
     my $class         = shift;
@@ -84,48 +80,6 @@ sub new {
 
     return $self;
 }
-
-# sub new {
-#     my $class         = shift;
-#     $class            = ref $class || $class;                                   # получаем имя класса, если передана ссылка то извлекаем имя класса
-#     $class->__CLASS_ARGS__(@_) if exists &{$class.'::__CLASS_ARGS__'};          # получаем аргументы класса
-#     return bless {}, $class;                                       				# обьявляем класс и его свойства
-# }
-
-# sub __bind_args {
-#     my $self        = shift;
-#     my @args        = @_;
-#     # @args           = @$ARGS_CLASS;
-#     # @args           = (\$ARGS_CLASS[0], \$ARGS_CLASS[1]);
-#     @ARGS_CLASS     = @args;
-#     # return (\$ARGS_CLASS[0], \$ARGS_CLASS[1]);
-# }
-# sub new {
-#   my $class         = shift;
-#   my $obj;
-#   $class            = ref $class || $class;                                     # получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
-#   (${$ARGS_CLASS[0]}, ${$ARGS_CLASS[1]})       = @_;
-#   # $class->__get_args(@_);
-#   # print @_ if @_;
-#   $obj = bless {}, $class;                                       				# обьявляем класс и его свойства
-#   # $obj->__set_args(@_);
-#   # print @$ARGS_CLASS;
-#   return $obj;
-# }
-
-# sub new {
-#   my $class         = ref $_[0] || $_[0];                                     # получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
-#   my $object        = $_[1] || {};                                            # получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш
-#   %$object          = (%$ENV_CLASS, %$object);                                # применяем умолчания, если имеются входные данные то сохраняем их в умолчаниях
-#   return bless($object, $class);                                       		# обьявляем класс и его свойства
-# }
-
-# sub new {
-# 	my $class			= ref $_[0]	|| $_[0];
-# 	my $args			= $_[1]		|| {};
-# 	%$args				= (%$ENV_CLASS, %$args);
-# 	return bless $args, $class;
-# }
 
 sub import { no strict "refs";
 	my $caller              = (caller(0))[0];
@@ -196,6 +150,7 @@ sub export { no strict "refs"; no warnings;
 	my $__CALLER_CLASS__	= (caller(1))[0];
 	my $self                = shift;
 	my $exports				= shift;
+    my $code;
 
 
     # say '--------- class EXPORT ---------';
@@ -208,16 +163,13 @@ sub export { no strict "refs"; no warnings;
 
 
 	foreach my $func (@$exports){
-		# *{$__CALLER_CLASS__ . "::$_"} = \&{"$self::$_"};
-		# *{$__CALLER_CLASS__ . "::IMPORT::$_"} = \&{"$self::$_"};
-
-        # *{$__CALLER_CLASS__ . "::$func"}          = sub { &{"$__PARENT_CLASS__::IMPORT::$func"}($self, @_)};
-
-        *{$__CALLER_CLASS__.'::'.$func}          = sub { &{$self.'::'.$func}($self, @_) };
-        *{$__CALLER_CLASS__.'::IMPORT::'.$func}  = sub { &{$self.'::'.$func}($self, @_) };
-        # *{$__CALLER_CLASS__.'::IMPORT::'.$func}  = \&{$__CALLER_CLASS__ . "::$func"};
+        $code = sub { &{$self.'::'.$func}($self->__RISE_SELF__, @_) };
+        *{$__CALLER_CLASS__.'::'.$func}          = $code;
+        *{$__CALLER_CLASS__.'::IMPORT::'.$func}  = $code;
+        # *{$__CALLER_CLASS__.'::IMPORT::'.$func}  = \&{$self.'::'.$func};
 	}
 
+    $code = undef;
 
 }
 

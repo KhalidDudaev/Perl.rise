@@ -2,17 +2,17 @@
 using Plack::Util;
 using Plack::Loader;
 using CGI::Carp qw/fatalsToBrowser/;
-using rise.lib.fs.file;
+using rise.lib.fs.fileWorker;
 
 // using web::route;
 namespace rise.lib {
 
     public class web {
 
-        var file                   = new rise.lib.fs.file;
+        var file                   = new rise.lib.fs.fileWorker;
 
         var data;
-        public var env             = {};
+        export:simple var env             = {};
         public var routes           = { 'GET' => [], 'POST' => [], 'UPDATE' => [], 'DELETE' => [] };
         var out;
         var _qobj           = {};
@@ -24,10 +24,12 @@ namespace rise.lib {
 
         export:simple function wsay (data = '') {
             self.out    ~= data;
+            return self.out;
         }
 
         export:simple function out (data = '') {
             self.out    = data;
+            return self.out;
         }
 
         // export:simple function env {
@@ -42,20 +44,39 @@ namespace rise.lib {
         }
 
         export:simple function template (tname, params) {
-
+            // self.dmsg(tname);
             var thtml           = self.file.read(tname);
 
             thtml =~ s/ \[\[(\w+)\]\] / $params->{$1}||'' /gsxe;
-            # templ =~ s/(\<\w+\>)/\'1\'/gsx;
+            // templ =~ s/(\<\/?\w+\>)/\'$1\'/gsx;
             // thtml =~ s{\.\.\.}{\$self->tsay}gsx;
             thtml =~ s{\.\.\.\s+(.*?)\;}{\$self->tsay($1);}gsx;
+
             thtml =~ s{
                 \{\{(.*?)\}\}
             }{
-                eval $self->_tag($1);
+                my $data = $1;
+                eval $self->_tag($data);
                 die "TEMPLATE CODE ERROR\n".$@ if $@;
                 $self->tout();
             }gsxe;
+
+            // thtml =~ s/
+            //     \{\{(.*?)\}\}
+            // /
+            //     my $data = $1;
+            //     '{{'.$self->_tag($data).'}}';
+            // /gsxe;
+            //
+            // thtml =~ s{
+            //     \{\{(.*?)\}\}
+            // }{
+            //     eval ($1);
+            //     die "TEMPLATE CODE ERROR\n".$@ if $@;
+            //     $self->tout();
+            // }gsxe;
+
+            // self.dmsg(thtml);
 
             return thtml;
         }
@@ -63,11 +84,13 @@ namespace rise.lib {
         function _tag (str) {
             # str =~ s{\>\s*\<}{\>\.\<}gsx;
             str =~ s{(\<\/?\w+\>)}{\'$1\'}gsx;
+            // str =~ s{[^\'](\<\/?\w+\>)[^\']}{\'$1\'}gsx;
             return str;
         }
 
         export:simple function tsay (data = '') {
             self._tout ~= data;
+            return self._tout
         }
 
         export:simple function tout {
@@ -80,10 +103,11 @@ namespace rise.lib {
             var qstring = self.env.{'QUERY_STRING'};
             qstring =~ s{\:}{=>}gsx;
             self._qobj = eval qstring;
+            return self._qobj;
         }
 
         export:simple function start {
-
+            // self.dmsg(self);
             var psgi_app         = function (env, args) {
                 self.header.{'status'}         = 404;
                 self.header.{'type'}         = 'text/html';
@@ -91,48 +115,56 @@ namespace rise.lib {
                 self.env            = env;
                 self.args           = args;
 
-                # var app                   = self->__route_eq;
+                var app                   = self->__route_eq;
+                // self                        = self.__route_eq();
                 # self.html               = app->app if app;
 
-                self                   = self.__route_eq();
                 if (self.apptrue){
                     self.header.{'status'}      = 200;
-                    self.html                   = self.app;
+                    self.html                   = app.app;
                 }
 
                 return [self.header.{'status'}, ['Content-Type'=> self.header.{'type'} ], [self.html]];
             };
 
-            Plack::Loader.auto.run(psgi_app);
+            return Plack::Loader.auto.run(psgi_app);
         }
 
         export:simple function set_header (data) {
             self.header         = data;
+            return self.header;
         }
 
         export:simple function route (rmeth, data) {
             push self.routes.{rmeth}, [data];
+            return self.routes.{rmeth};
         }
 
         export:simple function get (route, controller) {
+            // self.dmsg(route);
             self.route('GET', [route, controller]);
+            return [route, controller];
         }
 
         export:simple function dmsg (data) {
             use CGI;
-            say CGI::header();
-        	say "<br>################################################<br>";
-        	say data;
-        	say "<br>################################################<br>";
+            var msg;
+            msg ~= CGI::header();
+        	msg ~= "<br>################################################<br>";
+        	msg ~= data;
+        	msg ~= "<br>################################################<br>";
+            say msg;
+            return msg;
         }
 
         function __route_eq {
-            var app               = self;
-            app.apptrue             = 0;
+            // self.dmsg(self);
+            var app;
+            self.apptrue             = 0;
             foreach var r (self.routes.{self.env.{'REQUEST_METHOD'}}) {
                 if (self.env.{'REQUEST_URI'} =~ m{^(?:$r->[0])$}sx) {
                     app = r.[1];
-                    app.apptrue                = 1;
+                    self.apptrue                = 1;
                     last;
                 };
             }

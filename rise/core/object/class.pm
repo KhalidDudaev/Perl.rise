@@ -32,11 +32,14 @@ sub import { no strict "refs";
 
     # print "### $caller - $parent - $self ###\n";
 
+    ############################################## IMPORT MEMBERS ####################################
     foreach my $func (keys %{$parent . "::IMPORT::"}){
-        *{$caller.'::'.$func} = \&{$parent.'::IMPORT::'.$func};
+        *{$caller.'::'.$func}               = \&{$parent.'::IMPORT::'.$func};
+        *{$caller.'::IMPORT::'.$func}       = \&{$parent.'::IMPORT::'.$func};
     }
+    ##################################################################################################
 
-    push (@{$caller.'::ISA'}, ($parent, 'rise::core::object::class::ext'));
+    push (@{$caller.'::ISA'}, ($parent, 'rise::core::object::class::helper'));
 	# push @{$caller.'::ISA'}, $parent if $parent;
 	# push @{$caller.'::ISA'}, 'rise::core::object::class::ext';
 

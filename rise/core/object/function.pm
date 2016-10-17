@@ -19,7 +19,9 @@ sub import { no strict 'refs';
 
 	# say '--------- func ---------';
 	# say "caller -> $obj";
-	# say "self   -> $fn_name";
+	# say "parent -> $parent";
+    # say "self   -> $self";
+	# say "func   -> $fn_name";
 
 	########################################################################
 		push @{$obj.'::ISA'}, $parent;
@@ -29,6 +31,14 @@ sub import { no strict 'refs';
 	########################################################################
 
 	*{$obj} = *{"$obj::$fn_name"};
+
+    ############################################## IMPORT MEMBERS ####################################
+    foreach my $func (keys %{$parent . "::IMPORT::"}){
+        *{$obj.'::'.$func}              = \&{$parent.'::IMPORT::'.$func};
+        *{$obj.'::IMPORT::'.$func}      = \&{$parent.'::IMPORT::'.$func};
+    }
+    ##################################################################################################
+
 }
 
 
