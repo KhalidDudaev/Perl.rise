@@ -42,10 +42,10 @@ sub import { no strict "refs";
     push (@{$caller.'::ISA'}, ($parent, 'rise::core::object::class::helper'));
 	# push @{$caller.'::ISA'}, $parent if $parent;
 	# push @{$caller.'::ISA'}, 'rise::core::object::class::ext';
-
-	*{$caller."::super"}	= sub {${$caller.'::ISA'}[2]};
-	*{$caller."::self"}		= sub {$caller};
-
+    { no warnings;
+    	*{$caller."::super"}	= sub {${$caller.'::ISA'}[2]};
+    	*{$caller."::self"}		= sub {$caller};
+    }
 	$caller->strict::import;
 	$caller->warnings::import;
 	$caller->utf8::import;

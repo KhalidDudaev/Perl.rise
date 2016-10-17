@@ -1,20 +1,58 @@
-{ package rise::lib::fs;  use strict; use warnings;
-    { package rise::lib::fs::path; use strict; use warnings; use rise::core::ops::extends 'rise::core::object::class','rise::lib::fs';   BEGIN { no strict 'refs'; *{'rise::lib::fs::path::'.$_} = \&{'rise::lib::fs::IMPORT::'.$_} for keys %rise::lib::fs::IMPORT::; }; sub super { $rise::lib::fs::path::ISA[1] } my $self = 'rise::lib::fs::path'; sub self { $self }; BEGIN { __PACKAGE__->__RISE_COMMANDS } __PACKAGE__->interface_confirm; sub __CLASS_MEMBERS__ {'public-function-cwd public-function-isAbs public-function-isRel'}
-        { package rise::lib::fs::path::cwd; use rise::core::object::function; sub  cwd  {  my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings;  ($self) = ($_[0]);
-            my $cwdir; no warnings; sub cwdir ():lvalue; *cwdir = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'cwdir') unless (caller eq 'rise::lib::fs::path::cwd' || caller =~ m/^rise::lib::fs::path::cwd\b/o); $cwdir }; use warnings;
-            $cwdir =  __RISE_A2R $0 =~ m/^(.*?)\w+(?:\.\w+)*$/sx;
-            return $cwdir->[0];
+{ package rise::lib::fs; use rise::core::object::namespace;   
+    { package rise::lib::fs::path; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1017044311"; sub VERSION {"2016.1017044311"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-cwd  public-function-toAbs  public-function-toRel  public-function-isAbs  public-function-isRel  public-function-path  public-function-filename  public-function-basename  public-function-ext}} 
+
+        # public var slash          = '/';
+
+        { package rise::lib::fs::path::cwd; use rise::core::object::function;  sub cwd {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings;  ($self) = ($_[0]); 
+             my $cwdir; no warnings; sub cwdir ():lvalue; *cwdir = sub ():lvalue { $cwdir }; use warnings;  ($cwdir) = toList __RISE_MATCH $0 =~ m{^(.*?)[^\\\/]*$}sx;
+            return $cwdir;
         }}
 
-        { package rise::lib::fs::path::isAbs; use rise::core::object::function; sub  isAbs {  my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $fname; no warnings; local *fname; sub fname ():lvalue; *fname = sub ():lvalue {  $fname }; use warnings;  ($self,$fname) = ($_[0],$_[1]);
-            return !!1 if __RISE_A2R $fname =~ m/^(?:\w+\:|[\W]+)/gsx;
-            return !!0;
+        { package rise::lib::fs::path::toAbs; use rise::core::object::function;  sub toAbs {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $fname; no warnings; sub fname ():lvalue; *fname = sub ():lvalue { $fname }; use warnings;  ($self,$fname) = ($_[0],$_[1]);
+            $fname = $self->cwd . $fname if $self->isRel($fname);
+            return $fname;
         }}
 
-        { package rise::lib::fs::path::isRel; use rise::core::object::function; sub  isRel {  my $self; no warnings; local *self; sub self ():lvalue; *self = sub ():lvalue {  $self }; use warnings; my $fname; no warnings; local *fname; sub fname ():lvalue; *fname = sub ():lvalue {  $fname }; use warnings;  ($self,$fname) = ($_[0],$_[1]);
-            return !!1 if __RISE_A2R $fname !~ m/^(?:\w+\:|[\W]+)/gsx;
-            return !!0;
+        { package rise::lib::fs::path::toRel; use rise::core::object::function;  sub toRel {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $fname; no warnings; sub fname ():lvalue; *fname = sub ():lvalue { $fname }; use warnings;  ($self,$fname) = ($_[0],$_[1]);
+            my $cwdir; no warnings; sub cwdir ():lvalue; *cwdir = sub ():lvalue { $cwdir }; use warnings;  $cwdir = $self->cwd;
+            $cwdir =~ s{\\}{\\\\}gsx;
+            $fname =~ s{$cwdir}{}sx;
+            # fname =~ replace:sx cwdir => "";
+            return $fname;
         }}
+
+        { package rise::lib::fs::path::isAbs; use rise::core::object::function;  sub isAbs {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $fname; no warnings; sub fname ():lvalue; *fname = sub ():lvalue { $fname }; use warnings;  ($self,$fname) = ($_[0],$_[1]);
+            return __RISE_MATCH $fname =~ m{^(?:\w+\:|[\W]+)};
+        }}
+
+        { package rise::lib::fs::path::isRel; use rise::core::object::function;  sub isRel {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $fname; no warnings; sub fname ():lvalue; *fname = sub ():lvalue { $fname }; use warnings;  ($self,$fname) = ($_[0],$_[1]);
+            return __RISE_MATCH $fname !~ m{^(?:\w+\:|[\W]+)};
+        }}
+
+        { package rise::lib::fs::path::path; use rise::core::object::function;  sub path {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $fname; no warnings; sub fname ():lvalue; *fname = sub ():lvalue { $fname }; use warnings;  ($self,$fname) = ($_[0],$_[1]);
+             my $p; no warnings; sub p ():lvalue; *p = sub ():lvalue { $p }; use warnings;  ($p) = __RISE_MATCH $fname =~ m{^(.*?)[^\\\/]*$}sx;
+            return $p;
+        }}
+
+        { package rise::lib::fs::path::filename; use rise::core::object::function;  sub filename {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $fname; no warnings; sub fname ():lvalue; *fname = sub ():lvalue { $fname }; use warnings;  ($self,$fname) = ($_[0],$_[1]);
+            $fname      =~ s{^.*?([^\\\/]*)$}{$1}sx;
+            return $fname;
+        }}
+
+        { package rise::lib::fs::path::basename; use rise::core::object::function;  sub basename {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $fname; no warnings; sub fname ():lvalue; *fname = sub ():lvalue { $fname }; use warnings;  ($self,$fname) = ($_[0],$_[1]);
+            $fname      =~ s{^.*?(\w+(?:\.\w+)*)$}{$1}sx;
+            $fname      =~ s{^(.*?)(?:\.(\w+))?$}{$1}sx;
+            return $fname;
+        }}
+
+        { package rise::lib::fs::path::ext; use rise::core::object::function;  sub ext {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $fname; no warnings; sub fname ():lvalue; *fname = sub ():lvalue { $fname }; use warnings;  ($self,$fname) = ($_[0],$_[1]);
+            $fname      =~ s{^.*?(\w+(?:\.\w+)*)$}{$1}sx;
+            $fname      =~ s{^(.*?)(?:\.(\w+))?$}{$2||''}sxe;
+            return $fname;
+        }}
+
+        # public function isFile (name) { -e name && !-d _ }
+        # public function isDir  (name) { -d name }
     }
 }
 

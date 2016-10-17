@@ -2,14 +2,14 @@
 using Plack::Util;
 using Plack::Loader;
 using CGI::Carp qw/fatalsToBrowser/;
-using rise.lib.fs.fileWorker;
+using rise.lib.fs.file;
 
 // using web::route;
 namespace rise.lib {
 
     public class web {
 
-        var file                   = new rise.lib.fs.fileWorker;
+        var file                   = new rise.lib.fs.file;
 
         var data;
         export:simple var env             = {};

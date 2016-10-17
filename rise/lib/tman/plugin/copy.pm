@@ -1,5 +1,5 @@
 { package rise::lib::tman::plugin; use rise::core::object::namespace;   
-	{ package rise::lib::tman::plugin::copy; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1016042911"; sub VERSION {"2016.1016042911"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-copy}} 
+	{ package rise::lib::tman::plugin::copy; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1017044311"; sub VERSION {"2016.1017044311"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-copy}} 
         { package rise::lib::tman::plugin::copy::copy; use rise::core::object::function;  sub copy {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $path; no warnings; sub path ():lvalue; *path = sub ():lvalue { $path }; use warnings;  ($self,$path) = ($_[0],$_[1]); 
 
 

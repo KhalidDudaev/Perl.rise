@@ -1,15 +1,15 @@
 namespace rise.lib {
     public class fs {
 
-        using rise.lib.fs.pathWorker;
-        using rise.lib.fs.dirWorker;
-        using rise.lib.fs.fileWorker;
-        using rise.lib.fs.infoWorker;
+        using rise.lib.fs.path;
+        using rise.lib.fs.dir;
+        using rise.lib.fs.file;
+        using rise.lib.fs.info;
 
-        public var dir  = new rise.lib.fs.dirWorker;
-        public var path = new rise.lib.fs.pathWorker;
-        public var file = new rise.lib.fs.fileWorker;
-        public var info = new rise.lib.fs.infoWorker;
+        public var dir  = new rise.lib.fs.dir;
+        public var path = new rise.lib.fs.path;
+        public var file = new rise.lib.fs.file;
+        public var info = new rise.lib.fs.info;
 
     }
 }
