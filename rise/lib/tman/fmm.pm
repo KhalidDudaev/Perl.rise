@@ -3,7 +3,7 @@ use rise::lib::fs;
 
 { package rise::lib::tman; use rise::core::object::namespace;   
 
-    { package rise::lib::tman::fmm; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1017044311"; sub VERSION {"2016.1017044311"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-monitor  private-var-fs}} 
+    { package rise::lib::tman::fmm; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1017055954"; sub VERSION {"2016.1017055954"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-monitor  private-var-fs}} 
 
          sub fs ():lvalue; no warnings; *__fs__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'fs') unless (caller eq 'rise::lib::tman::fmm' || caller =~ m/^rise::lib::tman::fmm\b/o); my $self = shift; $self->{'fs'} }; *fs = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'fs') unless (caller eq 'rise::lib::tman::fmm' || caller =~ m/^rise::lib::tman::fmm\b/o); $__RISE_SELF__->{'fs'} }; use warnings;  fs = new rise::lib::fs::;
         # public var diff     = 2;

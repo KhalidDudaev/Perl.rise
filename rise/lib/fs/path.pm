@@ -1,5 +1,5 @@
 { package rise::lib::fs; use rise::core::object::namespace;   
-    { package rise::lib::fs::path; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1017044311"; sub VERSION {"2016.1017044311"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-cwd  public-function-toAbs  public-function-toRel  public-function-isAbs  public-function-isRel  public-function-path  public-function-filename  public-function-basename  public-function-ext}} 
+    { package rise::lib::fs::path; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1017055954"; sub VERSION {"2016.1017055954"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-cwd  public-function-toAbs  public-function-toRel  public-function-isAbs  public-function-isRel  public-function-path  public-function-filename  public-function-basename  public-function-ext}} 
 
         # public var slash          = '/';
 

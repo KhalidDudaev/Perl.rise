@@ -14,8 +14,8 @@ our $VERSION = '0.001';
 # $\ = "\n";
 
 #use dialect::Parents;
-use rise::lib::fs::fileWorker;
-use rise::lib::fs::pathWorker;
+use rise::lib::fs::file;
+use rise::lib::fs::path;
 use rise::grammar;
 use rise::syntax;
 # use rise::lib::txt;
@@ -91,8 +91,8 @@ sub __init {
 	#$parser						= new dialect::Parser ({ info => $conf->{info} });
     $conf->{VERSION}                    = $ver_set if $conf->{VERSION} eq 'auto';
 
-    $file						= new rise::lib::fs::fileWorker;
-    $path						= new rise::lib::fs::pathWorker;
+    $file						= new rise::lib::fs::file;
+    $path						= new rise::lib::fs::path;
 	$grammar					= new rise::grammar $conf;
 	$syntax						= new rise::syntax $conf;
 
