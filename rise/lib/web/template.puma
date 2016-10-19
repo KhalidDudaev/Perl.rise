@@ -1,0 +1,40 @@
+using rise.lib.fs.file;
+
+// using web::route;
+namespace rise.lib.web {
+    public class template {
+
+        var thtml;
+        var file                   = new rise.lib.fs.file;
+
+        public function compile (tname, params) {
+            // self.dmsg(tname);
+            var thtml           = self.file.read(tname);
+
+            thtml =~ s/ \[\[(\w+)\]\] / $params->{$1}||'' /gsxe;
+            // templ =~ s/(\<\/?\w+\>)/\'$1\'/gsx;
+            // thtml =~ s{\.\.\.}{\$self->tsay}gsx;
+            // thtml =~ s{\.\.\.\s+(.*?)\;}{\$self->tsay($1);}gsx;
+            thtml =~ s{\.\.\.}{\$self->thtml .= }gsx;
+
+            thtml =~ s{
+                \{\{(.*?)\}\}
+            }{
+                my $data = $1;
+                eval $self->tag($data);
+                die "TEMPLATE CODE ERROR\n".$@ if $@;
+                $self->thtml;
+            }gsxe;
+
+            return thtml;
+        }
+
+        function tag (str) {
+            # str =~ s{\>\s*\<}{\>\.\<}gsx;
+            str =~ s{(\<\/?\w+\>)}{\'$1\'}gsx;
+            // str =~ s{[^\'](\<\/?\w+\>)[^\']}{\'$1\'}gsx;
+            return str;
+        }
+
+    }
+}
