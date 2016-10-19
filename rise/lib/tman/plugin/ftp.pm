@@ -1,7 +1,7 @@
 use rise::lib::ftp;
 
 { package rise::lib::tman::plugin; use rise::core::object::namespace;   
-	{ package rise::lib::tman::plugin::ftp; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1017055954"; sub VERSION {"2016.1017055954"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-ftp}} 
+	{ package rise::lib::tman::plugin::ftp; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1018013856"; sub VERSION {"2016.1018013856"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-ftp}} 
 
 		{ package rise::lib::tman::plugin::ftp::ftp; use rise::core::object::function;  sub ftp {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $conf; no warnings; sub conf ():lvalue; *conf = sub ():lvalue { $conf }; use warnings;  ($self,$conf) = ($_[0],$_[1]); 
 			# if (self.src_name){

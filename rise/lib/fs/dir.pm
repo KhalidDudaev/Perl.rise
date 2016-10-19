@@ -3,7 +3,7 @@
 
     use rise::lib::fs::info;
 
-    { package rise::lib::fs::dir; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1017055954"; sub VERSION {"2016.1017055954"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{private-function-listhelper  public-function-list  public-function-listf  public-function-listd  private-function-filter  private-function-filterExtract  public-var-slash  private-var-info}} 
+    { package rise::lib::fs::dir; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1018013856"; sub VERSION {"2016.1018013856"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{private-function-listhelper  public-function-list  public-function-listf  public-function-listd  private-function-filter  private-function-filterExtract  public-var-slash  private-var-info}} 
 
          sub slash ():lvalue; no warnings; *__slash__ = sub ():lvalue {  my $self = shift; $self->{'slash'} }; *slash = sub ():lvalue {  $__RISE_SELF__->{'slash'} }; use warnings; 
          sub info ():lvalue; no warnings; *__info__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'info') unless (caller eq 'rise::lib::fs::dir' || caller =~ m/^rise::lib::fs::dir\b/o); my $self = shift; $self->{'info'} }; *info = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'info') unless (caller eq 'rise::lib::fs::dir' || caller =~ m/^rise::lib::fs::dir\b/o); $__RISE_SELF__->{'info'} }; use warnings;  info = new rise::lib::fs::info::;

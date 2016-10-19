@@ -1309,7 +1309,7 @@ sub _syntax_function_compile {
 		$fn_name		  = $name;
 		# $anon_code		  = 'return &'.$name.'; ' ;
         $anon_code		  = 'return '.$name.'($'.var('pkg_self').',@_); ';
-        $anon_code		  = 'return '.$name.'($self,@_); ' if $parent_type eq 'function';
+        $anon_code		  = 'return '.$name.'(__PACKAGE__, @_); ' if $parent_type eq 'function';
 		$anon_code_open   = 'sub { ';
 		$anon_code_close  = '}';
 		# $self_args		  = '';
@@ -1475,7 +1475,7 @@ sub _syntax_thread_compile {
 		$trd_name		  = $name;
         # $anon_code		  = 'return &'.$name.'; ' ;
         $anon_code		  = 'return '.$name.'($'.var('pkg_self').',@_); ';
-        $anon_code		  = 'return '.$name.'($self,@_); ' if $parent_type eq 'function';
+        $anon_code		  = 'return '.$name.'(__PACKAGE__, @_); ' if $parent_type eq 'function';
 		$anon_code_open   = 'sub { ';
 		$anon_code_close  = '}';
 		# $self_args		  = '';

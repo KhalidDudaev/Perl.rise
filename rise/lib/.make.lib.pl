@@ -18,6 +18,7 @@ use rise {
     # ']
     compile => [qw'
         web
+        web/template
     ']
 };
 # MakeBot
