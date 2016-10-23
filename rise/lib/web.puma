@@ -1,4 +1,4 @@
-
+// csdfsdf
 using Plack::Util;
 using Plack::Loader;
 using CGI::Carp qw/fatalsToBrowser/;
@@ -69,7 +69,7 @@ namespace rise.lib {
 
         export:simple function start {
             // self.dmsg(self);
-            var app         = function (env, args) {
+            var psgi_app         = function (env, args) {
                 self.header.{'status'}         = 404;
                 self.header.{'type'}         = 'text/html';
                 self.html           = 'ERROR 404: Not Found';
@@ -86,7 +86,7 @@ namespace rise.lib {
                 return [self.header.{'status'}, ['Content-Type'=> self.header.{'type'} ], [self.html]];
             };
 
-            return Plack::Loader.auto.run(app);
+            return Plack::Loader.auto.run(psgi_app);
         }
 
         export:simple function set_header (data) {

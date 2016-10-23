@@ -4,11 +4,13 @@
 
     use FileHandle;
     use rise::lib::fs::path;
+    use rise::lib::fs::info;
 
-    { package rise::lib::fs::file; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1018013856"; sub VERSION {"2016.1018013856"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{private-function-cmd_sel  public-function-file  public-function-read  public-function-write  public-function-append  public-function-copy  public-function-move  public-function-delete  private-var-fh  private-var-path  private-var-fhelper  public-var-binmod}} 
+    { package rise::lib::fs::file; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1023064937"; sub VERSION {"2016.1023064937"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{private-function-cmd_sel  public-function-file  public-function-read  public-function-write  public-function-append  public-function-copy  public-function-move  public-function-delete  private-var-fh  private-var-path  private-var-info  private-var-fhelper  public-var-binmod}} 
 
          sub fh ():lvalue; no warnings; *__fh__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'fh') unless (caller eq 'rise::lib::fs::file' || caller =~ m/^rise::lib::fs::file\b/o); my $self = shift; $self->{'fh'} }; *fh = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'fh') unless (caller eq 'rise::lib::fs::file' || caller =~ m/^rise::lib::fs::file\b/o); $__RISE_SELF__->{'fh'} }; use warnings;  fh = new FileHandle::;
          sub path ():lvalue; no warnings; *__path__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'path') unless (caller eq 'rise::lib::fs::file' || caller =~ m/^rise::lib::fs::file\b/o); my $self = shift; $self->{'path'} }; *path = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'path') unless (caller eq 'rise::lib::fs::file' || caller =~ m/^rise::lib::fs::file\b/o); $__RISE_SELF__->{'path'} }; use warnings;  path = new rise::lib::fs::path::;
+         sub info ():lvalue; no warnings; *__info__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'info') unless (caller eq 'rise::lib::fs::file' || caller =~ m/^rise::lib::fs::file\b/o); my $self = shift; $self->{'info'} }; *info = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'info') unless (caller eq 'rise::lib::fs::file' || caller =~ m/^rise::lib::fs::file\b/o); $__RISE_SELF__->{'info'} }; use warnings;  info = new rise::lib::fs::info::;
          sub fhelper ():lvalue; no warnings; *__fhelper__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'fhelper') unless (caller eq 'rise::lib::fs::file' || caller =~ m/^rise::lib::fs::file\b/o); my $self = shift; $self->{'fhelper'} }; *fhelper = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'fhelper') unless (caller eq 'rise::lib::fs::file' || caller =~ m/^rise::lib::fs::file\b/o); $__RISE_SELF__->{'fhelper'} }; use warnings;  fhelper = new rise::lib::fs::fileHelper::;
 
          sub binmod ():lvalue; no warnings; *__binmod__ = sub ():lvalue {  my $self = shift; $self->{'binmod'} }; *binmod = sub ():lvalue {  $__RISE_SELF__->{'binmod'} }; use warnings;  binmod = 0;
@@ -26,9 +28,15 @@
             my $res; no warnings; sub res ():lvalue; *res = sub ():lvalue { $res }; use warnings; 
             $name = $self->cmd_sel($cmd) . $self->path->toAbs($name);
         	$data = __RISE_JOIN('',<$data>) if ref $data eq 'Fh';
+            # say '>>>> ' ~ name;
 
             # self.fh.open(name) || die "cannot open file $@";
-            $self->fh->open($name);
+            # if(self.path.filename(name))){
+            #
+            # }
+            __PACKAGE__->__RISE_ERR('ISFILE', $self->path->filename($name)) if $self->info->isFile($name);
+
+            $self->fh->open($name) || __PACKAGE__->__RISE_ERR('ISFILE', $self->path->filename($name));
             $self->fh->binmod() if $self->binmod;
 
             if ($cmd eq 'read'){
@@ -67,7 +75,7 @@
 
     }
 
-    { package rise::lib::fs::fileHelper; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1018013856"; sub VERSION {"2016.1018013856"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-fcopy  public-function-fmove}} 
+    { package rise::lib::fs::fileHelper; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1023064937"; sub VERSION {"2016.1023064937"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-fcopy  public-function-fmove}} 
         use File::Copy;
 
         { package rise::lib::fs::fileHelper::fcopy; use rise::core::object::function;  sub fcopy {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $name1; no warnings; sub name1 ():lvalue; *name1 = sub ():lvalue { $name1 }; use warnings; my $name2; no warnings; sub name2 ():lvalue; *name2 = sub ():lvalue { $name2 }; use warnings;  ($self,$name1,$name2) = ($_[0],$_[1],$_[2]);

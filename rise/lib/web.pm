@@ -1,4 +1,4 @@
-
+# csdfsdf
 use Plack::Util;
 use Plack::Loader;
 use CGI::Carp qw/fatalsToBrowser/;
@@ -8,7 +8,7 @@ use rise::lib::web::template;
 # using web::route;
 { package rise::lib; use rise::core::object::namespace;   
 
-    { package rise::lib::web; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1019014032"; sub VERSION {"2016.1019014032"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{export:simple-function-wsay  export:simple-function-out  export:simple-function-req  export:simple-function-template  export:simple-function-tsay  export:simple-function-tout  export:simple-function-query  export:simple-function-start  export:simple-function-set_header  export:simple-function-route  export:simple-function-get  export:simple-function-dmsg  private-function-route_eq  private-var-file  private-var-tmpl  private-var-data  export:simple-var-env  public-var-routes  private-var-out  private-var-_qobj  private-var-_tout  private-var-header  private-var-html  private-var-args  private-var-apptrue}} sub __EXPORT__ { {":all"=>[qw/wsay out req template tsay tout query start set_header route get dmsg env/],":function"=>[qw/wsay out req template tsay tout query start set_header route get dmsg/],":simple"=>[qw/wsay out req template tsay tout query start set_header route get dmsg env/],":var"=>[qw/env/],"dmsg"=>[qw/dmsg/],"env"=>[qw/env/],"get"=>[qw/get/],"out"=>[qw/out/],"query"=>[qw/query/],"req"=>[qw/req/],"route"=>[qw/route/],"set_header"=>[qw/set_header/],"start"=>[qw/start/],"template"=>[qw/template/],"tout"=>[qw/tout/],"tsay"=>[qw/tsay/],"wsay"=>[qw/wsay/],} } 
+    { package rise::lib::web; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1023064937"; sub VERSION {"2016.1023064937"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{export:simple-function-wsay  export:simple-function-out  export:simple-function-req  export:simple-function-template  export:simple-function-tsay  export:simple-function-tout  export:simple-function-query  export:simple-function-start  export:simple-function-set_header  export:simple-function-route  export:simple-function-get  export:simple-function-dmsg  private-function-route_eq  private-var-file  private-var-tmpl  private-var-data  export:simple-var-env  public-var-routes  private-var-out  private-var-_qobj  private-var-_tout  private-var-header  private-var-html  private-var-args  private-var-apptrue}} sub __EXPORT__ { {":all"=>[qw/wsay out req template tsay tout query start set_header route get dmsg env/],":function"=>[qw/wsay out req template tsay tout query start set_header route get dmsg/],":simple"=>[qw/wsay out req template tsay tout query start set_header route get dmsg env/],":var"=>[qw/env/],"dmsg"=>[qw/dmsg/],"env"=>[qw/env/],"get"=>[qw/get/],"out"=>[qw/out/],"query"=>[qw/query/],"req"=>[qw/req/],"route"=>[qw/route/],"set_header"=>[qw/set_header/],"start"=>[qw/start/],"template"=>[qw/template/],"tout"=>[qw/tout/],"tsay"=>[qw/tsay/],"wsay"=>[qw/wsay/],} } 
 
          sub file ():lvalue; no warnings; *__file__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'file') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); my $self = shift; $self->{'file'} }; *file = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'file') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); $__RISE_SELF__->{'file'} }; use warnings;  file = new rise::lib::fs::file::;
          sub tmpl ():lvalue; no warnings; *__tmpl__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'tmpl') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); my $self = shift; $self->{'tmpl'} }; *tmpl = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'tmpl') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); $__RISE_SELF__->{'tmpl'} }; use warnings;  tmpl = new rise::lib::web::template::;
@@ -69,8 +69,7 @@ use rise::lib::web::template;
 
         { package rise::lib::web::start; use rise::core::object::function;  sub start {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings;  ($self) = ($_[0]); 
             # self.dmsg(self);
-            my $apptrue; no warnings; sub apptrue ():lvalue; *apptrue = sub ():lvalue { $apptrue }; use warnings;  $apptrue = 0;
-            my $app; no warnings; sub app ():lvalue; *app = sub ():lvalue { $app }; use warnings;  $app = sub { return ACODE00001(__PACKAGE__, @_); { package rise::lib::web::start::ACODE00001; use rise::core::object::function; sub ACODE00001 { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'ACODE00001') unless (caller eq 'rise::lib::web::start' || caller =~ m/^rise::lib::web::start\b/o); my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $env; no warnings; sub env ():lvalue; *env = sub ():lvalue { $env }; use warnings; my $args; no warnings; sub args ():lvalue; *args = sub ():lvalue { $args }; use warnings;  ($self,$env,$args) = ($_[0],$_[1],$_[2]);
+            my $psgi_app; no warnings; sub psgi_app ():lvalue; *psgi_app = sub ():lvalue { $psgi_app }; use warnings;  $psgi_app = sub { return ACODE00001(__PACKAGE__, @_); { package rise::lib::web::start::ACODE00001; use rise::core::object::function; sub ACODE00001 { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'ACODE00001') unless (caller eq 'rise::lib::web::start' || caller =~ m/^rise::lib::web::start\b/o); my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $env; no warnings; sub env ():lvalue; *env = sub ():lvalue { $env }; use warnings; my $args; no warnings; sub args ():lvalue; *args = sub ():lvalue { $args }; use warnings;  ($self,$env,$args) = ($_[0],$_[1],$_[2]);
                 $self->header->{'status'}         = 404;
                 $self->header->{'type'}         = 'text/html';
                 $self->html           = 'ERROR 404: Not Found';
@@ -87,7 +86,7 @@ use rise::lib::web::template;
                 return [$self->header->{'status'}, ['Content-Type'=> $self->header->{'type'} ], [$self->html]];
             }}};
 
-            return Plack::Loader->auto->run($app);
+            return Plack::Loader->auto->run($psgi_app);
         }}
 
         { package rise::lib::web::set_header; use rise::core::object::function;  sub set_header {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $data; no warnings; sub data ():lvalue; *data = sub ():lvalue { $data }; use warnings;  ($self,$data) = ($_[0],$_[1]); 

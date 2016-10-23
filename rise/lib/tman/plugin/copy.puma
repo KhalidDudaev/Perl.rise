@@ -1,34 +1,30 @@
+//ksdfkjs
 namespace rise.lib.tman.plugin {
 	public class copy {
-        public function copy (path) {
+        public function plugin (path) {
 
-
-
-            if (self.dst_name) {
-                // say ">>> " ~ path;
-                // self.dst_path		= path;
-                //
-                var dpath			= path ~ self.referPath();
-                var err				= '';
-                //
-                if(!self.fs.info.isDir(dpath)){
-                    mkdir dpath or err = "ERROR: Cant make dir $dpath";
-                    if (err) {
-                        say err;
-                        self.sndERR();
-                        return;
-                    }
-                    // say "mkdir $dpath";
+            var dpath			= path ~ self.referPath();
+            var err				= '';
+            //
+            // say ">>> copy dir " ~ dpath;
+            if(!self.fs.info.isDir(dpath)){
+                mkdir dpath or err = "ERROR: Cant make dir $dpath";
+                if (err) {
+                    say err;
+                    self.sndERR();
+                    return;
                 }
-                //
-                // self.code_res		= self.code_src;
-                // self.dst_ext		= self.fs.path.ext(self.src_name);
-                var dst_name		= dpath ~ self.basename ~ '.' ~ self.dst_ext;
-                // self.fs.file.write(dst_name, self.code_res) if self.code_res;
-                self.fs.file.copy(self.dst_name, dst_name);
-
-                self.sndOK();
+                // say "mkdir $dpath";
             }
+
+    		self.filename		= self.fs.path.filename(self.src_name);
+            self.dst_file		= self.filename;
+            self.dst_name		= dpath ~ self.filename;
+            // self.fs.file.write(dst_name, self.code_res) if self.code_res;
+            self.fs.file.copy(self.src_name, self.dst_name);
+
+            self.sndOK();
+            // }
             // self.snd.play(self.snd_OK);
             return self;
         }

@@ -91,10 +91,10 @@ sub __init {
 	#$parser						= new dialect::Parser ({ info => $conf->{info} });
     $conf->{VERSION}                    = $ver_set if $conf->{VERSION} eq 'auto';
 
-    $file						= new rise::lib::fs::file;
-    $path						= new rise::lib::fs::path;
-	$grammar					= new rise::grammar $conf;
-	$syntax						= new rise::syntax $conf;
+    $file						= new rise::lib::fs::file::;
+    $path						= new rise::lib::fs::path::;
+	$grammar					= new rise::grammar:: $conf;
+	$syntax						= new rise::syntax:: $conf;
 
 	# print ">>>>>>>>>>>>>> - ".dump($grammar)."\n";
 
@@ -104,6 +104,12 @@ sub __init {
 	#$parser						= $syntax->parser;
 	#$modules 					= join ( " ", $inst->modules);
 }
+
+# sub set_conf {
+#     my($this, $newconf) 	    = __class_ref(@_);
+#     %$conf						= ( %$conf, %$newconf );
+#     __init();
+# }
 
 sub __confs_load {
     (my $this, @_) 				= __class_ref(@_);
@@ -171,13 +177,13 @@ sub compile_list { #print "#### COMPILE ####\n";
 
 	foreach (@app_stack) {
 		# print $_;
+        # print '>>>>>>>>>' . $_ . "<<<<\n";
 		if (__truefile($_)){
             $fpath                  = $path->path($_);
             $basename               = $path->basename($_);
             $fext                   = $path->ext($_) || $this->{source}{fext};
 			$fname_source			= $fpath . $basename . '.' . $fext;
 			$fname_dest				= $fpath . $basename . '.' . $this->{dest}{fext};
-
 			$assembly = compile($fname_source, $fname_dest);
 			$info = $assembly->{info};
 		}
@@ -198,11 +204,15 @@ sub compile { #print "#### COMPILE ####\n";
 	my $code_source;
 	my $info                    = '';
 
+    # print '>>>>>>>>> ' . $fname_source . "\n";
 	$code_source				= __file('read', $fname_source);
+    # $code_source				= $file->read($fname_source);
+
+
 
 	if ($code_source) {
 		# $grammar->clear;
-        $grammar->{FNAME}      = $fname_source;
+        $grammar->{FNAME}       = $fname_source;
 		&__syntax->{RULE}		= $grammar->compile_RBNF(&__syntax->{RULE});
 		($code_dest, $info)		= $grammar->parse($code_source, &__syntax);
 		$code_dest .= "\n1;";

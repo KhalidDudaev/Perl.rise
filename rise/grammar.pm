@@ -450,6 +450,7 @@ sub __action {
 	my $rule_list	= rule_list();
 
 	#print ">>>>>>>>>>>>>>>>>>> $action - ".dump($confs)."\n" if $action;
+    $self->{NOPARSE} = 0;
 
 	__save_rule_last_var();
 
@@ -459,13 +460,15 @@ sub __action {
 	#};
 	#die __error('"the action \"'.$action.'\" not correct\n $@ \n"') if $@;
 
-
-	$res =~ s/\.\.\./$sps++; grammar->{RULE_LAST_VAR}{SPS}[$sps] || ''/gsxe;
-	$res =~ s/\<kw\_(\w+)\>/grammar->{KEYWORD}{$1}/gsxe;
-	$res =~ s/\<tk\_(\w+)\>/grammar->{RULE}{$1}/gsxe;
-	$res =~ s/\<($rule_list)\>/grammar->{RULE_LAST_VAR}{$1} || ''/gsxe;
-	$res =~ s/\<sps(\d+)\>/grammar->{RULE_LAST_VAR}{SPS}[$1] || ''/gsxe;
-	$res =~ s/\<spsall\>/grammar->{RULE_LAST_VAR}{SPSALL} || ''/gsxe;
+    if (!$self->{NOPARSE}) {
+    	$res =~ s/\.\.\./$sps++; grammar->{RULE_LAST_VAR}{SPS}[$sps] || ''/gsxe;
+    	$res =~ s/\<kw\_(\w+)\>/grammar->{KEYWORD}{$1}/gsxe;
+    	$res =~ s/\<tk\_(\w+)\>/grammar->{RULE}{$1}/gsxe;
+    	$res =~ s/\<($rule_list)\>/grammar->{RULE_LAST_VAR}{$1} || ''/gsxe;
+    	$res =~ s/\<sps(\d+)\>/grammar->{RULE_LAST_VAR}{SPS}[$1] || ''/gsxe;
+    	$res =~ s/\<spsall\>/grammar->{RULE_LAST_VAR}{SPSALL} || ''/gsxe;
+    }
+    $self->{NOPARSE} = 0;
 
 	return $res;
 }

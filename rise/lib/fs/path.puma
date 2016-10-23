@@ -1,10 +1,15 @@
 namespace rise.lib.fs {
     public class path {
+        using Cwd;
 
         // public var slash          = '/';
 
         public function cwd {
-            var (cwdir) = toList $0 =~ m{^(.*?)[^\\\/]*$}sx;
+            var cwdir       = Cwd::abs_path();
+            var (slash)     = cwdir =~ m{(\\|\/)}sx;
+            cwdir ~= slash;
+            // (cwdir) = toList cwdir =~ m{^(.*?)[^\\\/]*$}sx;
+            // say '>>>' ~ cwdir ~ '<<<';
             return cwdir;
         }
 

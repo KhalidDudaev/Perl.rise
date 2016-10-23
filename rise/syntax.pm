@@ -950,6 +950,8 @@ sub _syntax_excluding {
 }
 
 sub _syntax_including {
+    my ($self, $rule_name, $confs)			= @_;
+    $self->{NOPARSE}    = 1;
 	my $including		= &including;
 	my $res				= 'NOMATH';
 	$including			=~ s/%%%TEXT_(\d+)%%%/$1/gsx;
@@ -1265,7 +1267,7 @@ sub _syntax_function_call {
 
     $members_list = join '\b|\b', $members_list =~ m/function-(\w+)/gsx;
 
-	if ($members_list && $name =~ m/\b(?:$members_list)\b/sx) {
+	if ($members_list && $name =~ m/^\b(?:$members_list)\b/sx) {
 		$this			= '$'.var('pkg_self').',';
 		# print ">>> $parent_class->$name | fnlist - *$members_list* \n";
 	}

@@ -14,5 +14,6 @@
 	end				=> 0,
 	accmod	        => 'private',
 	debug			=> 1,
-	info			=> 1
+	info			=> 1,
+    NOPARSE         => 0
 }

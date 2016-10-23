@@ -1,10 +1,15 @@
 { package rise::lib::fs; use rise::core::object::namespace;   
-    { package rise::lib::fs::path; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1018013856"; sub VERSION {"2016.1018013856"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-cwd  public-function-toAbs  public-function-toRel  public-function-isAbs  public-function-isRel  public-function-path  public-function-filename  public-function-basename  public-function-ext}} 
+    { package rise::lib::fs::path; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1023064937"; sub VERSION {"2016.1023064937"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-cwd  public-function-toAbs  public-function-toRel  public-function-isAbs  public-function-isRel  public-function-path  public-function-filename  public-function-basename  public-function-ext}} 
+        use Cwd;
 
         # public var slash          = '/';
 
         { package rise::lib::fs::path::cwd; use rise::core::object::function;  sub cwd {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings;  ($self) = ($_[0]); 
-             my $cwdir; no warnings; sub cwdir ():lvalue; *cwdir = sub ():lvalue { $cwdir }; use warnings;  ($cwdir) = toList __RISE_MATCH $0 =~ m{^(.*?)[^\\\/]*$}sx;
+            my $cwdir; no warnings; sub cwdir ():lvalue; *cwdir = sub ():lvalue { $cwdir }; use warnings;  $cwdir = Cwd::abs_path();
+             my $slash; no warnings; sub slash ():lvalue; *slash = sub ():lvalue { $slash }; use warnings;  ($slash) = __RISE_MATCH $cwdir =~ m{(\\|\/)}sx;
+            $cwdir .= $slash;
+            # (cwdir) = toList cwdir =~ m{^(.*?)[^\\\/]*$}sx;
+            # say '>>>' ~ cwdir ~ '<<<';
             return $cwdir;
         }}
 

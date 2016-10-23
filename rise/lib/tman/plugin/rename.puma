@@ -1,6 +1,6 @@
 namespace rise.lib.tman.plugin {
 	public class rename {
-		public function rename (nname) {
+		public function plugin (nname) {
 			self.basename	= self.fs.path.basename(nname);
 			self.dst_ext	= self.fs.path.ext(nname);
 			return self;

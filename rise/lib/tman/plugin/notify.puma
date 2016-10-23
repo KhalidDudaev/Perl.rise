@@ -1,6 +1,6 @@
 namespace rise.lib.tman.plugin {
 	public class notify {
-		public function notify (msg) {
+		public function plugin (msg) {
 			say msg;
 			return self;
 		}

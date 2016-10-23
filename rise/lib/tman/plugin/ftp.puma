@@ -3,7 +3,7 @@ using rise.lib.ftp;
 namespace rise.lib.tman.plugin {
 	public class ftp {
 
-		public function ftp (conf) {
+		public function plugin (conf) {
 			// if (self.src_name){
 				var ftppath			= conf.{path} ~ '/' ~ self.referPath();
 				var ftppath_full	= ftppath ~ self.filename;

@@ -5,7 +5,7 @@ use rise::lib::txt;
 
 { package rise::lib; use rise::core::object::namespace;   
 
-    { package rise::lib::tman; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1018013856"; sub VERSION {"2016.1018013856"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{private-function-sndOK  private-function-sndERR  public-function-src  public-function-dst  private-function-referPath  export:simple-function-plugin  export:simple-function-tman  export:simple-function-start  export:simple-function-task  public-function-watch  private-thread-watch_go  private-var-fs  private-var-fmon  private-var-txt  private-var-snd  private-var-snd_OK  private-var-snd_ERR  private-var-tlast  private-var-tcurrent  private-var-tcode  private-var-tstack  private-var-wcode  private-var-wstack  private-var-wstart  private-var-code_src  private-var-code_res  private-var-filename  private-var-basename  private-var-src_path  private-var-src_name  private-var-dst_name  private-var-dst_ext  public-var-ref_path  public-var-dst_file}} sub __EXPORT__ { {":all"=>[qw/plugin tman start task/],":function"=>[qw/plugin tman start task/],":simple"=>[qw/plugin tman start task/],"plugin"=>[qw/plugin/],"start"=>[qw/start/],"task"=>[qw/task/],"tman"=>[qw/tman/],} } 
+    { package rise::lib::tman; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1023081631"; sub VERSION {"2016.1023081631"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{private-function-sndOK  private-function-sndERR  public-function-src  public-function-dst  private-function-referPath  export:simple-function-plugin  export:simple-function-tman  export:simple-function-task  public-function-watch  export:simple-function-start  private-thread-watch_go  private-var-fs  private-var-fmon  private-var-txt  private-var-snd  private-var-snd_OK  private-var-snd_ERR  private-var-tlast  private-var-tcurrent  private-var-tcode  private-var-tstack  private-var-wcode  private-var-wstack  private-var-wstart  private-var-code_src  private-var-code_res  private-var-filename  private-var-basename  private-var-src_path  private-var-src_name  private-var-dst_name  private-var-dst_ext  public-var-ref_path  public-var-dst_file}} sub __EXPORT__ { {":all"=>[qw/plugin tman task start/],":function"=>[qw/plugin tman task start/],":simple"=>[qw/plugin tman task start/],"plugin"=>[qw/plugin/],"start"=>[qw/start/],"task"=>[qw/task/],"tman"=>[qw/tman/],} } 
 
          sub fs ():lvalue; no warnings; *__fs__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'fs') unless (caller eq 'rise::lib::tman' || caller =~ m/^rise::lib::tman\b/o); my $self = shift; $self->{'fs'} }; *fs = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'fs') unless (caller eq 'rise::lib::tman' || caller =~ m/^rise::lib::tman\b/o); $__RISE_SELF__->{'fs'} }; use warnings;  fs = new rise::lib::fs::;
 		 sub fmon ():lvalue; no warnings; *__fmon__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'fmon') unless (caller eq 'rise::lib::tman' || caller =~ m/^rise::lib::tman\b/o); my $self = shift; $self->{'fmon'} }; *fmon = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'fmon') unless (caller eq 'rise::lib::tman' || caller =~ m/^rise::lib::tman\b/o); $__RISE_SELF__->{'fmon'} }; use warnings;  fmon = new rise::lib::tman::fmm::;
@@ -33,8 +33,8 @@ use rise::lib::txt;
 		# var dst_path;
 		 sub dst_name ():lvalue; no warnings; *__dst_name__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'dst_name') unless (caller eq 'rise::lib::tman' || caller =~ m/^rise::lib::tman\b/o); my $self = shift; $self->{'dst_name'} }; *dst_name = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'dst_name') unless (caller eq 'rise::lib::tman' || caller =~ m/^rise::lib::tman\b/o); $__RISE_SELF__->{'dst_name'} }; use warnings; 
 		 sub dst_ext ():lvalue; no warnings; *__dst_ext__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'dst_ext') unless (caller eq 'rise::lib::tman' || caller =~ m/^rise::lib::tman\b/o); my $self = shift; $self->{'dst_ext'} }; *dst_ext = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'dst_ext') unless (caller eq 'rise::lib::tman' || caller =~ m/^rise::lib::tman\b/o); $__RISE_SELF__->{'dst_ext'} }; use warnings;  dst_ext = 'tman';
-		 sub ref_path ():lvalue; no warnings; *__ref_path__ = sub ():lvalue {  my $self = shift; $self->{'ref_path'} }; *ref_path = sub ():lvalue {  $__RISE_SELF__->{'ref_path'} }; use warnings; 
-		 sub dst_file ():lvalue; no warnings; *__dst_file__ = sub ():lvalue {  my $self = shift; $self->{'dst_file'} }; *dst_file = sub ():lvalue {  $__RISE_SELF__->{'dst_file'} }; use warnings; 
+		 sub ref_path ():lvalue; no warnings; *__ref_path__ = sub ():lvalue {  my $self = shift; $self->{'ref_path'} }; *ref_path = sub ():lvalue {  $__RISE_SELF__->{'ref_path'} }; use warnings;  ref_path = 'NO PATH';
+		 sub dst_file ():lvalue; no warnings; *__dst_file__ = sub ():lvalue {  my $self = shift; $self->{'dst_file'} }; *dst_file = sub ():lvalue {  $__RISE_SELF__->{'dst_file'} }; use warnings;  dst_file = 'NO DESTINATION';
 
 		{ package rise::lib::tman::sndOK; use rise::core::object::function; sub sndOK { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'sndOK') unless (caller eq 'rise::lib::tman' || caller =~ m/^rise::lib::tman\b/o); my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings;  ($self) = ($_[0]); 
 			# var sound					= new Audio.Beep;
@@ -67,8 +67,8 @@ use rise::lib::txt;
 			# self.src_name			= self.monitor(path,1);
 			$self->src_name			= $self->fmon->monitor($path,1);
 
-			# say ">>> " ~ self.src_name;
-			# say ">>> " ~ self.src_path;
+			# say ">>> name " ~ self.src_name if self.src_name;
+			# say ">>> path " ~ self.src_path;
 
 			if ($self->src_name) {
 				# self.lsrc_name			= self.src_name if self.src_name;
@@ -90,10 +90,10 @@ use rise::lib::txt;
 				my $dpath; no warnings; sub dpath ():lvalue; *dpath = sub ():lvalue { $dpath }; use warnings;  $dpath = $path . $self->referPath();
 				my $err; no warnings; sub err ():lvalue; *err = sub ():lvalue { $err }; use warnings;  $err = '';
 
-				# say ">>> " ~ dpath;
 
 				if(!$self->fs->info->isDir($dpath)){
-					mkdir $dpath or $err = "ERROR: Cant make dir $dpath";
+                    # say '>>> dest dir ' ~ dpath;
+					mkdir $dpath or $err = "ERROR: Cant make dir " . $dpath;
 					if ($err) {
 						say $err;
 						$self->sndERR();
@@ -123,37 +123,19 @@ use rise::lib::txt;
 		{ package rise::lib::tman::plugin; use rise::core::object::function;  sub plugin {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $name; no warnings; sub name ():lvalue; *name = sub ():lvalue { $name }; use warnings;  ($self,$name) = ($_[0],$_[1]); 
 			no strict;
 			require 'rise/lib/tman/plugin/' . $name . '.pm';
-			*{"rise::lib::tman::$name"} = *{"rise::lib::tman::plugin::$name::$name"};
+            # say '>>> plugin >>> ' ~ name;
+
+
+            *{'rise::lib::tman::' . $name} = \&{'rise::lib::tman::plugin::' . $name . '::plugin'};
+
+            # var p = ('rise::lib::tman::plugin::' ~ name)->new;
+            # *{"rise::lib::tman::$name"} = sub { shift \@_; p.plugin(@_) };
 		}}
 
 		{ package rise::lib::tman::tman; use rise::core::object::function;  sub tman {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings;  ($self) = ($_[0]); 
             # say "tman OK";
 			return $self;
 		}}
-
-        { package rise::lib::tman::start; use rise::core::object::function;  sub start {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $tname; no warnings; sub tname ():lvalue; *tname = sub ():lvalue { $tname }; use warnings;  ($self,$tname) = ($_[0],$_[1]); 
-			$tname ||= 'default';
-			say ' ';
-			say $self->txt->line ({ title => 'tman START' });
-
-			{ my $task; no warnings; sub task ():lvalue; *task = sub ():lvalue { $task }; use warnings;  foreach (@ {($self->tstack->{$tname})}) { $task = $_;
-				say $self->txt->line ({ title => 'TASK: ' . $task, char => '-' });
-				$self->tcurrent		= $task;
-				#self.init();
-				$self->tcode->{$task}();
-				# if (self.wstart) {
-					{ my $wath; no warnings; sub wath ():lvalue; *wath = sub ():lvalue { $wath }; use warnings;  foreach (@ {($self->wstack->{$task})}) { $wath = $_;
-						{ my $wcode; no warnings; sub wcode ():lvalue; *wcode = sub ():lvalue { $wcode }; use warnings;  foreach (@ {($self->wcode->{$task})}) { $wcode = $_;
-							# say '### WATCH ' ~ wath;
-							$wcode->join if $wcode;
-						}}
-					}}
-				# }
-			}}
-			$self->wstart = 0;
-			say $self->txt->line ({ title => 'tman END' });
-			say ' ';
-        }}
 
         { package rise::lib::tman::task; use rise::core::object::function;  sub task {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $taskName; no warnings; sub taskName ():lvalue; *taskName = sub ():lvalue { $taskName }; use warnings; my $data; no warnings; sub data ():lvalue; *data = sub ():lvalue { $data }; use warnings;  ($self,$taskName,$data) = ($_[0],$_[1],$_[2]); 
 			$self->tlast		= $taskName;
@@ -168,17 +150,18 @@ use rise::lib::txt;
         { package rise::lib::tman::watch; use rise::core::object::function;  sub watch {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $path; no warnings; sub path ():lvalue; *path = sub ():lvalue { $path }; use warnings; my $data; no warnings; sub data ():lvalue; *data = sub ():lvalue { $data }; use warnings;  ($self,$path,$data) = ($_[0],$_[1],$_[2]); 
 			$self->wstart = 1;
 			# say '###>> ' ~ dump data;
-			$self->wcode->{$self->tcurrent}		= [];
-			$self->wstack->{$self->tcurrent}	= [];
+			# self.wcode.{self.tcurrent}	= [];
+			$self->wstack->{$self->tcurrent}	= [] if ref $self->wstack->{$self->tcurrent} ne 'ARRAY';
 			my $wc; no warnings; sub wc ():lvalue; *wc = sub ():lvalue { $wc }; use warnings;  $wc = [];
 
 			{ my $tname; no warnings; sub tname ():lvalue; *tname = sub ():lvalue { $tname }; use warnings;  foreach (@ {($data)}) { $tname = $_;
-				__RISE_PUSH $wc, $self->watch_go($path, $self->tcode->{$tname});
+                # say '### WATCH ' ~ tname;
+				__RISE_PUSH $wc, $self->watch_go($tname, $path, $self->tcode->{$tname});
 			}}
 
 			if (ref $data eq 'CODE') {
 				# say '>>> ' ~ self.tcurrent;
-				__RISE_PUSH $wc, $self->watch_go($path, $data);
+				__RISE_PUSH $wc, $self->watch_go($self->tcurrent, $path, $data);
 				$data = [$self->tcurrent];
 			}
 
@@ -188,19 +171,51 @@ use rise::lib::txt;
 			return $self;
         }}
 
+        { package rise::lib::tman::start; use rise::core::object::function;  sub start {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $tname; no warnings; sub tname ():lvalue; *tname = sub ():lvalue { $tname }; use warnings;  ($self,$tname) = ($_[0],$_[1]); 
+			$tname ||= 'default';
+			say ' ';
+			# say self.txt.line ({ title => 'tman START' });
+			say $self->txt->box (' v' . $self->VERSION . "\n" .
+                ' task lists: ' . dump (__RISE_KEYS $self->tstack) . "\n" .
+                ' start tasks... ', 'TMAN Simple Task Manager Lib');
+
+			{ my $task; no warnings; sub task ():lvalue; *task = sub ():lvalue { $task }; use warnings;  foreach (@ {($self->tstack->{$tname})}) { $task = $_;
+				say $self->txt->line ({ title => 'TASK: ' . $task, char => '-' });
+				$self->tcurrent		= $task;
+				#self.init();
+				$self->tcode->{$task}();
+				if ($self->wstart) {
+					{ my $wath; no warnings; sub wath ():lvalue; *wath = sub ():lvalue { $wath }; use warnings;  foreach (@ {($self->wstack->{$task})}) { $wath = $_;
+                        # say '### WATCH ' ~ wath;
+						{ my $wcode; no warnings; sub wcode ():lvalue; *wcode = sub ():lvalue { $wcode }; use warnings;  foreach (@ {($self->wcode->{$task})}) { $wcode = $_;
+							# wcode.join if wcode;
+							$wcode->join;
+							# wcode.() if wcode;
+						}}
+					}}
+				}
+			}}
+			$self->wstart = 0;
+			say $self->txt->line ({ title => 'tman END' });
+			say ' ';
+        }}
+
 		# function action_reg (aname, code) {
 		# 	self.tcode.{aname} = code;
 		# }
 
-		{ package rise::lib::tman::watch_go; use rise::core::object::thread; sub watch_go  { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'watch_go') unless (caller eq 'rise::lib::tman' || caller =~ m/^rise::lib::tman\b/o); my $thr; $thr = threads->create(sub{my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $path; no warnings; sub path ():lvalue; *path = sub ():lvalue { $path }; use warnings; my $code; no warnings; sub code ():lvalue; *code = sub ():lvalue { $code }; use warnings;  ($self,$path,$code) = ($_[0],$_[1],$_[2]); 
+		{ package rise::lib::tman::watch_go; use rise::core::object::thread; sub watch_go  { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'watch_go') unless (caller eq 'rise::lib::tman' || caller =~ m/^rise::lib::tman\b/o); my $thr; $thr = threads->create(sub{my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $tname; no warnings; sub tname ():lvalue; *tname = sub ():lvalue { $tname }; use warnings; my $path; no warnings; sub path ():lvalue; *path = sub ():lvalue { $path }; use warnings; my $code; no warnings; sub code ():lvalue; *code = sub ():lvalue { $code }; use warnings;  ($self,$tname,$path,$code) = ($_[0],$_[1],$_[2],$_[3]); 
+		# function watch_go (path, code) {
 			# say '### PATH: ' ~ path ~ ' | DATA: ' ~ dump data;
-			while(1){
+            # say '### WATCH ' ~ tname;
+			while( true ){
 				$self->src($path);
+                # self.src_name			= self.fmon.monitor(path,1);
 				if ($self->src_name){
 					# say self.txt.line ({ title => 'WATCH', char => '~' });
 					$code->();
 				}
-				# sleep 1;
+                sleep 1;
 			}
 		}, @_); { no strict; no warnings; @{rise::lib::tman::THREAD::watch_go}[$thr->tid] = $thr; } return $thr; }}
 

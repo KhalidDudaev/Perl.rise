@@ -170,8 +170,8 @@ sub __RISE_ERRWARN {
         # print "child:[$child] file:[$file] line:[$line] func:[$func]\n";
 	}
 
-    # $err_msg_add = eval ('"\n-> line $line in $file"') . $err_msg_add;
-    # ($child, $file, $line, $func) = (caller($level->[1] + $level_count));# if $child eq 'main';
+    $err_msg_add = eval ('"\n-> line $line in $file"') . $err_msg_add;
+    ($child, $file, $line, $func) = (caller($level->[1] + $level_count));# if $child eq 'main';
 
 
     $err_msg .= $err_msg_add;

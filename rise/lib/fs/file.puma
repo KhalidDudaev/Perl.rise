@@ -4,11 +4,13 @@ namespace rise.lib.fs {
 
     using FileHandle;
     using rise.lib.fs.path;
+    using rise.lib.fs.info;
 
     public class file {
 
         var fh 						= new FileHandle;
         var path                    = new rise.lib.fs.path;
+        var info                    = new rise.lib.fs.info;
         var fhelper                 = new rise.lib.fs.fileHelper;
 
         public var binmod          = 0;
@@ -26,9 +28,15 @@ namespace rise.lib.fs {
             var res;
             name = self.cmd_sel(cmd) ~ self.path.toAbs(name);
         	data = join('',<data>) if ref data eq 'Fh';
+            // say '>>>> ' ~ name;
 
             // self.fh.open(name) || die "cannot open file $@";
-            self.fh.open(name);
+            // if(self.path.filename(name))){
+            //
+            // }
+            __PACKAGE__.__RISE_ERR('ISFILE', self.path.filename(name)) if self.info.isFile(name);
+
+            self.fh.open(name) || __PACKAGE__.__RISE_ERR('ISFILE', self.path.filename(name));
             self.fh.binmod() if self.binmod;
 
             if (cmd eq 'read'){

@@ -33,8 +33,8 @@ namespace rise.lib {
 		// var dst_path;
 		var dst_name;
 		var dst_ext				= 'tman';
-		public var ref_path;
-		public var dst_file;
+		public var ref_path       = 'NO PATH';
+		public var dst_file       = 'NO DESTINATION';
 
 		function sndOK {
 			// var sound					= new Audio.Beep;
@@ -67,8 +67,8 @@ namespace rise.lib {
 			// self.src_name			= self.monitor(path,1);
 			self.src_name			= self.fmon.monitor(path,1);
 
-			// say ">>> " ~ self.src_name;
-			// say ">>> " ~ self.src_path;
+			// say ">>> name " ~ self.src_name if self.src_name;
+			// say ">>> path " ~ self.src_path;
 
 			if (self.src_name) {
 				// self.lsrc_name			= self.src_name if self.src_name;
@@ -90,10 +90,10 @@ namespace rise.lib {
 				var dpath			= path ~ self.referPath();
 				var err				= '';
 
-				// say ">>> " ~ dpath;
 
 				if(!self.fs.info.isDir(dpath)){
-					mkdir dpath or err = "ERROR: Cant make dir $dpath";
+                    // say '>>> dest dir ' ~ dpath;
+					mkdir dpath or err = "ERROR: Cant make dir " ~ dpath;
 					if (err) {
 						say err;
 						self.sndERR();
@@ -123,37 +123,19 @@ namespace rise.lib {
 		export:simple function plugin (name) {
 			no strict;
 			inject 'rise/lib/tman/plugin/' ~ name ~ '.pm';
-			*{"rise::lib::tman::$name"} = *{"rise::lib::tman::plugin::$name::$name"};
+            // say '>>> plugin >>> ' ~ name;
+
+
+            *{'rise::lib::tman::' ~ name} = \&{'rise::lib::tman::plugin::' ~ name ~ '::plugin'};
+
+            // var p = ('rise::lib::tman::plugin::' ~ name)->new;
+            // *{"rise::lib::tman::$name"} = sub { shift \@_; p.plugin(@_) };
 		}
 
 		export:simple function tman () {
             // say "tman OK";
 			return self;
 		}
-
-        export:simple function start (tname) {
-			tname ||= 'default';
-			say ' ';
-			say self.txt.line ({ title => 'tman START' });
-
-			foreach var task (self.tstack.{tname}) {
-				say self.txt.line ({ title => 'TASK: ' ~ task, char => '-' });
-				self.tcurrent		= task;
-				//self.init();
-				self.tcode.{task}();
-				// if (self.wstart) {
-					foreach var wath (self.wstack.{task}) {
-						foreach var wcode (self.wcode.{task}) {
-							// say '### WATCH ' ~ wath;
-							wcode.join if wcode;
-						}
-					}
-				// }
-			}
-			self.wstart = 0;
-			say self.txt.line ({ title => 'tman END' });
-			say ' ';
-        }
 
         export:simple function task (taskName, data) {
 			self.tlast		= taskName;
@@ -168,17 +150,18 @@ namespace rise.lib {
         public function watch (path, data) {
 			self.wstart = 1;
 			// say '###>> ' ~ dump data;
-			self.wcode.{self.tcurrent}		= [];
-			self.wstack.{self.tcurrent}	= [];
+			// self.wcode.{self.tcurrent}	= [];
+			self.wstack.{self.tcurrent}	= [] if ref self.wstack.{self.tcurrent} ne 'ARRAY';
 			var wc						= [];
 
 			foreach var tname (data) {
-				push wc, self.watch_go(path, self.tcode.{tname});
+                // say '### WATCH ' ~ tname;
+				push wc, self.watch_go(tname, path, self.tcode.{tname});
 			}
 
 			if (ref data eq 'CODE') {
 				// say '>>> ' ~ self.tcurrent;
-				push wc, self.watch_go(path, data);
+				push wc, self.watch_go(self.tcurrent, path, data);
 				data = [self.tcurrent];
 			}
 
@@ -188,19 +171,51 @@ namespace rise.lib {
 			return self;
         }
 
+        export:simple function start (tname) {
+			tname ||= 'default';
+			say ' ';
+			// say self.txt.line ({ title => 'tman START' });
+			say self.txt.box (' v' ~ self.VERSION ~ "\n" ~
+                ' task lists: ' ~ dump (keys self.tstack) ~ "\n" ~
+                ' start tasks... ', 'TMAN Simple Task Manager Lib');
+
+			foreach var task (self.tstack.{tname}) {
+				say self.txt.line ({ title => 'TASK: ' ~ task, char => '-' });
+				self.tcurrent		= task;
+				//self.init();
+				self.tcode.{task}();
+				if (self.wstart) {
+					foreach var wath (self.wstack.{task}) {
+                        // say '### WATCH ' ~ wath;
+						foreach var wcode (self.wcode.{task}) {
+							// wcode.join if wcode;
+							wcode.join;
+							// wcode.() if wcode;
+						}
+					}
+				}
+			}
+			self.wstart = 0;
+			say self.txt.line ({ title => 'tman END' });
+			say ' ';
+        }
+
 		// function action_reg (aname, code) {
 		// 	self.tcode.{aname} = code;
 		// }
 
-		thread watch_go (path, code) {
+		thread watch_go (tname, path, code) {
+		// function watch_go (path, code) {
 			// say '### PATH: ' ~ path ~ ' | DATA: ' ~ dump data;
-			while(1){
+            // say '### WATCH ' ~ tname;
+			while( true ){
 				self.src(path);
+                // self.src_name			= self.fmon.monitor(path,1);
 				if (self.src_name){
 					// say self.txt.line ({ title => 'WATCH', char => '~' });
 					code.();
 				}
-				// sleep 1;
+                sleep 1;
 			}
 		}
 

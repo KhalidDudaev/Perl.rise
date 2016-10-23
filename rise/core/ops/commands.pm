@@ -98,8 +98,10 @@ sub init { no strict 'refs';
 sub _ (){ $_; };
 sub a (){ $a; };
 sub b (){ $b; };
-sub true { !!1; };
-sub false { !!0; };
+sub true { 1 };
+sub false { 0 };
+# sub true { !!1; };
+# sub false { !!0; };
 sub toList ($){@{$_[0]}}
 
 

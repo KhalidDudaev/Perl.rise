@@ -11,9 +11,11 @@ public class rise.lib.txt {
     }
 
     export:simple function box (text = 'NO TEXT', title = '', char = '#') {
-        say self.line ({ 'title' => title, 'char' => char });
-        say text;
-        say self.line ({ 'char' => char });
+        var t;
+        t ~= self.line ({ 'title' => title, 'char' => char }) ~ "\n";
+        t ~= text ~ "\n";
+        t ~= self.line ({ 'char' => char });
+        return t;
     }
 
 }
