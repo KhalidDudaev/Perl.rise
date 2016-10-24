@@ -1,8 +1,10 @@
 // csdfsdf
-using Plack::Util;
-using Plack::Loader;
+// using Plack::Util;
+// using Plack::Loader;
 using CGI::Carp qw/fatalsToBrowser/;
 using rise.lib.fs.file;
+using rise.lib.web.route;
+using rise.lib.web.server;
 using rise.lib.web.template;
 
 // using web::route;
@@ -11,18 +13,17 @@ namespace rise.lib {
     public class web {
 
         var file                   = new rise.lib.fs.file;
+        var route                  = new rise.lib.web.route;
+        var server                 = new rise.lib.web.server;
         var tmpl                   = new rise.lib.web.template;
 
-        var data;
-        export:simple var env             = {};
-        public var routes           = { 'GET' => [], 'POST' => [], 'UPDATE' => [], 'DELETE' => [] };
+        // var data;
         var out;
-        var _qobj           = {};
+        var _qobj                  = {};
         var _tout;
-        var header;
-        var html;
         var args;
         var apptrue;
+        // export:simple var env                = {};
 
         export:simple function wsay (data = '') {
             self.out    ~= data;
@@ -34,9 +35,9 @@ namespace rise.lib {
             return self.out;
         }
 
-        // export:simple function env {
-        //     return self.env;
-        // }
+        export:simple function env {
+            return self.server.env;
+        }
 
         export:simple function req {
             self.env.{'QUERY_STRING'} =~ s{\%22}{"}gsx;
@@ -68,45 +69,39 @@ namespace rise.lib {
         }
 
         export:simple function start {
-            // self.dmsg(self);
-            var psgi_app         = function (env, args) {
-                self.header.{'status'}         = 404;
-                self.header.{'type'}         = 'text/html';
-                self.html           = 'ERROR 404: Not Found';
-                self.env            = env;
-                self.args           = args;
-
-                var app                   = self.route_eq;
-
-                if (self.apptrue){
-                    self.header.{'status'}      = 200;
-                    self.html                   = app.app;
-                }
-
-                return [self.header.{'status'}, ['Content-Type'=> self.header.{'type'} ], [self.html]];
-            };
-
-            return Plack::Loader.auto.run(psgi_app);
+            return self.server.start(self.route);
         }
 
-        export:simple function set_header (data) {
-            self.header         = data;
-            return self.header;
+        export:simple function set_header (head) {
+            return self.server.set_header(head);
         }
 
-        export:simple function route (rmeth, data) {
-            push self.routes.{rmeth}, [data];
-            return self.routes.{rmeth};
+        export:simple function setRoute (rmeth, data) {
+            self.route.setRoute(rmeth, data);
         }
 
         export:simple function get (route, controller) {
-            // self.dmsg(route);
-            self.route('GET', [route, controller]);
+            self.setRoute('GET', [route, controller]);
+            return [route, controller];
+        }
+
+        export:simple function post (route, controller) {
+            self.setRoute('POST', [route, controller]);
+            return [route, controller];
+        }
+
+        export:simple function put (route, controller) {
+            self.setRoute('PUT', [route, controller]);
+            return [route, controller];
+        }
+
+        export:simple function delete (route, controller) {
+            self.setRoute('DELETE', [route, controller]);
             return [route, controller];
         }
 
         export:simple function dmsg (data) {
-            use CGI;
+            require CGI;
             var msg;
             msg ~= CGI::header();
         	msg ~= "<br>################################################<br>";
@@ -114,20 +109,6 @@ namespace rise.lib {
         	msg ~= "<br>################################################<br>";
             say msg;
             return msg;
-        }
-
-        function route_eq {
-            // self.dmsg(self);
-            var app;
-            self.apptrue             = 0;
-            foreach var r (self.routes.{self.env.{'REQUEST_METHOD'}}) {
-                if (self.env.{'REQUEST_URI'} =~ m{^(?:$r->[0])$}sx) {
-                    app = r.[1];
-                    self.apptrue                = 1;
-                    last;
-                };
-            }
-            return app;
         }
 
     }

@@ -1,0 +1,50 @@
+
+using Plack::Util;
+using Plack::Loader;
+
+namespace rise.lib.web {
+    public class server {
+        var header;
+        var html;
+        public var env          = {};
+
+        public function app2psgi (route) {
+            // var env = self.env;
+
+            var psgi_app         = function (env, args) {
+                self.header.{'status'}      = 404;
+                self.header.{'type'}        = 'text/html';
+                // self.html                   = self.file.read('C:\_DATA_EXT\_data\works\Development\_PERL\_lib\librise\rise\lib\web\err404.tmpl');
+                self.html                   = self.template('C:\_DATA_EXT\_data\works\Development\_PERL\_lib\librise\rise\lib\web\err4040.tmpl', { 'errno' => 404, 'errmsg' => 'page not found' });
+                self.self.env               = env;
+                self.args                   = args;
+
+                var objref                  = self.route.getRoute;
+
+                if (self.apptrue){
+                    self.header.{'status'}      = 200;
+                    self.html                   = objref.() if ref objref eq 'CODE';
+                    self.html                   = objref.app if ref objref ne 'CODE';
+                }
+
+                return [self.header.{'status'}, ['Content-Type' => self.header.{'type'}], [self.html]];
+            };
+
+            return psgi_app;
+        }
+
+        public function start (route) {
+            return self.start_psgi(self.app2psgi(route));
+        }
+
+        public function start_psgi (psgi_app) {
+            return Plack::Loader.auto.run(psgi_app);
+        }
+
+        public function set_header (header) {
+            self.header         = header;
+            return self.header;
+        }
+
+    }
+}

@@ -1,3 +1,32 @@
-public class route {
+
+// using Plack::Util;
+// using Plack::Loader;
+
+namespace rise.lib.web {
+
+    public class route {
+
+        public var routes           = { 'GET' => [], 'POST' => [], 'PUT' => [], 'DELETE' => [] };
+
+        public function setRoute (rmeth, objref) {
+            push self.routes.{rmeth}, [objref];
+            return self.routes.{rmeth};
+        }
+
+        public function getRoute {
+            // self.dmsg(self);
+            var objref;
+            self.apptrue             = 0;
+            foreach var r (self.routes.{self.env.{'REQUEST_METHOD'}}) {
+                if (self.env.{'REQUEST_URI'} =~ m{^(?:$r->[0])$}sx) {
+                    objref = r.[1];
+                    self.apptrue                = 1;
+                    last;
+                };
+            }
+            return objref;
+        }
+
+    }
 
 }

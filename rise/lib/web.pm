@@ -1,28 +1,29 @@
 # csdfsdf
-use Plack::Util;
-use Plack::Loader;
+# using Plack::Util;
+# using Plack::Loader;
 use CGI::Carp qw/fatalsToBrowser/;
 use rise::lib::fs::file;
+use rise::lib::web::route;
+use rise::lib::web::server;
 use rise::lib::web::template;
 
 # using web::route;
 { package rise::lib; use rise::core::object::namespace;   
 
-    { package rise::lib::web; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1023064937"; sub VERSION {"2016.1023064937"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{export:simple-function-wsay  export:simple-function-out  export:simple-function-req  export:simple-function-template  export:simple-function-tsay  export:simple-function-tout  export:simple-function-query  export:simple-function-start  export:simple-function-set_header  export:simple-function-route  export:simple-function-get  export:simple-function-dmsg  private-function-route_eq  private-var-file  private-var-tmpl  private-var-data  export:simple-var-env  public-var-routes  private-var-out  private-var-_qobj  private-var-_tout  private-var-header  private-var-html  private-var-args  private-var-apptrue}} sub __EXPORT__ { {":all"=>[qw/wsay out req template tsay tout query start set_header route get dmsg env/],":function"=>[qw/wsay out req template tsay tout query start set_header route get dmsg/],":simple"=>[qw/wsay out req template tsay tout query start set_header route get dmsg env/],":var"=>[qw/env/],"dmsg"=>[qw/dmsg/],"env"=>[qw/env/],"get"=>[qw/get/],"out"=>[qw/out/],"query"=>[qw/query/],"req"=>[qw/req/],"route"=>[qw/route/],"set_header"=>[qw/set_header/],"start"=>[qw/start/],"template"=>[qw/template/],"tout"=>[qw/tout/],"tsay"=>[qw/tsay/],"wsay"=>[qw/wsay/],} } 
+    { package rise::lib::web; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1024131219"; sub VERSION {"2016.1024131219"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-class-server  public-class-server  public-class-server  public-class-server  public-class-server  public-class-server  public-class-server  public-class-server  public-class-server  export:simple-function-wsay  export:simple-function-out  export:simple-function-env  export:simple-function-req  export:simple-function-template  export:simple-function-tsay  export:simple-function-tout  export:simple-function-query  export:simple-function-start  export:simple-function-set_header  export:simple-function-setRoute  export:simple-function-get  export:simple-function-post  export:simple-function-put  export:simple-function-delete  export:simple-function-dmsg  private-var-file  private-var-route  private-var-server  private-var-tmpl  private-var-out  private-var-_qobj  private-var-_tout  private-var-args  private-var-apptrue  public-var-env  export:simple-function-wsay  export:simple-function-out  export:simple-function-req  export:simple-function-template  export:simple-function-tsay  export:simple-function-tout  export:simple-function-query  export:simple-function-start  export:simple-function-set_header  export:simple-function-setRoute  export:simple-function-get  export:simple-function-post  export:simple-function-put  export:simple-function-delete  export:simple-function-dmsg            public-class-server  public-class-server  export:simple-function-wsay  export:simple-function-out  export:simple-function-req  export:simple-function-template  export:simple-function-tsay  export:simple-function-tout  export:simple-function-query  export:simple-function-start  export:simple-function-set_header  export:simple-function-setRoute  export:simple-function-get  export:simple-function-post  export:simple-function-put  export:simple-function-delete  export:simple-function-dmsg            export:simple-function-wsay  export:simple-function-out  export:simple-function-env  export:simple-function-req  export:simple-function-template  export:simple-function-tsay  export:simple-function-tout  export:simple-function-query  export:simple-function-start  export:simple-function-set_header  export:simple-function-setRoute  export:simple-function-get  export:simple-function-post  export:simple-function-put  export:simple-function-delete  export:simple-function-dmsg           public-class-server  public-class-server  public-class-server  public-class-server  public-class-server  public-class-server  public-class-server  public-class-server  export:simple-function-wsay  export:simple-function-out  export:simple-function-env  export:simple-function-req  export:simple-function-template  export:simple-function-tsay  export:simple-function-tout  export:simple-function-query  export:simple-function-start  export:simple-function-set_header  export:simple-function-setRoute  export:simple-function-get  export:simple-function-post  export:simple-function-put  export:simple-function-delete  export:simple-function-dmsg           public-class-route  public-class-server  public-class-server  public-class-server  public-class-server  public-class-server  public-class-server  public-class-server  public-class-server  export:simple-function-wsay  export:simple-function-out  export:simple-function-env  export:simple-function-req  export:simple-function-template  export:simple-function-tsay  export:simple-function-tout  export:simple-function-query  export:simple-function-start  export:simple-function-set_header  export:simple-function-setRoute  export:simple-function-get  export:simple-function-post  export:simple-function-put  export:simple-function-delete  export:simple-function-dmsg         }} sub __EXPORT__ { {":all"=>[qw/wsay out env req template tsay tout query start set_header setRoute get post put delete dmsg wsay out req template tsay tout query start set_header setRoute get post put delete dmsg wsay out req template tsay tout query start set_header setRoute get post put delete dmsg env wsay out env req template tsay tout query start set_header setRoute get post put delete dmsg wsay out env req template tsay tout query start set_header setRoute get post put delete dmsg wsay out env req template tsay tout query start set_header setRoute get post put delete dmsg/],":function"=>[qw/wsay out env req template tsay tout query start set_header setRoute get post put delete dmsg wsay out req template tsay tout query start set_header setRoute get post put delete dmsg wsay out req template tsay tout query start set_header setRoute get post put delete dmsg wsay out env req template tsay tout query start set_header setRoute get post put delete dmsg wsay out env req template tsay tout query start set_header setRoute get post put delete dmsg wsay out env req template tsay tout query start set_header setRoute get post put delete dmsg/],":simple"=>[qw/wsay out env req template tsay tout query start set_header setRoute get post put delete dmsg wsay out req template tsay tout query start set_header setRoute get post put delete dmsg wsay out req template tsay tout query start set_header setRoute get post put delete dmsg env wsay out env req template tsay tout query start set_header setRoute get post put delete dmsg wsay out env req template tsay tout query start set_header setRoute get post put delete dmsg wsay out env req template tsay tout query start set_header setRoute get post put delete dmsg/],":var"=>[qw/env/],"delete"=>[qw/delete delete delete delete delete delete/],"dmsg"=>[qw/dmsg dmsg dmsg dmsg dmsg dmsg/],"env"=>[qw/env env env env env/],"get"=>[qw/get get get get get get/],"out"=>[qw/out out out out out out/],"post"=>[qw/post post post post post post/],"put"=>[qw/put put put put put put/],"query"=>[qw/query query query query query query/],"req"=>[qw/req req req req req req/],"set_header"=>[qw/set_header set_header set_header set_header set_header set_header/],"setRoute"=>[qw/setRoute setRoute setRoute setRoute setRoute setRoute/],"start"=>[qw/start start start start start start/],"template"=>[qw/template template template template template template/],"tout"=>[qw/tout tout tout tout tout tout/],"tsay"=>[qw/tsay tsay tsay tsay tsay tsay/],"wsay"=>[qw/wsay wsay wsay wsay wsay wsay/],} } 
 
          sub file ():lvalue; no warnings; *__file__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'file') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); my $self = shift; $self->{'file'} }; *file = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'file') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); $__RISE_SELF__->{'file'} }; use warnings;  file = new rise::lib::fs::file::;
+         sub route ():lvalue; no warnings; *__route__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'route') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); my $self = shift; $self->{'route'} }; *route = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'route') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); $__RISE_SELF__->{'route'} }; use warnings;  route = new rise::lib::web::route::;
+         sub server ():lvalue; no warnings; *__server__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'server') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); my $self = shift; $self->{'server'} }; *server = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'server') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); $__RISE_SELF__->{'server'} }; use warnings;  server = new rise::lib::web::server::;
          sub tmpl ():lvalue; no warnings; *__tmpl__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'tmpl') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); my $self = shift; $self->{'tmpl'} }; *tmpl = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'tmpl') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); $__RISE_SELF__->{'tmpl'} }; use warnings;  tmpl = new rise::lib::web::template::;
 
-         sub data ():lvalue; no warnings; *__data__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'data') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); my $self = shift; $self->{'data'} }; *data = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'data') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); $__RISE_SELF__->{'data'} }; use warnings; 
-         sub env ():lvalue; no warnings; *__env__ = sub ():lvalue {  my $self = shift; $self->{'env'} }; *env = sub ():lvalue {  $__RISE_SELF__->{'env'} }; use warnings;  env = {};
-         sub routes ():lvalue; no warnings; *__routes__ = sub ():lvalue {  my $self = shift; $self->{'routes'} }; *routes = sub ():lvalue {  $__RISE_SELF__->{'routes'} }; use warnings;  routes = { 'GET' => [], 'POST' => [], 'UPDATE' => [], 'DELETE' => [] };
+        # var data;
          sub out ():lvalue; no warnings; *__out__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'out') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); my $self = shift; $self->{'out'} }; *out = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'out') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); $__RISE_SELF__->{'out'} }; use warnings; 
          sub _qobj ():lvalue; no warnings; *___qobj__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', '_qobj') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); my $self = shift; $self->{'_qobj'} }; *_qobj = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', '_qobj') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); $__RISE_SELF__->{'_qobj'} }; use warnings;  _qobj = {};
          sub _tout ():lvalue; no warnings; *___tout__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', '_tout') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); my $self = shift; $self->{'_tout'} }; *_tout = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', '_tout') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); $__RISE_SELF__->{'_tout'} }; use warnings; 
-         sub header ():lvalue; no warnings; *__header__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'header') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); my $self = shift; $self->{'header'} }; *header = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'header') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); $__RISE_SELF__->{'header'} }; use warnings; 
-         sub html ():lvalue; no warnings; *__html__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'html') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); my $self = shift; $self->{'html'} }; *html = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'html') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); $__RISE_SELF__->{'html'} }; use warnings; 
          sub args ():lvalue; no warnings; *__args__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'args') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); my $self = shift; $self->{'args'} }; *args = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'args') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); $__RISE_SELF__->{'args'} }; use warnings; 
          sub apptrue ():lvalue; no warnings; *__apptrue__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'apptrue') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); my $self = shift; $self->{'apptrue'} }; *apptrue = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'apptrue') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); $__RISE_SELF__->{'apptrue'} }; use warnings; 
+        # export:simple var env                = {};
 
         { package rise::lib::web::wsay; use rise::core::object::function;  sub wsay {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $data; no warnings; sub data ():lvalue; *data = sub ():lvalue { $data }; use warnings;  ($self,$data) = ($_[0],$_[1]||''); 
             $self->out    .= $data;
@@ -34,9 +35,9 @@ use rise::lib::web::template;
             return $self->out;
         }}
 
-        # export:simple function env {
-        #     return self.env;
-        # }
+        { package rise::lib::web::env; use rise::core::object::function;  sub env {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings;  ($self) = ($_[0]); 
+            return $self->server->env;
+        }}
 
         { package rise::lib::web::req; use rise::core::object::function;  sub req {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings;  ($self) = ($_[0]); 
             $self->env->{'QUERY_STRING'} =~ s{\%22}{"}gsx;
@@ -68,45 +69,39 @@ use rise::lib::web::template;
         }}
 
         { package rise::lib::web::start; use rise::core::object::function;  sub start {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings;  ($self) = ($_[0]); 
-            # self.dmsg(self);
-            my $psgi_app; no warnings; sub psgi_app ():lvalue; *psgi_app = sub ():lvalue { $psgi_app }; use warnings;  $psgi_app = sub { return ACODE00001(__PACKAGE__, @_); { package rise::lib::web::start::ACODE00001; use rise::core::object::function; sub ACODE00001 { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'ACODE00001') unless (caller eq 'rise::lib::web::start' || caller =~ m/^rise::lib::web::start\b/o); my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $env; no warnings; sub env ():lvalue; *env = sub ():lvalue { $env }; use warnings; my $args; no warnings; sub args ():lvalue; *args = sub ():lvalue { $args }; use warnings;  ($self,$env,$args) = ($_[0],$_[1],$_[2]);
-                $self->header->{'status'}         = 404;
-                $self->header->{'type'}         = 'text/html';
-                $self->html           = 'ERROR 404: Not Found';
-                $self->env            = $env;
-                $self->args           = $args;
-
-                my $app; no warnings; sub app ():lvalue; *app = sub ():lvalue { $app }; use warnings;  $app = $self->route_eq;
-
-                if ($self->apptrue){
-                    $self->header->{'status'}      = 200;
-                    $self->html                   = $app->app;
-                }
-
-                return [$self->header->{'status'}, ['Content-Type'=> $self->header->{'type'} ], [$self->html]];
-            }}};
-
-            return Plack::Loader->auto->run($psgi_app);
+            return $self->server->start($self->route);
         }}
 
-        { package rise::lib::web::set_header; use rise::core::object::function;  sub set_header {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $data; no warnings; sub data ():lvalue; *data = sub ():lvalue { $data }; use warnings;  ($self,$data) = ($_[0],$_[1]); 
-            $self->header         = $data;
-            return $self->header;
+        { package rise::lib::web::set_header; use rise::core::object::function;  sub set_header {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $head; no warnings; sub head ():lvalue; *head = sub ():lvalue { $head }; use warnings;  ($self,$head) = ($_[0],$_[1]); 
+            return $self->server->set_header($head);
         }}
 
-        { package rise::lib::web::route; use rise::core::object::function;  sub route {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $rmeth; no warnings; sub rmeth ():lvalue; *rmeth = sub ():lvalue { $rmeth }; use warnings; my $data; no warnings; sub data ():lvalue; *data = sub ():lvalue { $data }; use warnings;  ($self,$rmeth,$data) = ($_[0],$_[1],$_[2]); 
-            __RISE_PUSH $self->routes->{$rmeth}, [$data];
-            return $self->routes->{$rmeth};
+        { package rise::lib::web::setRoute; use rise::core::object::function;  sub setRoute {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $rmeth; no warnings; sub rmeth ():lvalue; *rmeth = sub ():lvalue { $rmeth }; use warnings; my $data; no warnings; sub data ():lvalue; *data = sub ():lvalue { $data }; use warnings;  ($self,$rmeth,$data) = ($_[0],$_[1],$_[2]); 
+            $self->route->setRoute($rmeth, $data);
         }}
 
         { package rise::lib::web::get; use rise::core::object::function;  sub get {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $route; no warnings; sub route ():lvalue; *route = sub ():lvalue { $route }; use warnings; my $controller; no warnings; sub controller ():lvalue; *controller = sub ():lvalue { $controller }; use warnings;  ($self,$route,$controller) = ($_[0],$_[1],$_[2]); 
-            # self.dmsg(route);
-            $self->route('GET', [$route, $controller]);
+            $self->setRoute('GET', [$route, $controller]);
+            return [$route, $controller];
+        }}
+
+        { package rise::lib::web::post; use rise::core::object::function;  sub post {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $route; no warnings; sub route ():lvalue; *route = sub ():lvalue { $route }; use warnings; my $controller; no warnings; sub controller ():lvalue; *controller = sub ():lvalue { $controller }; use warnings;  ($self,$route,$controller) = ($_[0],$_[1],$_[2]); 
+            $self->setRoute('POST', [$route, $controller]);
+            return [$route, $controller];
+        }}
+
+        { package rise::lib::web::put; use rise::core::object::function;  sub put {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $route; no warnings; sub route ():lvalue; *route = sub ():lvalue { $route }; use warnings; my $controller; no warnings; sub controller ():lvalue; *controller = sub ():lvalue { $controller }; use warnings;  ($self,$route,$controller) = ($_[0],$_[1],$_[2]); 
+            $self->setRoute('PUT', [$route, $controller]);
+            return [$route, $controller];
+        }}
+
+        { package rise::lib::web::delete; use rise::core::object::function;  sub delete {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $route; no warnings; sub route ():lvalue; *route = sub ():lvalue { $route }; use warnings; my $controller; no warnings; sub controller ():lvalue; *controller = sub ():lvalue { $controller }; use warnings;  ($self,$route,$controller) = ($_[0],$_[1],$_[2]); 
+            $self->setRoute('DELETE', [$route, $controller]);
             return [$route, $controller];
         }}
 
         { package rise::lib::web::dmsg; use rise::core::object::function;  sub dmsg {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings; my $data; no warnings; sub data ():lvalue; *data = sub ():lvalue { $data }; use warnings;  ($self,$data) = ($_[0],$_[1]); 
-            use CGI;
+            require CGI;
             my $msg; no warnings; sub msg ():lvalue; *msg = sub ():lvalue { $msg }; use warnings; 
             $msg .= CGI::header();
         	$msg .= "<br>################################################<br>";
@@ -114,20 +109,6 @@ use rise::lib::web::template;
         	$msg .= "<br>################################################<br>";
             say $msg;
             return $msg;
-        }}
-
-        { package rise::lib::web::route_eq; use rise::core::object::function; sub route_eq { __PACKAGE__->__RISE_ERR('CODE_PRIVATE', 'route_eq') unless (caller eq 'rise::lib::web' || caller =~ m/^rise::lib::web\b/o); my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings;  ($self) = ($_[0]); 
-            # self.dmsg(self);
-            my $app; no warnings; sub app ():lvalue; *app = sub ():lvalue { $app }; use warnings; 
-            $self->apptrue             = 0;
-            { my $r; no warnings; sub r ():lvalue; *r = sub ():lvalue { $r }; use warnings;  foreach (@ {($self->routes->{$self->env->{'REQUEST_METHOD'}})}) { $r = $_;
-                if ($self->env->{'REQUEST_URI'} =~ m{^(?:$r->[0])$}sx) {
-                    $app = $r->[1];
-                    $self->apptrue                = 1;
-                    last;
-                };
-            }}
-            return $app;
         }}
 
     }

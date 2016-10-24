@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ERROR 404</title>
+        <style media="screen">
+
+            body { background-color: #222; }
+            body, p, div {
+                margin: 0;
+                padding: 0;
+                /*color: #999;*/
+            }
+
+            .hrline {
+                display: block;
+                width: 70%;
+                height: 1px;
+                border: 0;
+                border-top: 1px solid;
+                /*margin: 1em 0;*/
+                padding: 0;
+            }
+
+            .titletext {
+                font-size: 18px;
+            }
+
+            .bodycontent {
+                display: block;
+                margin: 20% auto;
+                padding: 20px;
+                width: 70%;
+                font-family: sans-serif;
+                text-align: center;
+                /*border-top: 1px solid #555;*/
+                /*border-bottom: 1px solid #555;*/
+            }
+
+            .blocktop {
+                padding: 0 0.5em;
+                /*border-bottom: 1px solid #333;*/
+                height: 80px;
+                color: #555;
+                /*width: 65%;*/
+                text-align: center;
+                font-size: 72px;
+            }
+            .blockbottom {
+                padding: 4px 20px;
+                border-top: 1px solid #333;
+                color: #555;
+                width: inherit;
+                /* min-width: 50%; */
+                text-align: center;
+                font-size: 20px;
+                margin: 0 auto;
+                /* display: initial; */
+            }
+
+            .textbig {
+                /*margin: 5px 0px;*/
+            }
+
+            .textsmall {
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="bodycontent">
+            <!-- <hr class="hrline"> -->
+            <div class="blocktop">
+                ERROR <span style="color: #d44600">[[errno]]</span>
+            </div>
+            <div class="blockbottom">
+                [[errmsg]]
+            </div>
+            <!-- <hr class="hrline"> -->
+        </div>
+    </body>
+</html>
