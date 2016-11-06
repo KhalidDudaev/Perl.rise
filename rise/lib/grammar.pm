@@ -14,42 +14,20 @@ use Data::Dump 'dump';
 our $VERSION = '0.100';
 
 my $export 		= [qw/
-var
-keyword
-token
-rule
-action
-order
-parse
-grammar
-compile_RBNF
-rule_array
-rule_list
-rule_last_var
-gettok
+	var
+	keyword
+	token
+	rule
+	action
+	order
+	parse
+	grammar
+	compile_RBNF
+	rule_array
+	rule_list
+	rule_last_var
+	gettok
 /];
-
-# use parent 'Exporter';
-#
-# our @EXPORT;
-#
-# our @EXPORT_OK 		= qw/
-# var
-# keyword
-# token
-# rule
-# action
-# order
-# parse
-# grammar
-# compile_RBNF
-# rule_array
-# rule_list
-# rule_last_var
-# gettok
-# /;
-#
-# our %EXPORT_TAGS 	= ( simple => [@EXPORT_OK] );
 
 my $pself;
 sub pself { $pself }
@@ -85,13 +63,15 @@ sub new {
 	return bless($self, $class);                         					# обьявляем класс и его свойства
 }
 
-sub import {
+sub import { no strict;
     my $self                           = shift;
 	my $caller                         = caller;
 	my $cmd                            = shift;
 
     $self = $self->new;
-    $pself = $self;
+    $pself = $caller;
+
+    # say 'grammar caller - '.$pself;
 
 	no strict 'refs';
     if ($cmd && $cmd eq ':simple') {
@@ -102,6 +82,22 @@ sub import {
     }
 
 	return 1;
+}
+
+# sub self {
+# 	my $self					= shift if (ref $_[0] eq __PACKAGE__);
+# 	# $self						||= caller(1);
+# 	$self						||= pself;
+#     # say 'class_ref - '.$self;
+# 	return $self, @_;
+# }
+
+sub self {
+	my $self					= shift if (ref $_[0] eq __PACKAGE__);
+	# $self						||= caller(1);
+	$self						||= pself;
+    # say 'class_ref - '.$self;
+	return $self;
 }
 
 sub grammar :lvalue	{ $GRAMMAR }
@@ -116,16 +112,16 @@ sub keyword_list	{ __arr2list( keyword_array ) }
 sub ra			    { grammar->{RULE_LAST_VAR}{RA}[$_] }
 
 sub order	{
-    (my $self, @_) 			= __class_ref(@_);
-	my $data				= shift;
-    grammar->{ORDER}        = $data if $data;
+    my $self							= &self;
+	my $data							= shift;
+    grammar->{ORDER}                = $data if $data;
     grammar->{ORDER};
 }
 
 sub var :lvalue {
 	# my $self 			= shift;
-    (my $self, @_) 			= __class_ref(@_);
-	my $name 				= shift;
+    my $self							= &self;
+	my $name							= shift;
     {no strict; no warnings;
         *{$self.'::var_'.$name}		= sub ($):lvalue { grammar->{VAR}{$name} };
     }
@@ -134,7 +130,7 @@ sub var :lvalue {
 
 # sub var {
 # 	# my $self 			= shift;
-#     (my $self, @_) 			= __class_ref(@_);
+#     my $self                    = &self;
 # 	my ($name, $data)       = @_;
 #     grammar->{VAR}{$name}   = $data if $data;
 # 	return grammar->{VAR}{$name};
@@ -142,9 +138,9 @@ sub var :lvalue {
 
 sub keyword {
 	# my $self                           = shift;
-    (my $self, @_) 			= __class_ref(@_);
-	my $key                            = shift;
-	my $word                           = shift;
+    my $self							= &self;
+	my $key								= shift;
+	my $word							= shift;
 	# my ($key, $word)                   = @_;
 	my $res;
 
@@ -165,9 +161,9 @@ sub keyword {
 
 sub token {
 	# my $self                           = pself;
-    (my $self, @_) 			= __class_ref(@_);
-	my $token                          = shift;
-	my $lexem                          = shift;
+    my $self							= &self;
+	my $token							= shift;
+	my $lexem							= shift;
 	# my ($token, $lexem) 	= @_;
 	my $res;
 
@@ -183,9 +179,9 @@ sub token {
 
 sub rule {
 	# my $self                           = pself;
-    (my $self, @_) 			= __class_ref(@_);
-    my $action                         = shift;
-    my $rule                           = shift;
+    my $self							= &self;
+    my $action							= shift;
+    my $rule							= shift;
 	# my ($action, $rule) 	= @_;
 	#my $rule_list			= rule_list();
 	my $res;
@@ -204,9 +200,9 @@ sub rule {
 
 sub action {
 	# my $self                           = pself;
-    (my $self, @_) 			= __class_ref(@_);
-	my $action                         = shift;
-	my $code                           = shift;
+    my $self							= &self;
+	my $action							= shift;
+	my $code							= shift;
 	# my ($action, $code) 	= @_;
 	my $res;
 
@@ -335,8 +331,8 @@ sub __parse {
 }
 
 sub compile_RBNF {
-	# my $self                           = shift;
-    (my $self, @_) 						= __class_ref(@_);
+	# my $self							= shift;
+    my $self							= &self;
 
 	my ($rule_hash, $token_hash)		= @_;
 	my $rule							= '';
@@ -354,17 +350,17 @@ sub compile_RBNF {
 }
 
 sub gettok {
-	# my $self                           = shift;
-    (my $self, @_) 						= __class_ref(@_);
-	my $token                          = shift;
-	my $value                          = $+{$token};
+	# my $self							= shift;
+    my $self							= &self;
+	my $token							= shift;
+	my $value							= $+{$token};
 	return $value;
 }
 
 sub rule_last_var :lvalue {
-	# my $self                           = shift;
-    (my $self, @_) 						= __class_ref(@_);
-	my $token                          = shift;
+	# my $self							= shift;
+    my $self							= &self;
+	my $token							= shift;
     grammar->{RULE_LAST_VAR}{$token};
 }
 
@@ -394,9 +390,9 @@ sub __rule {
 }
 
 sub __action {
-	my $self		= shift;
-	my $action 		= shift;
-	my $confs		= shift;
+	my $self							= shift;
+	my $action							= shift;
+	my $confs							= shift;
 
 	my $res;
 	my $sps;
@@ -524,25 +520,27 @@ sub clear {
 	$self->{info_rule} = {};
 }
 
-# sub __class_ref {
-# 	my $this					= shift if (ref $_[0] eq __PACKAGE__);
-# 	$this						||= pself;
-# 	return $this, @_;
-# }
-
 sub __class_ref {
-    my $self;
-
-    if (ref $_[0] eq __PACKAGE__){
-        $self = shift;
-    } else {
-        $self = caller(1);
-    }
-
-    # print " SELF >>> $self \n";
-
-    return $self, @_;
+	my $self					= shift if (ref $_[0] eq __PACKAGE__);
+	# $self						||= caller(1);
+	$self						||= pself;
+    # say 'class_ref - '.$self;
+	return $self, @_;
 }
+
+# sub __class_ref {
+#     my $self;
+#
+#     if (ref $_[0] eq __PACKAGE__){
+#         $self = shift;
+#     } else {
+#         $self = caller(1);
+#     }
+#
+#     # print " SELF >>> $self \n";
+#
+#     return $self, @_;
+# }
 
 #sub __class_ref {
 #	my $this					= shift if (ref $_[0] eq __PACKAGE__);

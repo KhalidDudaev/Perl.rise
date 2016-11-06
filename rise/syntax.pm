@@ -863,7 +863,7 @@ sub confirm {
 	action _function_call_post2			=> \&_syntax_function_call_post2;
 
 	action _thread_compile 						    => \&_syntax_thread_compile;
-	action _thread_call					=> \&_syntax_thread_call;
+	action _thread_call                     => \&_syntax_thread_call;
 	action _thread_call_post1			    => \&_syntax_thread_call_post1;
 	action _thread_call_post2			    => \&_syntax_thread_call_post2;
 
