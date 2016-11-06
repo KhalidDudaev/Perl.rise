@@ -93,10 +93,8 @@ sub import { no strict;
 # }
 
 sub self {
-	my $self					= shift if (ref $_[0] eq __PACKAGE__);
-	# $self						||= caller(1);
+	my $self					= shift if ref $_[0] eq __PACKAGE__;
 	$self						||= pself;
-    # say 'class_ref - '.$self;
 	return $self;
 }
 
@@ -232,14 +230,14 @@ sub parse {
 	# my $confs                          = shift;
 
 
-	my $self;
+	my $self							= shift;
 	my $source;
 	my $rule_name_selected = [];
 	my $confs;
 
 	# my $fself;
 
-	($self, $source, grammar, $rule_name_selected, $confs,  @_)	= @_;
+	($source, grammar, $rule_name_selected, $confs,  @_)	= @_;
 
     # say 'parse source - '.$self;
 
