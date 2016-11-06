@@ -16,11 +16,11 @@ namespace rise.lib.web {
         public function getRoute {
             // self.dmsg(self);
             var objref;
-            self.apptrue             = 0;
+            // self.apptrue             = 0;
             foreach var r (self.routes.{self.env.{'REQUEST_METHOD'}}) {
                 if (self.env.{'REQUEST_URI'} =~ m{^(?:$r->[0])$}sx) {
                     objref = r.[1];
-                    self.apptrue                = 1;
+                    // self.apptrue                = 1;
                     last;
                 };
             }

@@ -1,16 +1,17 @@
 using rise;
 namespace rise.lib.tman.plugin {
 	public class puma {
-        // var r             		= new rise;
+        var r             		= new rise;
 		public function plugin (conf) {
 			if (self.src_name){
                 // say ">>> " ~ self.src_name if self.src_name;
-				var r             		= new rise conf;
-                // r.set_conf(conf);
+                var r             		= new rise conf;
+                r.set_conf(conf);
 				var c					= r.compile(self.src_name);
-				r = undef;
-				self.code_res		= c.{code};
-				self.dst_ext		= 'pm';
+                // say c.{code};
+				// r.__init();
+				self.code_res		    = c.{code};
+				self.dst_ext		    = 'pm';
 				say c.{info} if conf.{info};
 			}
 			return self;

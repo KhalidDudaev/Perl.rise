@@ -12,7 +12,7 @@ no strict 'subs';
 
 use lib '../lib/rise/';
 
-#use rise::grammar qw/:simple/;
+#use rise::lib::grammar qw/:simple/;
 
 our $VERSION = '0.000';
 our $conf							= {};
@@ -20,7 +20,7 @@ our $conf							= {};
 my $cenv 							= {};
 my $this							= {};
 my $PARSER							= {};
-#my $parser							= new rise::grammar;
+#my $parser							= new rise::lib::grammar;
 
 sub new {
     my ($class, $ARGS)			= (ref $_[0] || $_[0], $_[1] || {});    	# получаем имя класса, если передана ссылка то извлекаем имя класса,  получаем параметры, если параметров нет то присваиваем пустой анонимный хеш

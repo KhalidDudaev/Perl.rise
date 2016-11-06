@@ -83,7 +83,7 @@ rise::Compile	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^
 strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^use strict;$/;"	use	line:3
 warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^use warnings;$/;"	use	line:4
 utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^use utf8;$/;"	use	line:5
-rise::grammar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^use rise::grammar;$/;"	use	line:13
+rise::lib::grammar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^use rise::lib::grammar;$/;"	use	line:13
 rise::syntaxNew	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^use rise::syntaxNew;$/;"	use	line:14
 rise::file	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^use rise::file;$/;"	use	line:15
 VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\compile.pm	/^our $VERSION = '0.000';$/;"	our	line:17
@@ -375,7 +375,7 @@ task	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^sub task
 start	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^sub start {$/;"	subroutine	line:43
 task_action	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^sub task_action {$/;"	subroutine	line:47
 tall	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\fileTask.pm	/^sub tall {$/;"	subroutine	line:53
-rise::grammar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^package rise::grammar;$/;"	package	line:1
+rise::lib::grammar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^package rise::lib::grammar;$/;"	package	line:1
 strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^use strict;$/;"	use	line:3
 warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^use warnings;$/;"	use	line:4
 5.008	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^use 5.008;$/;"	use	line:5
@@ -422,7 +422,7 @@ __save_rule_last_var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\gramma
 __precompile_rule	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub __precompile_rule {$/;"	subroutine	line:480
 __error	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub __error {$/;"	subroutine	line:548
 __class_ref	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar.pm	/^sub __class_ref {$/;"	subroutine	line:563
-rise::grammar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^package rise::grammar;$/;"	package	line:1
+rise::lib::grammar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^package rise::lib::grammar;$/;"	package	line:1
 strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^use strict;$/;"	use	line:3
 warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^use warnings;$/;"	use	line:4
 5.008	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^use 5.008;$/;"	use	line:5
@@ -469,7 +469,7 @@ __save_rule_last_var	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\gramma
 __precompile_rule	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub __precompile_rule {$/;"	subroutine	line:439
 __error	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub __error {$/;"	subroutine	line:465
 __class_ref	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_new.pm	/^sub __class_ref {$/;"	subroutine	line:473
-rise::grammar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^package rise::grammar;$/;"	package	line:1
+rise::lib::grammar	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^package rise::lib::grammar;$/;"	package	line:1
 strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^use strict;$/;"	use	line:3
 warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^use warnings;$/;"	use	line:4
 5.008	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\grammar_old.pm	/^use 5.008;$/;"	use	line:5
@@ -575,7 +575,7 @@ utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^use utf8;$
 Data::Dump 'dump'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^use Data::Dump 'dump';$/;"	use	line:8
 Clone 'clone'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^use Clone 'clone';$/;"	use	line:9
 lib '../lib/rise/'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^use lib '..\/lib\/rise\/';$/;"	use	line:11
-rise::grammar qw/:simple/	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^use rise::grammar qw\/:simple\/;$/;"	use	line:13
+rise::lib::grammar qw/:simple/	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^use rise::lib::grammar qw\/:simple\/;$/;"	use	line:13
 VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^our $VERSION = '0.000';$/;"	our	line:16
 conf	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^our $conf							= {};$/;"	our	line:17
 new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax.pm	/^sub new {$/;"	subroutine	line:25
@@ -662,7 +662,7 @@ rise::syntaxNew	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.p
 strict	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^use strict;$/;"	use	line:3
 warnings	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^use warnings;$/;"	use	line:4
 utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^use utf8;$/;"	use	line:5
-rise::grammar qw/:simple/	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^use rise::grammar qw\/:simple\/;$/;"	use	line:7
+rise::lib::grammar qw/:simple/	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^use rise::lib::grammar qw\/:simple\/;$/;"	use	line:7
 VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^our $VERSION = '0.000';$/;"	our	line:9
 new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^sub new {$/;"	subroutine	line:13
 syntax	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntaxNew.pm	/^sub syntax { &grammar };$/;"	subroutine	line:130
@@ -683,7 +683,7 @@ utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^use ut
 Data::Dump 'dump'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^use Data::Dump 'dump';$/;"	use	line:8
 Clone 'clone'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^use Clone 'clone';$/;"	use	line:9
 lib '../lib/rise/'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^use lib '..\/lib\/rise\/';$/;"	use	line:11
-rise::grammar qw/:simple/	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^use rise::grammar qw\/:simple\/;$/;"	use	line:13
+rise::lib::grammar qw/:simple/	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^use rise::lib::grammar qw\/:simple\/;$/;"	use	line:13
 VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^our $VERSION = '0.000';$/;"	our	line:16
 conf	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^our $conf							= {};$/;"	our	line:17
 new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_new.pm	/^sub new {$/;"	subroutine	line:25
@@ -780,7 +780,7 @@ utf8	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^use ut
 Data::Dump 'dump'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^use Data::Dump 'dump';$/;"	use	line:8
 Clone 'clone'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^use Clone 'clone';$/;"	use	line:9
 lib '../lib/rise/'	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^use lib '..\/lib\/rise\/';$/;"	use	line:11
-rise::grammar qw/:simple/	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^use rise::grammar qw\/:simple\/;$/;"	use	line:13
+rise::lib::grammar qw/:simple/	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^use rise::lib::grammar qw\/:simple\/;$/;"	use	line:13
 VERSION	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^our $VERSION = '0.000';$/;"	our	line:16
 conf	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^our $conf							= {};$/;"	our	line:17
 new	C:\_DATA_EXT\_data\works\Development\_PERL\_lib\rise\syntax_old.pm	/^sub new {$/;"	subroutine	line:25

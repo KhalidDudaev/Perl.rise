@@ -6,7 +6,7 @@ use lib qw|
     c:/_DATA_EXT/_data/works/Development/_PERL/_lib/librise/
 |;
 
-use rise;
+use rise { aaa => 'asdasdasda' };
 use rise::lib::fs;
 
 my $r               = new rise { debug    => 1, info    => 1 };

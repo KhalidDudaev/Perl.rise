@@ -21,7 +21,7 @@ namespace rise.lib.web {
 
                 var objref                  = self.route.getRoute;
 
-                if (self.apptrue){
+                if (objref){
                     self.header.{'status'}      = 200;
                     self.html                   = objref.() if ref objref eq 'CODE';
                     self.html                   = objref.app if ref objref ne 'CODE';

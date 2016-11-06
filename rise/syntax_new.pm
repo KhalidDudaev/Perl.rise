@@ -10,7 +10,7 @@ use Clone 'clone';
 
 use lib '../lib/rise/';
 
-use rise::grammar qw/:simple/;
+use rise::lib::grammar qw/:simple/;
 #use rise::action;
 
 our $VERSION = '0.000';
@@ -19,7 +19,7 @@ our $conf							= {};
 my $cenv 							= {};
 my $this							= {};
 my $PARSER							= {};
-#my $parser							= new rise::grammar;
+#my $parser							= new rise::lib::grammar;
 #my $a								= rise::action->new(__PACKAGE__->new);
 
 sub new {

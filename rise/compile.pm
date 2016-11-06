@@ -10,7 +10,7 @@ use lib qw |
 ../lib/rise/
 |;
 
-use rise::grammar;
+use rise::lib::grammar;
 use rise::syntaxNew;
 use rise::file;
 
@@ -21,7 +21,7 @@ local $\ = "\n";
 my $cenv					= {};
 my $sfname					= 'mycode.sclass';
 
-my $grammar	= new rise::grammar;
+my $grammar	= new rise::lib::grammar;
 my $syntax	= new rise::syntaxNew;
 my $file	= new rise::file;
 

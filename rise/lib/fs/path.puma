@@ -34,7 +34,7 @@ namespace rise.lib.fs {
             return fname !~ m{^(?:\w+\:|[\W]+)};
         }
 
-        public function path(fname) {
+        public function path (fname) {
             var (p) = fname =~ m{^(.*?)[^\\\/]*$}sx;
             return p;
         }

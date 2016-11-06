@@ -22,7 +22,7 @@ namespace rise.lib {
         var _qobj                  = {};
         var _tout;
         var args;
-        var apptrue;
+        // var apptrue;
         // export:simple var env                = {};
 
         export:simple function wsay (data = '') {

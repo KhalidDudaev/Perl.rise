@@ -39,10 +39,11 @@ sub __objtype {'CLASS'};
 
 
 sub new {
-    my $class         = shift;
-    $class            = ref $class || $class;                                   # получаем имя класса, если передана ссылка то извлекаем имя класса
-    my $caller              = caller(0);
-    my $self = bless {}, $class;
+    my $class           = shift;
+    $class              = ref $class || $class;                                   # получаем имя класса, если передана ссылка то извлекаем имя класса
+    my $caller          = caller(0);
+    my ($constructor)   = $class =~ m/^.*?(\w+)$/sx;
+    my $self            = bless {}, $class;
     # my $accmod      = '';
     # my ($parent)			= $caller =~ /(?:(\w+(?:::\w+)*)::)?(\w+)$/;
 
@@ -66,7 +67,7 @@ sub new {
         # *{$class.'::'.$m_name} = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', $m_name) unless (caller eq $class || caller =~ m/^$class\b/o); my $self = shift; $self->{$m_name} } if $m_type eq 'var' && $m_accmod eq 'private';
         # *{$class.'::'.$m_name} = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PROTECTED', $m_name) unless caller->isa($class); my $self = shift; $self->{$m_name} } if $m_type eq 'var' && $m_accmod eq 'protected';
         # *{$class.'::'.$m_name} = sub ():lvalue { my $self = shift; $self->{$m_name} } if $m_type eq 'var' && $m_accmod eq 'public';
-    } split(/\s+/, $self->__CLASS_MEMBERS__) if exists &{$class.'::__CLASS_MEMBERS__'};
+    } split( /\s+/, $self->__CLASS_MEMBERS__ ) if exists &{ $class.'::__CLASS_MEMBERS__' };
 
     # $self->__RISE_SELF__ = $self if exists &{$class.'::__RISE_SELF__'};
 
@@ -77,6 +78,14 @@ sub new {
     # $self->__CLASS_CODE__ if exists &{$class.'::__CLASS_CODE__'};
     # $self->__RISE_SELF__ if exists &{$class.'::__RISE_SELF__'};
     # $self->{'SELF'} = $self;
+
+    # say '>>>>>> class: ' . $class . ' - ' . $constructor;
+    { no strict 'refs';
+        # &{$class.'::'.$constructor}($self, @_) if exists &{$class.'::'.$constructor};
+        # &{$class.'::constructor'}($self, @_) if exists &{$class.'::constructor'};
+        $self->constructor(@_) if exists &{$class.'::constructor'};
+    }
+
 
     return $self;
 }
