@@ -13,27 +13,7 @@ use Data::Dump 'dump';
 
 our $VERSION = '0.100';
 
-# my $export 		= [qw/
-# var
-# keyword
-# token
-# rule
-# action
-# order
-# parse
-# grammar
-# compile_RBNF
-# rule_array
-# rule_list
-# rule_last_var
-# gettok
-# /];
-
-use parent 'Exporter';
-
-our @EXPORT;
-
-our @EXPORT_OK 		= qw/
+my $export 		= [qw/
 var
 keyword
 token
@@ -47,9 +27,29 @@ rule_array
 rule_list
 rule_last_var
 gettok
-/;
+/];
 
-our %EXPORT_TAGS 	= ( simple => [@EXPORT_OK] );
+# use parent 'Exporter';
+#
+# our @EXPORT;
+#
+# our @EXPORT_OK 		= qw/
+# var
+# keyword
+# token
+# rule
+# action
+# order
+# parse
+# grammar
+# compile_RBNF
+# rule_array
+# rule_list
+# rule_last_var
+# gettok
+# /;
+#
+# our %EXPORT_TAGS 	= ( simple => [@EXPORT_OK] );
 
 my $pself;
 sub pself { $pself }
@@ -85,27 +85,26 @@ sub new {
 	return bless($self, $class);                         					# обьявляем класс и его свойства
 }
 
-# sub import {
-#     my $self                           = shift;
-# 	my $caller                         = caller;
-# 	my $cmd                            = shift;
-#
-#     $self = $self->new;
-#     $pself = $self;
-#
-# 	no strict 'refs';
-#     if ($cmd && $cmd eq ':simple') {
-#     	foreach my $code (@$export) {
-#     		*{$caller."::".$code} = *{$code};
-#     		# *{$caller."::$code"} = sub { &{$code}($self, @_) };
-#     	}
-#     }
-#
-# 	return 1;
-# }
+sub import {
+    my $self                           = shift;
+	my $caller                         = caller;
+	my $cmd                            = shift;
+
+    $self = $self->new;
+    $pself = $self;
+
+	no strict 'refs';
+    if ($cmd && $cmd eq ':simple') {
+    	foreach my $code (@$export) {
+    		*{$caller."::".$code} = *{$code};
+    		# *{$caller."::$code"} = sub { &{$code}($self, @_) };
+    	}
+    }
+
+	return 1;
+}
 
 sub grammar :lvalue	{ $GRAMMAR }
-sub order :lvalue	{ grammar->{ORDER} }
 sub action_array	{ keys(%{grammar->{ACTION}}) }
 sub action_list     { __arr2list( action_array ) }
 sub rule_array      { keys(%{grammar->{RULE}}) }
@@ -116,21 +115,28 @@ sub keyword_array	{ values(%{grammar->{KEYWORD}}) }
 sub keyword_list	{ __arr2list( keyword_array ) }
 sub ra			    { grammar->{RULE_LAST_VAR}{RA}[$_] }
 
+sub order	{
+    (my $self, @_) 			= __class_ref(@_);
+	my $data				= shift;
+    grammar->{ORDER}        = $data if $data;
+    grammar->{ORDER};
+}
+
 sub var :lvalue {
 	# my $self 			= shift;
     (my $self, @_) 			= __class_ref(@_);
-	my ($name) 				= @_;
-
+	my $name 				= shift;
+    {no strict; no warnings;
+        *{$self.'::var_'.$name}		= sub ($):lvalue { grammar->{VAR}{$name} };
+    }
 	return grammar->{VAR}{$name};
 }
 
 # sub var {
 # 	# my $self 			= shift;
 #     (my $self, @_) 			= __class_ref(@_);
-# 	my ($name, $data) 				= @_;
-#
-#     grammar->{VAR}{$name}           = $data if $data;
-#
+# 	my ($name, $data)       = @_;
+#     grammar->{VAR}{$name}   = $data if $data;
 # 	return grammar->{VAR}{$name};
 # }
 
@@ -237,7 +243,9 @@ sub parse {
 
 	# my $fself;
 
-	($self, $source, grammar, $rule_name_selected, $confs,  @_)	= __class_ref(@_);
+	($self, $source, grammar, $rule_name_selected, $confs,  @_)	= @_;
+
+    # say 'parse source - '.$self;
 
 	my $rule                           = '';
 	my $rule_name                      = '';
@@ -347,7 +355,7 @@ sub compile_RBNF {
 
 sub gettok {
 	# my $self                           = shift;
-    (my $self, @_) 			= __class_ref(@_);
+    (my $self, @_) 						= __class_ref(@_);
 	my $token                          = shift;
 	my $value                          = $+{$token};
 	return $value;
@@ -355,7 +363,7 @@ sub gettok {
 
 sub rule_last_var :lvalue {
 	# my $self                           = shift;
-    (my $self, @_) 			= __class_ref(@_);
+    (my $self, @_) 						= __class_ref(@_);
 	my $token                          = shift;
     grammar->{RULE_LAST_VAR}{$token};
 }

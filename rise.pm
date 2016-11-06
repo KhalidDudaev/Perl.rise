@@ -20,7 +20,7 @@ our $VERSION = '0.001';
 #use dialect::Parents;
 use rise::lib::fs::file;
 use rise::lib::fs::path;
-use rise::lib::grammar;
+# use rise::lib::grammar;
 use rise::syntax;
 # use rise::lib::txt;
 #use dialect::syntax_pmd;
@@ -151,7 +151,7 @@ sub __init {
 
     $self->{file}			    = new rise::lib::fs::file::;
     $path                       = new rise::lib::fs::path::;
-	$self->{GRAMMAR}            = new rise::lib::grammar:: $self;
+	# $self->{GRAMMAR}            = new rise::lib::grammar:: $self;
 	$self->{SYNTAX}				= new rise::syntax:: $self;
 
 	# say ">>>>>>>>>>>>>> - ".$syntax;
@@ -232,7 +232,7 @@ sub compile_list { #print "#### COMPILE ####\n";
 	my $time_start_compile = time;
 
  	no strict 'refs';
-		push @app_stack, @{$self->syntax->{VAR}{app_stack}};
+		push @app_stack, @{$self->syntax->grammar->{VAR}{app_stack}};
 
 	foreach (@app_stack) {
 		# print $_;
@@ -274,12 +274,13 @@ sub compile { #print "#### COMPILE ####\n";
 
 	if ($code_source) {
 		# $self->grammar->clear;
-        $self->grammar->{FNAME}             = $fname_source;
+        $self->syntax->grammar->{FNAME}             = $fname_source;
 		# $self->syntax->{RULE}             = $self->grammar->compile_RBNF($self->syntax->{RULE});
 
 
 
-		($code_dest, $info)		     = $self->grammar->parse( $code_source, $self->syntax );
+		# ($code_dest, $info)		     = $self->grammar->parse( $code_source, $self->syntax->grammar );
+		($code_dest, $info)		     = $self->syntax->compile( $code_source );
 
         # say '---------------------------------';
     	# say $code_dest;
@@ -297,10 +298,11 @@ sub compile { #print "#### COMPILE ####\n";
 }
 
 #sub __obj__		{ $parser }
-sub grammar		{ shift->{GRAMMAR} }
-sub syntax      { shift->{SYNTAX}->compile }
+# sub grammar		{ shift->{GRAMMAR} }
+sub syntax      { shift->{SYNTAX} }
+# sub syntax      { shift->{SYNTAX}->compile }
 sub __file		{ shift->{file}->file(@_) }
-sub clear		{ shift->grammar->clear }
+# sub clear		{ shift->grammar->clear }
 
 sub __message { print @_ if $conf->{info} }
 
