@@ -1,0 +1,106 @@
+
+using Carp;
+using Crypt::Mode::CBC;
+using Digest::SHA;
+using Digest::SHA3;
+using MIME::Base64;
+
+// 'AES', 'Anubis', 'Blowfish', 'CAST5', 'Camellia', 'DES', 'DES_EDE',
+// 'KASUMI', 'Khazad', 'MULTI2', 'Noekeon', 'RC2', 'RC5', 'RC6',
+// 'SAFERP', 'SAFER_K128', 'SAFER_K64', 'SAFER_SK128', 'SAFER_SK64',
+// 'SEED', 'Skipjack', 'Twofish', 'XTEA'
+
+namespace rise.lib {
+    public class crypt ( engname = 'AES', pass = 'password' ) {
+
+        const RAND_DEV              = '/dev/urandom';
+
+        public var sha1             = new Digest::SHA 256;
+        public var sha3             = new Digest::SHA3 256;
+        public var crypt_eng        = new Crypt::Mode::CBC 'AES';
+        public var passhash;
+        public var key;
+        public var iv;
+
+        public function constructor ( engname = 'AES', pass = 'password' ) {
+            self.engname            = engname;
+            self.pass               = pass;
+
+            self.password(pass);
+
+            self.crypt_eng         = new Crypt::Mode::CBC ( self.engname );
+            return self;
+        }
+
+        public function encrypt ( data, pass ) {
+            self.password(pass) if pass;
+        	return self.crypt_eng.encrypt(data, self.key, self.iv);
+        }
+
+        public function decrypt ( data, pass ) {
+            self.password(pass) if pass;
+        	return self.crypt_eng.decrypt(data, self.key, self.iv);
+        }
+
+        public function set_engine ( engname, key = self.key ) {
+            self.crypt_eng         = new Crypt::Cipher (engname, key);
+            return self.crypt_eng;
+        }
+
+        public function set_sha1 ( alg = 256 ) {
+            self.sha1          = new Digest::SHA alg;
+            return self.sha1;
+        }
+
+        public function set_sha3 ( alg = 256 ) {
+            self.sha3          = new Digest::SHA3 alg;
+            return self.sha3;
+        }
+
+        public function password ( pass = 'password' ) {
+            self.pass              = pass;
+            self.passhash          = self.sha3.add(pass).digest;
+
+            // (self.key, self.iv)    = toList phash =~ m/ ^(.{16})(.{0,16}) /sx;
+            (self.key, self.iv)    = toList re.match:sx self.passhash => "^(.{16})(.{0,16})";
+
+            return self.passhash;
+        }
+
+        public function b64encode (data) {
+            return MIME::Base64::encode_base64(data);
+        }
+
+        public function b64decode (data) {
+            return MIME::Base64::decode_base64(data);
+        }
+
+        public function rand_pass (len = 8) {
+        	var pass;
+            var letters = ['a'..'z',0..9,'A'..'Z','!','@','#','$','%','&','*','_','-','+','='];
+        	srand();
+        	pass ~= letters.[ rand(@letters) ] for (1..len);
+        	return pass;
+        }
+
+        public function rand_pass2 (len = 8) {
+        	return substr(self.sha3.add(self.rand_bytes (len)).b64digest, 0, len);
+        }
+
+        public function rand_bytes (len) {
+            var result;
+
+            if (-r self.RAND_DEV && open(F,self.RAND_DEV)) {
+                read(F,result,len);
+                close F;
+            } else {
+                result = pack("C*", toList map { rand(256) } [1..len]);
+            }
+            # Clear taint and check length
+            result =~ m/^(.+)$/s;
+            length($1) == len or self.croak ("Invalid length while gathering length random bytes");
+            return $1;
+        }
+    }
+
+}
