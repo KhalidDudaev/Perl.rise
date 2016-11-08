@@ -1,3 +1,4 @@
+#sdfsfsfsdfsfd
 
 use Carp;
 use Crypt::Mode::CBC;
@@ -11,7 +12,7 @@ use MIME::Base64;
 # 'SEED', 'Skipjack', 'Twofish', 'XTEA'
 
 { package rise::lib; use rise::core::object::namespace;   
-    { package rise::lib::crypt; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1105052847"; sub VERSION {"2016.1105052847"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ }  sub engname ():lvalue; no warnings; *__engname__ = sub ():lvalue {  my $self = shift; $self->{'engname'} }; *engname = sub ():lvalue {  $__RISE_SELF__->{'engname'} }; use warnings;  sub pass ():lvalue; no warnings; *__pass__ = sub ():lvalue {  my $self = shift; $self->{'pass'} }; *pass = sub ():lvalue {  $__RISE_SELF__->{'pass'} }; use warnings;  sub __CLASS_ARGS__ { (engname,pass) = ($_[1]||'AES',$_[2]||'password' ); };sub __CLASS_MEMBERS__ {q{public-function-constructor  public-function-encrypt  public-function-decrypt  public-function-set_engine  public-function-set_sha1  public-function-set_sha3  public-function-password  public-function-b64encode  public-function-b64decode  public-function-rand_pass  public-function-rand_pass2  public-function-rand_bytes  public-var-sha1  public-var-sha3  public-var-crypt_eng  public-var-passhash  public-var-key  public-var-iv   }}  
+    { package rise::lib::crypt; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1106144722"; sub VERSION {"2016.1106144722"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ }  sub engname ():lvalue; no warnings; *__engname__ = sub ():lvalue {  my $self = shift; $self->{'engname'} }; *engname = sub ():lvalue {  $__RISE_SELF__->{'engname'} }; use warnings;  sub pass ():lvalue; no warnings; *__pass__ = sub ():lvalue {  my $self = shift; $self->{'pass'} }; *pass = sub ():lvalue {  $__RISE_SELF__->{'pass'} }; use warnings;  sub __CLASS_ARGS__ { (engname,pass) = ($_[1]||'AES',$_[2]||'password' ); };sub __CLASS_MEMBERS__ {q{public-function-constructor  public-function-encrypt  public-function-decrypt  public-function-set_engine  public-function-set_sha1  public-function-set_sha3  public-function-password  public-function-b64encode  public-function-b64decode  public-function-rand_pass  public-function-rand_pass2  public-function-rand_bytes  public-var-sha1  public-var-sha3  public-var-crypt_eng  public-var-passhash  public-var-key  public-var-iv   }}  
 
         sub RAND_DEV () { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'RAND_DEV') unless (caller eq 'rise::lib::crypt' || caller =~ m/^rise::lib::crypt\b/o);'/dev/urandom' }
 

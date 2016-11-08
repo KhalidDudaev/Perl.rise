@@ -19,19 +19,21 @@ namespace rise.lib {
 
         // var data;
         var out;
-        var _qobj                  = {};
-        var _tout;
+        var qobj                  = {};
+        var tout;
         var args;
+
+		public var routeData		= [];
         // var apptrue;
         // export:simple var env                = {};
 
         export:simple function wsay (data = '') {
-            self.out    ~= data;
+            self.out    		~= data;
             return self.out;
         }
 
         export:simple function out (data = '') {
-            self.out    = data;
+            self.out    		= data;
             return self.out;
         }
 
@@ -51,21 +53,21 @@ namespace rise.lib {
         }
 
         export:simple function tsay (data = '') {
-            self._tout ~= data;
-            return self._tout
+            self.tout 			~= data;
+            return self.tout
         }
 
         export:simple function tout {
-            var t = self._tout;
-            self._tout = '';
+            var t				= self.tout;
+            self.tout			= '';
             return t;
         }
 
         export:simple function query {
             var qstring = self.env.{'QUERY_STRING'};
             qstring =~ s{\:}{=>}gsx;
-            self._qobj = eval qstring;
-            return self._qobj;
+            self.qobj = eval qstring;
+            return self.qobj;
         }
 
         export:simple function start {

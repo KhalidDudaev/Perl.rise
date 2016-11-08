@@ -35,8 +35,6 @@ sub pself { $pself }
 # my $PACK_ENV 						= {};
 my $GRAMMAR							= {};
 
-# $GRAMMAR->{ORDER}       = [''];
-
 my $all_k = '';
 my $all_v = '';
 my $or = '';
@@ -71,8 +69,6 @@ sub import { no strict;
     $self = $self->new;
     $pself = $caller;
 
-    # say 'grammar caller - '.$pself;
-
 	no strict 'refs';
     if ($cmd && $cmd eq ':simple') {
     	foreach my $code (@$export) {
@@ -83,14 +79,6 @@ sub import { no strict;
 
 	return 1;
 }
-
-# sub self {
-# 	my $self					= shift if (ref $_[0] eq __PACKAGE__);
-# 	# $self						||= caller(1);
-# 	$self						||= pself;
-#     # say 'class_ref - '.$self;
-# 	return $self, @_;
-# }
 
 sub self {
 	my $self					= shift if ref $_[0] eq __PACKAGE__;
@@ -180,8 +168,6 @@ sub rule {
     my $self							= &self;
     my $action							= shift;
     my $rule							= shift;
-	# my ($action, $rule) 	= @_;
-	#my $rule_list			= rule_list();
 	my $res;
 
 	if ($rule) {
@@ -201,7 +187,6 @@ sub action {
     my $self							= &self;
 	my $action							= shift;
 	my $code							= shift;
-	# my ($action, $code) 	= @_;
 	my $res;
 
 	__error('"undefined rule \"'.$action.'\" at $file line $line\n"') unless (exists grammar->{RULE}{$action});
@@ -223,24 +208,11 @@ sub action {
 }
 
 sub parse {
-	# my $self                           = shift;
-	# my $source                         = shift;
-	# grammar                            = shift;
-	# my $rule_name_selected             = shift || [];
-	# my $confs                          = shift;
-
-
-	my $self							= shift;
-	my $source;
-	my $rule_name_selected = [];
-	my $confs;
-
-	# my $fself;
-
-	($source, grammar, $rule_name_selected, $confs,  @_)	= @_;
-
-    # say 'parse source - '.$self;
-
+	my $self                           = shift;
+	my $source                         = shift;
+	grammar                            = shift;
+	my $rule_name_selected             = shift;
+	my $confs                          = shift;
 	my $rule                           = '';
 	my $rule_name                      = '';
 	my $rule_list                      = rule_list();
@@ -278,14 +250,14 @@ sub parse {
 
 	map {
 		# if ( $self->{info_rule}{$rule_name} ){
-			my $rule_name = $_;
-			my $cnt			= 30 - length $rule_name;
-			my $indent		= 4 - length ($self->{info_rule}{$rule_name}||'');
-			# $self->{info_all} .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $self->{info_rule}{$rule_name} . " ] : PASSED\n";
+		my $rule_name = $_;
+		my $cnt			= 30 - length $rule_name;
+		my $indent		= 4 - length ($self->{info_rule}{$rule_name}||'');
+		# $self->{info_all} .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $self->{info_rule}{$rule_name} . " ] : PASSED\n";
 
-            # print "#### $cnt ####\n";
+        # print "#### $cnt ####\n";
 
-			$self->{info_all} .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $self->{info_rule}{$rule_name} . " ] : PASSED\n" if $self->{info_rule}{$rule_name};
+		$self->{info_all} .= " " x $cnt . $rule_name . " --- [" . " " x $indent . $self->{info_rule}{$rule_name} . " ] : PASSED\n" if $self->{info_rule}{$rule_name};
 		# }
 	} @{$self->{rule_order}}; #keys %$info_rule;
 
@@ -300,29 +272,13 @@ sub parse {
 	return $source;
 }
 
-# sub __parse_helper {
-#
-# 	my ($self, $rule_name, $rule, $source, $last_sourse, $passed) = @_;
-#
-# 	if ($source ne $$last_sourse && $source =~ s/$rule/__parse($rule_name, $source, $last_sourse, $passed)/gmsxe) {
-# 		#$source =~ s/$rule/__parse($rule_name, $source, $last_sourse, $passed)/gmsxe;
-# 		$source = __parse_helper($rule_name, $rule, $source, $last_sourse, $passed);
-# 	}
-# 	return $source;
-# }
-
 sub __parse {
 	my ($self, $rule_name, $source, $confs, $last_sourse) = @_;
 	my $res			= '';
 
-	#print ">>>>>>>>>>>>>>>>>>> $rule_name - ".dump($confs)."\n" if $rule_name;
-
 	$self->{passed}++;
-
 	die __error('"the action \"'.$rule_name.'\" not exists\n"') if !exists grammar->{ACTION}{$rule_name};
-
 	$res			= (exists grammar->{ACTION}{$rule_name} ? __action($self, $rule_name, $confs) : __rule(__PACKAGE__, $rule_name));
-
 	$$last_sourse	= $source;
 
 	return $res;
@@ -374,16 +330,11 @@ sub __rule {
 	{no strict; no warnings;
 		*{$self.'::'.$token}		= sub {
             return grammar->{RULE_LAST_VAR}{$token} || '';
-            # my $res     = '';
-            # $res = grammar->{RULE_LAST_VAR}{$token} if grammar->{RULE_LAST_VAR}{$token};
-            # $res = '0' if grammar->{RULE_LAST_VAR}{$token} == 0;
-            # return $res;
         };
-
 		*{$self.'::tk_'.$token}		= sub { grammar->{RULE}{$token} };
 	}
 
- grammar->{RULE}{$token} = $rule;
+	grammar->{RULE}{$token} = $rule;
 	return $rule;
 }
 
@@ -424,11 +375,8 @@ sub __action {
 
 sub __compile_RBNF {
 	my ($rule_name, $rule, $rule_list, $keyword_list)			= @_;
-	#my $kw_list						= grammar->{KW_LIST};
-	#my $keyword_list						= keyword_list();
 
 	$rule ||= '';
-
 	$rule							=~ s/^(?<!\_)($keyword_list)$/\\b$1\\b/gsx;
 	$rule							=~ s/(?<!\(\?\<)($rule_list)(?!\>)/__compile_RBNF($1, rule($1), $rule_list, $keyword_list)/gsxe if $rule ne ($1||'');
 
@@ -443,10 +391,10 @@ sub __save_rule_last_var {
     grammar->{RULE_LAST_VAR}{SPS}	= [];
 
 	map {
-	 grammar->{RULE_LAST_VAR}{$_} = $+{$_} if defined $+{$_};
+		grammar->{RULE_LAST_VAR}{$_} = $+{$_} if defined $+{$_};
 	} rule_array;
 
-	{no strict; no warnings;
+	{ no strict; no warnings;
 		for my $i (1..15) {
 		 grammar->{RULE_LAST_VAR}{SPS}[$i] = $+{'sps'.$i} || '';
 			*{$syntax_class.'::sps'.$i}		= sub { grammar->{RULE_LAST_VAR}{SPS}[$i] || '' };

@@ -11,7 +11,7 @@ namespace rise.lib.web {
         public function app2psgi (route) {
             // var env = self.env;
 
-            var psgi_app         = function (env, args) {
+            var psgi_app = function (env, args) {
                 self.header.{'status'}      = 404;
                 self.header.{'type'}        = 'text/html';
                 // self.html                   = self.file.read('C:\_DATA_EXT\_data\works\Development\_PERL\_lib\librise\rise\lib\web\err404.tmpl');
@@ -20,11 +20,12 @@ namespace rise.lib.web {
                 self.args                   = args;
 
                 var objref                  = self.route.getRoute;
+				// var routeData				= [$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15];
 
                 if (objref){
                     self.header.{'status'}      = 200;
-                    self.html                   = objref.() if ref objref eq 'CODE';
-                    self.html                   = objref.app if ref objref ne 'CODE';
+                    self.html                   = objref.(self.routeData) if ref objref eq 'CODE';
+                    self.html                   = objref.controller(self.routeData) if ref objref ne 'CODE';
                 }
 
                 return [self.header.{'status'}, ['Content-Type' => self.header.{'type'}], [self.html]];

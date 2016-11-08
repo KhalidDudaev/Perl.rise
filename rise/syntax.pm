@@ -921,8 +921,17 @@ sub confirm {
 
 #$parser->grammar = grammar;
 
-sub compile { shift->parse (shift, grammar) }
-# sub compile { grammar }
+sub compile {
+	my $self			= shift;
+	my $source			= shift;
+	# my $source2			= shift;
+	# say '-------- syntax compile ---------';
+	# say $source;
+	# say '---------------------------------';
+	$self->parse ($source, grammar);
+}
+
+# sub rules { grammar }
 #sub parser { $parser }
 
 #######################################################################################
@@ -2056,7 +2065,7 @@ sub _syntax_auth {
     my $res;
 
     # $fname                                  =~ s/\.puma$//sx;
-    &var_auth->{$fname}                   = $auth;
+    &var_auth->{$fname}                   	= $auth;
 
 
     # &var_auth->{$class}                   = 'our $'.$class.'::AUTHORITY = "' . $auth . '";';
@@ -2074,7 +2083,7 @@ sub _syntax_vers {
     my $res;
 
     # $fname                                  =~ s/\.puma$//sx;
-    &var_ver->{$fname}                    = $ver;
+    &var_ver->{$fname}                    	= $ver;
 
     # $res                                    = '$main::'.$class.'::VERSION = "' . $ver .'";';
     $res                                    = '# VERSION ' . $ver;
@@ -2205,8 +2214,11 @@ sub __object {
 	$res				= "{ package ${name};".$sps1."use rise::core::object::${object};". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $class_args, $confs) . $sps4.$block."}";
 	# $res				= "{ package ${name};".$sps1."use strict; use warnings; use rise::core::object::class;". $sps2 . $extends . $sps3 . $accmod . __object_header($self, $object, $name || '', $confs) . $sps4.$block."}";
 
-    &var_members->{$name} = '';
+    # &var_members->{$name} = '';
     # &var_exports->{$name} = '';
+
+	&var_members = {};
+	&var_exports = {};
 
     &var_wrap_code->{$name} = $res;
 	$res = '%%%WRAP_CODE_' . $name . '%%%';
@@ -2225,9 +2237,25 @@ sub __object_header {
     my $fname           = $self->{FNAME};
 
     # $fname                                  =~ s/\.puma$//sx;
-    my $auth            = &var_auth->{$fname} || $self->{AUTHORITY};
-    my $ver             = &var_ver->{$fname} || $self->{VERSION};
+
+
+
+    my $auth            = exists &var_auth->{$fname}	? &var_auth->{$fname}	: $self->{AUTHORITY};
+    my $ver             = exists &var_ver->{$fname}		? &var_ver->{$fname}	: $self->{VERSION};
+
+    # my $auth            = &var_auth->{$fname} if exists &var_auth->{$fname};
+    # my $ver             = &var_ver->{$fname} if exists &var_ver->{$fname};
+	#
+    # my $auth            ||= $self->{AUTHORITY};
+    # my $ver             ||= $self->{VERSION};
+
     my $header          = {};
+
+	# say '------------ syntax -------------';
+	# say $self->{FNAME};
+	# say $auth;
+	# say $ver;
+	# say '---------------------------------';
 
 	$header			= {
         namespace   => "use rise::core::object::namespace;",

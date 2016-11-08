@@ -1,6 +1,6 @@
 use rise;
 { package rise::lib::tman::plugin; use rise::core::object::namespace;   
-	{ package rise::lib::tman::plugin::puma; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1105052847"; sub VERSION {"2016.1105052847"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-plugin  private-var-r}} 
+	{ package rise::lib::tman::plugin::puma; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1106144320"; sub VERSION {"2016.1106144320"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-plugin  private-var-r}} 
          sub r ():lvalue; no warnings; *__r__ = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'r') unless (caller eq 'rise::lib::tman::plugin::puma' || caller =~ m/^rise::lib::tman::plugin::puma\b/o); my $self = shift; $self->{'r'} }; *r = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', 'r') unless (caller eq 'rise::lib::tman::plugin::puma' || caller =~ m/^rise::lib::tman::plugin::puma\b/o); $__RISE_SELF__->{'r'} }; use warnings;  r = new rise::;
 		{ package rise::lib::tman::plugin::puma::plugin; use rise::core::object::function;  sub plugin {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings;  $self = $_[0]; my $conf; no warnings; sub conf ():lvalue; *conf = sub ():lvalue { $conf }; use warnings;  ($conf) = ($_[1]); 
 			if ($self->src_name){

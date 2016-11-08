@@ -7,6 +7,7 @@ namespace rise.lib.web {
     public class route {
 
         public var routes           = { 'GET' => [], 'POST' => [], 'PUT' => [], 'DELETE' => [] };
+		// public var routeData		= [];
 
         public function setRoute (rmeth, objref) {
             push self.routes.{rmeth}, [objref];
@@ -19,6 +20,8 @@ namespace rise.lib.web {
             // self.apptrue             = 0;
             foreach var r (self.routes.{self.env.{'REQUEST_METHOD'}}) {
                 if (self.env.{'REQUEST_URI'} =~ m{^(?:$r->[0])$}sx) {
+					self.routeData				= [$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15];
+					// self.dmsg ($1);
                     objref = r.[1];
                     // self.apptrue                = 1;
                     last;
