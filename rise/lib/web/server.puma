@@ -16,16 +16,23 @@ namespace rise.lib.web {
                 self.header.{'type'}        = 'text/html';
                 // self.html                   = self.file.read('C:\_DATA_EXT\_data\works\Development\_PERL\_lib\librise\rise\lib\web\err404.tmpl');
                 self.html                   = self.template('C:\_DATA_EXT\_data\works\Development\_PERL\_lib\librise\rise\lib\web\err4040.tmpl', { 'errno' => 404, 'errmsg' => 'page not found' });
-                self.self.env               = env;
+                self.env               		= env;
                 self.args                   = args;
 
                 var objref                  = self.route.getRoute;
+				var code					= objref.[1];
+				var coderef					= ref code;
+				var rparamArr				= objref.[2];
+				var rparamHash				= objref.[3];
+
+				// self.dmsg(dump rparamHash);
+				// self.dmsg(dump self.rparam);
 				// var routeData				= [$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15];
 
                 if (objref){
                     self.header.{'status'}      = 200;
-                    self.html                   = objref.(self.routeData) if ref objref eq 'CODE';
-                    self.html                   = objref.controller(self.routeData) if ref objref ne 'CODE';
+                    self.html                   = code.(rparamHash, rparamArr) if coderef eq 'CODE';
+                    self.html                   = code.controller(rparamHash, rparamArr) if coderef ne 'CODE' && coderef =~ m/(?:[^\d][a-zA-Z0-9_](?:\:\:)?)+/;
                 }
 
                 return [self.header.{'status'}, ['Content-Type' => self.header.{'type'}], [self.html]];

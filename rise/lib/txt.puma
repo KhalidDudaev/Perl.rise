@@ -1,10 +1,10 @@
 // text decoration lib
 public class rise.lib.txt {
 
-    export:simple function line (args) {
-    	var char		= args.{'char'} || '#';
-    	var title		= args.{'title'} || '';
-    	var len    		= args.{'length'} || 75;
+    export:simple function line (data) {
+    	var char		= data.{'char'} || '#';
+    	var title		= data.{'title'} || '';
+    	var len    		= data.{'length'} || 75;
 
     	title			= char x 3 ~ ' ' ~ title ~ ' ' if title;
     	return title ~ char x (len - length(title));

@@ -95,6 +95,7 @@ sub init { no strict 'refs';
 	# *{"UNIVERSAL::CORE::size"} = \&size;
 }
 
+# sub __class__ { &__RISE_OREF }
 sub _ (){ $_; };
 sub a (){ $a; };
 sub b (){ $b; };
@@ -236,7 +237,7 @@ sub __RISE_EACH ($){
 #    keys %$hash;
 #
 #    while((my $k, my $v) = each(%$hash)) {
-#        # local $_ = $v; # XXX may I break stuff?
+#        # local $_ = $v; # nc:0 may I break stuff?
 #        $cb->($k, $v);
 #    }
 #

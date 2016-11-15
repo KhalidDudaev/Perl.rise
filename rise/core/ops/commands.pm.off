@@ -203,7 +203,7 @@ sub each ($){
 #    keys %$hash;
 #
 #    while((my $k, my $v) = each(%$hash)) {
-#        # local $_ = $v; # XXX may I break stuff?
+#        # local $_ = $v; # may I break stuff?
 #        $cb->($k, $v);
 #    }
 #

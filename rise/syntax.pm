@@ -119,7 +119,7 @@ sub confirm {
 	var('protected_code')			= q/'__PACKAGE__->__RISE_ERR(\'PROTECTED_CODE\', \''.$name.'\') unless caller->isa(\''.$parent_class.'\');'/;
 	var('public_code')				= q/''/;
 
-	var ('parser_variable_class')			= [
+	var ('parser_variable_class')	= [
         '_variable_list',
 		# '_variable_observe',
 		# '_variable_boost',
@@ -129,7 +129,7 @@ sub confirm {
         # '_variable_call',
 	];
 
-    var ('parser_variable_function')			= [
+    var ('parser_variable_function')	= [
         '_variable_list',
 		# '_variable_observe',
 		# '_variable_boost',
@@ -160,7 +160,7 @@ sub confirm {
 		'_thread_call',
 	];
 
-    var ('parser_code_function')				= [
+    var ('parser_code_function')	= [
         # '_variable_list',
         # '_variable_observe',
         # '_variable_boost',
@@ -175,7 +175,7 @@ sub confirm {
         '_foreach_arr',
 	];
 
-	var ('parser_code_class')				= [
+	var ('parser_code_class')	= [
         # '_variable_list',
         # '_variable_observe',
         # '_variable_boost',
@@ -188,28 +188,27 @@ sub confirm {
         @{var 'parser_variable_class'},
 
         '_foreach_arr',
-
 	];
 
-	var ('parser_class')			= [
+	var ('parser_class')	= [
 		'_class',
 		'_inject',
 		'_using',
 		@{var 'parser_code_class'},
 	];
 
-	var ('parser_interface')		= [
+	var ('parser_interface')	= [
 		'_interface_set',
 	];
 
-	var ('parser_abstract')			= [
+	var ('parser_abstract')		= [
 		'_interface_set',
 		'_inject',
 		'_using',
 		@{var 'parser_code_class'},
 	];
 
-	var ('parser_namespace')		= [
+	var ('parser_namespace')	= [
 		'_comma_quarter',
 		'_namespace',
 		'_inject',
@@ -222,7 +221,7 @@ sub confirm {
         # @{var 'parser_interface'},
 	];
 
-	var ('parser__')				= [
+	var ('parser__')	= [
 
 		'_commentC',
         '_auth',
@@ -235,7 +234,6 @@ sub confirm {
 
 		'_nonamedblock',
 		@{var 'parser_namespace'},
-        '_unwrap_code',
         '_unwrap_code',
         '_op_regex',
 
@@ -312,7 +310,10 @@ sub confirm {
 
 	keyword dot					    => '\.';
 	keyword self					=> 'self';
+	keyword fnargs					=> 'args';
+	# keyword self_pkg       			=> '__RISE_SELF__';
 	keyword self_pkg       			=> '__RISE_SELF__';
+	keyword self_fn       			=> '__PACKAGE__';
     keyword context				    => '_';
     # keyword concat				    => '_\+';
     keyword concat				    => '\~';
@@ -373,6 +374,8 @@ sub confirm {
 	token export					=> keyword 'export';
 	token self						=> keyword 'self';
 	token self_pkg					=> keyword 'self_pkg';
+	token self_fn					=> keyword 'self_fn';
+	token self_con					=> q/(?:\$?self_pkg|self_fn)/;
 
 	token re_match1					=> keyword 're_match1';
 	token re_match2					=> keyword 're_match2';
@@ -742,16 +745,20 @@ sub confirm {
     rule _function_compile 					=> q/[<accessmod>] [<override>] <function> [<name>] [<code_args>] [<code_type>] <block_brace>/;
 	rule _function_defs 					=> q/[<accessmod>] <function> [<args_attr>] <op_end><nline>/;
 	# rule _function_call					=> q/(_NOT:__METHOD__)<name> \( (NOT:__PACKAGE__)/;
-	rule _function_call					    => q/(_NOT:op_dot)<name> \((NOT: \$self_pkg)/;
+	# rule _function_call					    => q/(_NOT:op_dot)<name> \((NOT: \$self_pkg)/;
+	rule _function_call					    => q/(_NOT:op_dot)<name> \((NOT: self_con)/;
 	# rule _function_call					=> q/(_NOT:op_dot)(NOT:<name_ops>)<name> \((NOT: __PACKAGE__)/;
 	rule _function_call_post1				=> q/(__METHOD__)+/;
-	rule _function_call_post2				=> q/self_pkg\,\)/;
+	# rule _function_call_post2				=> q/self_pkg\,\)/;
+	rule _function_call_post2				=> q/<self_con>\,\)/;
 
     rule _thread_compile 					=> q/[<accessmod>] <thread> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
     # rule _thread_call					    => q/(NOT:__METHOD__)<name> \( (NOT:$self_pkg)/;
-    rule _thread_call					    => q/(_NOT:op_dot)<name> \((NOT: $self_pkg)/;
+    # rule _thread_call					    => q/(_NOT:op_dot)<name> \((NOT: $self_pkg)/;
+    rule _thread_call					    => q/(_NOT:op_dot)<name> \((NOT: self_con)/;
     rule _thread_call_post1				    => q/(__METHOD__)+/;
-    rule _thread_call_post2				    => q/self_pkg\,\)/;
+    # rule _thread_call_post2				    => q/self_pkg\,\)/;
+    rule _thread_call_post2				    => q/<self_con>\,\)/;
 
 	rule _variable_list						=> q/[<accessmod>] <variable> \( <name_list_wtype> \) [<op_end>]/;
 	rule _variable_observe					=> q/[<accessmod>] <variable> <name>/;
@@ -857,12 +864,12 @@ sub confirm {
 	action _regex_replace					=> \&_syntax_regex_replace;
 
 	action _function_defs 					=> \&_syntax_function_defs;
-	action _function_compile 						=> \&_syntax_function_compile;
+	action _function_compile 				=> \&_syntax_function_compile;
 	action _function_call					=> \&_syntax_function_call;
-	action _function_call_post1			=> \&_syntax_function_call_post1;
-	action _function_call_post2			=> \&_syntax_function_call_post2;
+	action _function_call_post1				=> \&_syntax_function_call_post1;
+	action _function_call_post2				=> \&_syntax_function_call_post2;
 
-	action _thread_compile 						    => \&_syntax_thread_compile;
+	action _thread_compile 					=> \&_syntax_thread_compile;
 	action _thread_call                     => \&_syntax_thread_call;
 	action _thread_call_post1			    => \&_syntax_thread_call_post1;
 	action _thread_call_post2			    => \&_syntax_thread_call_post2;
@@ -996,6 +1003,7 @@ sub _syntax_including {
 }
 
 sub _syntax_unwrap_code {
+	# say 'unwrap_code';
 	my $all				= &all;
 	my $res				= '';
 	1 while $all =~ s/%%%WRAP_CODE_(\w+(?:::\w+)*)%%%/&var_wrap_code->{$1}/gsxe;
@@ -1289,12 +1297,15 @@ sub _syntax_function_defs {
 sub _syntax_function_call {
 	my ($self, $rule_name, $confs)			= @_;
 	my $parent_class	= $confs->{parent};
+	my $parent_type     = $confs->{parent_type}||'';
 	my $name			= &name;
-	my $this			= '';
+	my $fncall_self		= '';
 	my $tk_accmod		= token 'accessmod';
 	# my $fn_list			= &var_members->{$parent_class}||'';
 	# my $method			= '__METHOD__';
 	my $members_list	= &var_members->{$parent_class}||'';
+
+	# say 'funcall parent --> ' . $parent_type;
 
 	# $members_list		=~ s/$tk_accmod//gsx;
 	# $members_list		=~ s/\-function\-//gsx;
@@ -1304,15 +1315,16 @@ sub _syntax_function_call {
     $members_list = join '\b|\b', $members_list =~ m/function-(\w+)/gsx;
 
 	if ($members_list && $name =~ m/^\b(?:$members_list)\b/sx) {
-		$this			= '$'.&var_pkg_self.',';
+		$fncall_self			= '$'.&var_pkg_self.',';
+		$fncall_self			= '__PACKAGE__,' if $parent_type eq 'function';
 		# print ">>> $parent_class->$name | fnlist - *$members_list* \n";
 	}
 
-	return "${name}...(${this}";
+	return "${name}...(${fncall_self}";
 }
 
 sub  _syntax_function_call_post1 {''}
-sub  _syntax_function_call_post2 {&var_pkg_self.')'}
+sub  _syntax_function_call_post2 {&self_con.')'}
 
 sub _syntax_function_compile {
 	my ($self, $rule_name, $confs)			= @_;
@@ -1348,7 +1360,8 @@ sub _syntax_function_compile {
 		$fn_name		  = $name;
 		# $anon_code		  = 'return &'.$name.'; ' ;
         $anon_code		  = 'return '.$name.'($'.&var_pkg_self.',@_); ';
-        $anon_code		  = 'return '.$name.'(__PACKAGE__, @_); ' if $parent_type eq 'function';
+        # $anon_code		  = 'return '.$name.'(__PACKAGE__, @_); ' if $parent_type eq 'function';
+        $anon_code		  = 'return '.$name.'($self, @_); ' if $parent_type eq 'function';
 		$anon_code_open   = 'sub { ';
 		$anon_code_close  = '}';
 		# $self_args		  = '';
@@ -1405,7 +1418,7 @@ sub _syntax_function_compile {
 	my $args_def			= '';
 	my $proto			= '';
 	# my $i = 0;
-	my $i = 1;
+	my $i = 0;
 
 	s{
 		(?<name>\b\w+(?:\s*\:\s*\w+)?\b)
@@ -1426,9 +1439,21 @@ sub _syntax_function_compile {
 	$self_args =~ s/^\,//;
 
 	# $arguments			= &kw_local." ".&kw_variable." ($self_args) = ($args_def);" if $self_args;
-    $arguments			= &kw_local." ".&kw_variable." ".&kw_self." = \$_[0]; ";
+
+    # $arguments			= &kw_local." ".&kw_variable." ".&kw_self." = \$_[0]; ";
+	# $arguments			.= &kw_local." ".&kw_variable." ($self_args) = ($args_def);" if $self_args;
+	# $arguments			= $self->parse($arguments, &grammar, [@{var 'parser_variable_function'}], { parent => $name });
+
+	$arguments			= &kw_local." ".&kw_variable." ".&kw_self." = shift; ".&kw_local." ".&kw_variable." ".&kw_fnargs." = \\\@_; ";
 	$arguments			.= &kw_local." ".&kw_variable." ($self_args) = ($args_def);" if $self_args;
 	$arguments			= $self->parse($arguments, &grammar, [@{var 'parser_variable_function'}], { parent => $name });
+
+	&var_wrap_code_header->{'FNARGS_'.$name} = $arguments;
+	$arguments = '%%%WRAP_CODEHEADER_FNARGS_' . $name . '%%%';
+
+	# say 'fn args ->' . $arguments;
+	# $arguments			=~ s/\_\_RISE\_SHIFT/shift/sx;
+
 
 	if ($type) {
         my ($fn_type, $fn_type_args)	= $type =~ m/\:\s*(\w+)(?:\((.*?)\))?/;
@@ -1462,8 +1487,9 @@ sub _syntax_function_compile {
 sub _syntax_thread_call {
 	my ($self, $rule_name, $confs)			= @_;
 	my $parent_class	= $confs->{parent};
+	my $parent_type     = $confs->{parent_type}||'';
 	my $name			= &name;
-	my $this			= '';
+	my $fncall_self		= '';
 	my $tk_accmod		= token 'accessmod';
 	# my $fn_list			= &var_members->{$parent_class}||'';
 	# my $method			= '__METHOD__';
@@ -1475,14 +1501,15 @@ sub _syntax_thread_call {
 	$members_list		=~ s/\s+/\|/gsx;
 
     if ($members_list && $name =~ m/\b(?:$members_list)\b/sx) {
-		$this			= '$'.&var_pkg_self.',';
+		$fncall_self			= '$'.&var_pkg_self.',';
+		$fncall_self	= '__PACKAGE__,' if $parent_type eq 'function';
 	}
 
-	return "${name}...(${this}";
+	return "${name}...(${fncall_self}";
 }
 
 sub _syntax_thread_call_post1 {''}
-sub _syntax_thread_call_post2 {&var_pkg_self.')'}
+sub _syntax_thread_call_post2 {&self_con.')'}
 
 sub _syntax_thread_compile {
 	my ($self, $rule_name, $confs)			= @_;
@@ -1614,122 +1641,9 @@ sub _syntax_thread_compile {
     &var_wrap_code_header->{$name} = $header;
     $header = '%%%WRAP_CODEHEADER_' . $name . '%%%';
 
-    $block 				= $self->parse($block, &grammar, [@{var 'parser_code_function'}], { parent => $name });
+    $block 				= $self->parse($block, &grammar, [@{var 'parser_code_function'}], { parent => $name, parent_type => 'function' });
 
     $res				= "${anon_code_open}${anon_code}{ package ${name}; ${header}${s1}$retval sub ${trd_name}${s2}${s3}{ ${accmod} my \$thr; \$thr = threads->create(sub{${arguments}${s4}${block}}, \@_); { no strict; no warnings; \@{${parent_class}::THREAD::${trd_name}}[\$thr->tid] = \$thr; } return \$thr; }}${anon_code_close}";
-	&var_wrap_code->{$name} = $res;
-	$res = '%%%WRAP_CODE_' . $name . '%%%';
-
-	return $res;
-}
-
-sub _syntax_thread_off {
-	my ($self, $rule_name, $confs)			= @_;
-    my $header;
-	my $accmod             = &accessmod || &var_accessmod;
-	my $name               = &name;
-	my $args               = &code_args || '';
-	my $attr               = &code_attr || '';
-	my $block              = &block_brace;
-	my $parent_class       = $confs->{parent};
-	my $fn_name            = &name;
-	my ($s1,$s2,$s3,$s4)   = (&sps1,&sps2,&sps3,&sps4);
-	my $anon_code          = '';
-    my $anon_code_open     = '';
-    my $anon_code_close    = '';
-	my $arguments          = '';
-	my $self_args          = &kw_self;
-	my $fn_list;
-	my $res                = '';
-
-	if ($name){
-		&var_members->{$parent_class} .= ' '.$accmod.'-thread-'.$name;
-		&var_members->{$parent_class} =~ s/^\s+//;
-		&var_members->{$parent_class.'::'.$name} .= ' '.$accmod.'-thread-'.$name; # for recursion caller
-        &var_members->{$parent_class.'::'.$name} =~ s/^\s+//;
-	}
-
-    if (!$name){
-		&var_anon_fn_count++;
-		$name			  = &var_anon_code_pref.sprintf("%05d", &var_anon_fn_count);
-		$fn_name		  = $name;
-		$anon_code		  = 'return &'.$fn_name.'; ' ;
-		$anon_code_open   = 'sub { ';
-		$anon_code_close  = '}';
-		$self_args		= '';
-	}
-
-	if ($args !~ m/\(\s*(\w+.*?)\)/sx) {
-		$attr = $args . $attr;
-		$args = '';
-	}
-
-    if ($accmod =~ s/export//sx){
-        my @export_tags                 = $accmod =~ m/\:\w+/gsx;
-
-        push @export_tags, ':import' if !$accmod;
-        $accmod                         = 'public';
-
-        foreach my $t ($name, ':all', ':thread', @export_tags){ no strict 'refs';
-            &var_exports->{$parent_class}{$t} .= ' '.$name;
-    		&var_exports->{$parent_class}{$t} =~ s/^\s+//;
-    		&var_exports->{$parent_class.'::'.$name}{$t} .= &var_exports->{$parent_class}{$t}; # for recursion caller
-        }
-    }
-
-	$accmod            = __accessmod($self, 'code_'.$accmod, $parent_class, $name);
-
-	$name              = $parent_class . '::' . $name;
-
-	#if ($args) {
-		$args				=~ s/^\((.*?)\)$/$1/;
-		$self_args			.= ',' . $args if $args;
-
-		my @args = split /\,/,$self_args;
-		my $args_list			= '';
-		my $args_def			= '';
-		my $proto			= '';
-		my $i = 0;
-
-		s{
-			(?<name>\b\w+(?:\s*\:\s*\w+)?\b)
-			(\s*\=\s*(?<def>.*))?
-		  }{
-			$args_list	.= $+{name} . ',';
-			$args_def 	.= '$_['.$i.']';
-			$args_def	.=('||'.$+{def}) if $+{def};
-			$args_def	.=',';
-			$proto		.= '$';
-			$i++;
-		}sxe for @args;
-
-		$args_list	=~ s/\,$//;
-		$args_def	=~ s/\,$//;
-
-		$self_args	= $args_list;
-	#}
-	$self_args =~ s/^\,//;
-
-	$arguments			= &kw_local." ".&kw_variable." ($self_args) = ($args_def);" if $self_args;
-	$arguments			= $self->parse($arguments, &grammar, [@{var 'parser_variable'}], { parent => $name });
-	$block 				=~ s/\{(.*)\}/$1/gsx;
-	# $block 				= $self->parse($block, &grammar, ['_variable_observe', '_variable_boost', '_variable_optimize'], { parent => $name });
-	#$block 				= $self->parse($block, &grammar, [@{var 'parser_variable'}], { parent => $parent_class });
-	$block 				= $self->parse($block, &grammar, [@{var 'parser_code'}], { parent => $name });
-
-    # $header             = "my \$thr;${s1}{ no strict; no warnings; \$thr = \\\@{'${parent_class}::THREAD::${fn_name}'}; } push \@{\$thr}, threads->create";
-    $header             = "my \$thr;${s1} \$thr = threads->create";
-    &var_wrap_code_header->{$name} = $header;
-    $header = '%%%WRAP_CODEHEADER_' . $name . '%%%';
-
-    # print "\n#### ${parent_class}::THREAD::${fn_name} ####\n";
-
-    # $block              = $header . ' ( sub {'. $arguments . $s4 . $block . '}, @_ ); return $thr->[0] if scalar @$thr == 1; return $thr;';
-    # $block              = $header . ' ( sub {'. $arguments . $s4 . $block . '}, @_ ); { no strict; no warnings; push \@{'.${parent_class}.'::THREAD::'.${fn_name}.'}, $thr;} return $thr;';
-    $block              = $header . ' ( sub {'. $arguments . $s4 . $block . '}, @_ ); { no strict; no warnings; @{'.${parent_class}.'::THREAD::'.${fn_name}.'}[$thr->tid] = $thr; } return $thr;';
-
-	$res				= "${anon_code_open}${anon_code}{ package ${name}; use threads; use rise::core::ops::extends 'rise::core::object::thread', '${parent_class}'; use rise::core::object::thread::thread; BEGIN { __PACKAGE__->__RISE_COMMANDS } sub ${s1}${fn_name}${s2}${attr}${s3}{ ${accmod} ${block}}}${anon_code_close}";
-	#$res 				= $self->parse($res, &grammar, [@{var 'parser_code'}], { parent => $parent_class });
 	&var_wrap_code->{$name} = $res;
 	$res = '%%%WRAP_CODE_' . $name . '%%%';
 
@@ -2007,7 +1921,8 @@ sub _syntax_variable_call {
 
     # print $members_list . "\n";
 
-	if ($members_list && $name =~ m/\b(?:$members_list)\b/sx && $name !~ m/WRAP\_VARIABLE\_/sx) {
+	# if ($members_list && $name =~ m/\b(?:$members_list)\b/sx && $name !~ m/WRAP\_VARIABLE\_/sx) {
+	if ($members_list && $name =~ m/\b(?:$members_list)\b/sx && $name !~ m/WRAP\_/sx) {
 		$this			= '$';
 		# print ">>> $parent_class->$name | fnlist - *$members_list* \n";
 	}
@@ -2204,7 +2119,7 @@ sub __object {
 	$block 				=~ s/\{(.*)\}/$1/gsx;
 
 	#$block 				= $self->parse($block, &grammar, ['_variable_boost', '_variable_optimize'], { parent => $parent_class });
-	$block 				= $self->parse($block, &grammar, [@{var 'parser_'.$object}], { parent => $name });
+	$block 				= $self->parse($block, &grammar, [@{var 'parser_'.$object}], { parent => $name, parent_type => $object });
 	# $block 				= $self->parse($block, &grammar, [@{var 'parser_code'}], { parent => $name });
 
     # &var_wrap_code_header->{$name.'_CLASS_SELF_H'} = '__PACKAGE__->{\'SELF\'} = shift;';
@@ -2259,7 +2174,7 @@ sub __object_header {
 
 	$header			= {
         namespace   => "use rise::core::object::namespace;",
-		class		=> 'our $AUTHORITY = "'.$auth.'"; sub AUTHORITY {"'.$auth.'"}; our $VERSION = "'.$ver.'"; sub VERSION {"'.$ver.'"}; my $'.&var_pkg_self.' = bless {}; sub '.&var_pkg_self.' ():lvalue { $'.&var_pkg_self.' } ',
+		class		=> 'our $AUTHORITY = "'.$auth.'"; sub AUTHORITY {"'.$auth.'"}; our $VERSION = "'.$ver.'"; sub VERSION {"'.$ver.'"}; my $'.&var_pkg_self.' = bless {}; sub '.&var_pkg_self.' ():lvalue { $'.&var_pkg_self.' } sub __class__ { $'.&var_pkg_self.' } ',
 		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; ",
 		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
 		# class		=> " BEGIN { no strict 'refs'; *{'".$name."::'.\$_} = \\&{'".$parent_class."::IMPORT::'.\$_} for keys \%".$parent_class."::IMPORT::; }; sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",

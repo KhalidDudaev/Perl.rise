@@ -7,28 +7,69 @@ namespace rise.lib.web {
     public class route {
 
         public var routes           = { 'GET' => [], 'POST' => [], 'PUT' => [], 'DELETE' => [] };
-		// public var routeData		= [];
 
-        public function setRoute (rmeth, objref) {
+        public function setRoute (rmeth, objref) { //DOC: привязывает паттерн роута к коду или к объекту с методом "controller" и сохраняет их.
+
+			#doc: setRoute sdfksdflksjdlfsjdfjlk
+			var nn						= 1;
+
+			objref.[0]					= self.routeParse(objref.[0]);
             push self.routes.{rmeth}, [objref];
+
+			// self.dmsg(objref.[0]);
+
             return self.routes.{rmeth};
         }
 
-        public function getRoute {
-            // self.dmsg(self);
+        public function getRoute { //DOC: сравнивает роут с паттерном и при совпадении возвращает массив содержащий паттерн, код и если это предусмотренно шаблоном, данные из строки запроса.
             var objref;
-            // self.apptrue             = 0;
-            foreach var r (self.routes.{self.env.{'REQUEST_METHOD'}}) {
-                if (self.env.{'REQUEST_URI'} =~ m{^(?:$r->[0])$}sx) {
-					self.routeData				= [$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15];
-					// self.dmsg ($1);
-                    objref = r.[1];
-                    // self.apptrue                = 1;
+			var reqmeth 			= self.env.{'REQUEST_METHOD'};
+			var requri 				= self.env.{'REQUEST_URI'};
+
+            foreach var r (self.routes.{reqmeth}) {
+				// local %+;
+                if (requri =~ m{^(?:$r->[0])$}gsx) {
+					r.[2]				= [$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15];
+					r.[3]				= clone \%+;
+					// self.dmsg(dump r.[3]);
+                    objref = r;
                     last;
                 };
             }
             return objref;
         }
+
+		function routeParse (route) {
+			var nn				= 1;
+			var stat			= '';
+
+			route					=~ s/\*/'(?<m'. $nn++ .'>.*?)'/gsxe;
+
+			route					=~ s/
+				\:(?<name>(?!\d)[a-zA-Z0-9]+)(?:\[(?<data>.*?)\])?
+			/
+				my $data			= '.*?';
+				$data = $+{data}						if $+{data};
+				$data = __PACKAGE__->codedata($data)	if $data;
+				'(?<'.$+{name}.'>'.$data.')';
+			/gsxe;
+
+			return route;
+
+			function codedata (data) {
+				data				=~ s/a/[a-zA-Z]/gsx;
+				data				=~ s/d/\\d/gsx;
+				data				=~ s/
+					(\d)(?:\-(\d))?
+				/
+					my $to = '';
+					$to = ",$2" if $2;
+					'{'.$1.$to.'}'
+				/gsxe;
+
+				return data;
+			}
+		}
 
     }
 

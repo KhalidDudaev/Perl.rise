@@ -10,20 +10,21 @@ using rise.lib.web.template;
 // using web::route;
 namespace rise.lib {
 
-    public class web {
+    public class web { //OK
 
-        var file                   = new rise.lib.fs.file;
-        var route                  = new rise.lib.web.route;
-        var server                 = new rise.lib.web.server;
-        var tmpl                   = new rise.lib.web.template;
+        var file					= new rise.lib.fs.file;
+        var route					= new rise.lib.web.route;
+        var server					= new rise.lib.web.server;
+        var tmpl					= new rise.lib.web.template;
 
         // var data;
         var out;
-        var qobj                  = {};
+        var qobj					= {};
         var tout;
         var args;
+		var dmsg_used				= false;
 
-		public var routeData		= [];
+		// public var rparam			= ['NO DATA'];
         // var apptrue;
         // export:simple var env                = {};
 
@@ -103,9 +104,12 @@ namespace rise.lib {
         }
 
         export:simple function dmsg (data) {
+			var web = 'rise::lib::web';
+			// var web = __class__;
             require CGI;
             var msg;
-            msg ~= CGI::header();
+            msg ~= CGI::header() unless web.dmsg_used;
+			web.dmsg_used		= true;
         	msg ~= "<br>################################################<br>";
         	msg ~= data;
         	msg ~= "<br>################################################<br>";
