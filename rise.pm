@@ -38,7 +38,8 @@ my $file						= new rise::lib::fs::file::;
 my $path						= new rise::lib::fs::path::;
 my $syntax						= new rise::syntax:: $conf;
 
-$syntax->confirm;
+my $rules = $syntax->confirm;
+$file->file('write', 'C:\_DATA_EXT\_data\works\Development\_PERL\_lib\librise\puma.rules', dump $rules);
 ############################################################################################################
 
 sub new {

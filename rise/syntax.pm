@@ -167,10 +167,10 @@ sub confirm {
         '_regex_match',
 		'_regex_replace',
 
-		@{var 'parser_function'},
-		@{var 'parser_thread'},
-		@{var 'parser_loops'},
-        @{var 'parser_variable_function'},
+		@{&var_parser_function},
+		@{&var_parser_thread},
+		@{&var_parser_loops},
+        @{&var_parser_variable_function},
 
         '_foreach_arr',
 	];
@@ -182,10 +182,10 @@ sub confirm {
         '_regex_match',
 		'_regex_replace',
 
-		@{var 'parser_function'},
-		@{var 'parser_thread'},
-		@{var 'parser_loops'},
-        @{var 'parser_variable_class'},
+		@{&var_parser_function},
+		@{&var_parser_thread},
+		@{&var_parser_loops},
+        @{&var_parser_variable_class},
 
         '_foreach_arr',
 	];
@@ -194,7 +194,7 @@ sub confirm {
 		'_class',
 		'_inject',
 		'_using',
-		@{var 'parser_code_class'},
+		@{&var_parser_code_class},
 	];
 
 	var ('parser_interface')	= [
@@ -912,10 +912,11 @@ sub confirm {
 	action _including						=> \&_syntax_including;
 	action _commentC 						=> \&_syntax_commentC;
 
-	order(var 'parser__');
+	# order(var 'parser__');
+	order(&var_parser__);
 
 	#print dump(order);
-	# print token 'function';
+	# print &tk_function;
 	# print rule '_op_for_each';
 	# print "\n";
 	# print rule '_op_dot';
@@ -1070,7 +1071,7 @@ sub _syntax_for {
     $for_each           = '__FOR_COND__' if &for_each eq 'for';
     $for_each           = '__FOREACH_COND__' if &for_each eq 'foreach';
 
-    # $block 				= $self->parse($block, &grammar, [@{var 'parser_loops'}], { parent => $parent_class });
+    # $block 				= $self->parse($block, &grammar, [@{&var_parser_loops}], { parent => $parent_class });
 
     $for 				= $for_each.$sps1.' ('.$sps3.$name.' ='.$sps4.$cond.$sps5.')'.$sps6.$block;
 	$for 				= '{ <kw_local> '.$sps2.'<variable> '.$name.'; '.$for.'}' if &variable;
@@ -1086,8 +1087,8 @@ sub _syntax_foreach {
     my $for_each        = '';
 	my $cond			= &block_paren;
     my $block			= &block_brace;
-	my $tk_self_name	= token 'self_name';
-	my $tk_sigils		= token 'sigils';
+	my $tk_self_name	= &tk_self_name;
+	my $tk_sigils		= &tk_sigils;
     my ($sps,$sigil,$name)     = $cond =~ m/^\((\s*)($tk_sigils)?($tk_self_name)/sx;
 
     # &var_members->{$parent_class} .= ' local-var-'.$name if &variable;
@@ -1097,8 +1098,8 @@ sub _syntax_foreach {
     $for_each           = '__FOREACH__' if &for_each eq 'foreach';
 
     $cond               = __for_arr($parent_class, $cond);
-    # $cond 				= $self->parse($cond, &grammar, [@{var 'parser_variable'}], { parent => $parent_class });
-    $block 				= $self->parse($block, &grammar, [@{var 'parser_loops'}], { parent => $parent_class });
+    # $cond 				= $self->parse($cond, &grammar, [@{&var_parser_variable}], { parent => $parent_class });
+    $block 				= $self->parse($block, &grammar, [@{&var_parser_loops}], { parent => $parent_class });
 
 	return "$for_each...($cond)...$block";
 }
@@ -1111,8 +1112,8 @@ sub _syntax_foreach_var {
 	my $name			= &name;
 	my $cond			= &block_paren;
 	my $block			= &block_brace;
-	my $tk_self_name	= token 'self_name';
-	my $tk_sigils		= token 'sigils';
+	my $tk_self_name	= &tk_self_name;
+	my $tk_sigils		= &tk_sigils;
     # my ($sps,$sigil,$self_name)     = $cond =~ m/^\((\s*)($tk_sigils)?($tk_self_name)/sx;
 	my $for				= '';
 
@@ -1128,11 +1129,11 @@ sub _syntax_foreach_var {
     # $cond                           =~ s/^(\s*)($tk_sigils)?($tk_self_name)/$1.'__RISE_R2A '.($2||'').$3/sxe;
 	# $cond                           =~ s/^(\s*)(\[.*?\])$/$1 __RISE_R2A $2/sx;
 
-    # $cond                           = $self->parse($cond, &grammar, [@{var 'parser_variable'}], { parent => $parent_class });
+    # $cond                           = $self->parse($cond, &grammar, [@{&var_parser_variable}], { parent => $parent_class });
 
     if ($block) {
         $block 				=~ s/\{(.*)\}/$1/gsx;
-        $block 				= $self->parse($block, &grammar, [@{var 'parser_loops'}], { parent => $parent_class });
+        $block 				= $self->parse($block, &grammar, [@{&var_parser_loops}], { parent => $parent_class });
     	$block				= '{ '.$name.' = $_;'.$block.'}';
     }
 
@@ -1152,8 +1153,8 @@ sub _syntax_for_foreach_array {
     # my $self_name           = &self_name;
     # my $parent_class        = $confs->{parent};
     # my $members_list        = &var_members->{$parent_class} || '';
-    # my $tk_accmod           = token 'accessmod';
-    # my $tk_self			      = token 'self';
+    # my $tk_accmod           = &tk_accessmod;
+    # my $tk_self			      = &tk_self;
     # my $R2A                 = '__RISE_R2A';
 
     # $for_each           = '__FOR__' if &for_each eq 'for';
@@ -1171,9 +1172,9 @@ sub _syntax_foreach_arr {
     my $for_each        = &op_for_each;
 	my $cond			= &block_paren;
     my $block			= &block_brace;
-	my $tk_self_name	= token 'self_name';
-	my $tk_sigils		= token 'sigils';
-    my $ret_arr_ops     = token 'ret_arr_ops';
+	my $tk_self_name	= &tk_self_name;
+	my $tk_sigils		= &tk_sigils;
+    my $ret_arr_ops     = &tk_ret_arr_ops;
     # my ($name)          = $cond =~ m/^\(\s*\@\s+$tk_sigils?($tk_self_name)/sx;
     my ($name)          = $cond =~ m/^\(\s*\@\s*\{\(\s*$tk_sigils?($tk_self_name)/sx;
 
@@ -1193,8 +1194,8 @@ sub _syntax_foreach_arr {
     # $for_each           = '__FOREACH__' if &for_each eq 'foreach';
 
     # $cond               = __for_arr($parent_class, $cond);
-    # $cond 				= $self->parse($cond, &grammar, [@{var 'parser_variable'}], { parent => $parent_class });
-    $block 				= $self->parse($block, &grammar, [@{var 'parser_loops'}], { parent => $parent_class });
+    # $cond 				= $self->parse($cond, &grammar, [@{&var_parser_variable}], { parent => $parent_class });
+    $block 				= $self->parse($block, &grammar, [@{&var_parser_loops}], { parent => $parent_class });
 
 	return "$for_each...$cond...$block";
 }
@@ -1204,20 +1205,20 @@ sub _syntax_while {
     my $parent_class        = $confs->{parent};
     my $block			= &block_brace;
     my $condition		= &condition;
-    my $tk_self_name	= token 'self_name';
-	my $tk_sigils		= token 'sigils';
+    my $tk_self_name	= &tk_self_name;
+	my $tk_sigils		= &tk_sigils;
 
     $condition			=~ s/^($tk_sigils)?($tk_self_name)/'__RISE_R2A '.($1||'').$2/sxe;
 
-    # $block 				= $self->parse($block, &grammar, [@{var 'parser_loops'}], { parent => $parent_class });
+    # $block 				= $self->parse($block, &grammar, [@{&var_parser_loops}], { parent => $parent_class });
 
     return "<while>...(...$condition...)...$block"
 }
 
 sub __for_arr {
     my ($parent_class, $cond)		= @_;
-    my $tk_self_name	            = token 'self_name';
-	my $tk_sigils		            = token 'sigils';
+    my $tk_self_name	            = &tk_self_name;
+	my $tk_sigils		            = &tk_sigils;
     # my $members_list                = &var_members->{$parent_class} || '';
     # my ($sps,$sigil,$name)          = $cond =~ m/^\((\s*)($tk_sigils)?($tk_self_name)/sx;
     my $R2A                         = '@ ';
@@ -1300,7 +1301,7 @@ sub _syntax_function_call {
 	my $parent_type     = $confs->{parent_type}||'';
 	my $name			= &name;
 	my $fncall_self		= '';
-	my $tk_accmod		= token 'accessmod';
+	my $tk_accmod		= &tk_accessmod;
 	# my $fn_list			= &var_members->{$parent_class}||'';
 	# my $method			= '__METHOD__';
 	my $members_list	= &var_members->{$parent_class}||'';
@@ -1442,12 +1443,12 @@ sub _syntax_function_compile {
 
     # $arguments			= &kw_local." ".&kw_variable." ".&kw_self." = \$_[0]; ";
 	# $arguments			.= &kw_local." ".&kw_variable." ($self_args) = ($args_def);" if $self_args;
-	# $arguments			= $self->parse($arguments, &grammar, [@{var 'parser_variable_function'}], { parent => $name });
+	# $arguments			= $self->parse($arguments, &grammar, [@{&var_parser_variable_function}], { parent => $name });
 
 	$arguments			= &kw_local." ".&kw_variable." ".&kw_self." = shift; ".&kw_local." ".&kw_variable." ".&kw_fnargs." = \\\@_; ";
 	$arguments			.= &kw_local." ".&kw_variable." ($self_args) = ($args_def);" if $self_args;
-	$arguments			= $self->parse($arguments, &grammar, [@{var 'parser_variable_function'}], { parent => $name });
 
+	$arguments			= $self->parse($arguments, &grammar, [@{&var_parser_variable_function}], { parent => $name });
 	&var_wrap_code_header->{'FNARGS_'.$name} = $arguments;
 	$arguments = '%%%WRAP_CODEHEADER_FNARGS_' . $name . '%%%';
 
@@ -1465,15 +1466,15 @@ sub _syntax_function_compile {
 	}
 
     $block 				=~ s/\{(.*)\}/$1/gsx;
-    $header             = "use rise::core::object::function;$override";
+    $header             = "use rise::core::object::function;$override sub __function__ { __PACKAGE__ } ";
     &var_wrap_code_header->{$name} = $header;
     $header = '%%%WRAP_CODEHEADER_' . $name . '%%%';
 
     # my $block_parent    = $name;
     # $block_parent       = $parent_class if $anon_code;
-    # $block 				= $self->parse($block, &grammar, [@{var 'parser_code_function'}], { parent => $block_parent });
+    # $block 				= $self->parse($block, &grammar, [@{&var_parser_code_function}], { parent => $block_parent });
 
-    $block 				= $self->parse($block, &grammar, [@{var 'parser_code_function'}], { parent => $name, parent_type => 'function' });
+    $block 				= $self->parse($block, &grammar, [@{&var_parser_code_function}], { parent => $name, parent_type => 'function' });
 
 	$res				= "${anon_code_open}${anon_code}{ package ${name}; ${header}${s1}$retval sub ${fn_name}${s2}${s3}{ ${accmod} ${arguments}${s4}${block}}}${anon_code_close}";
 	&var_wrap_code->{$name} = $res;
@@ -1490,7 +1491,7 @@ sub _syntax_thread_call {
 	my $parent_type     = $confs->{parent_type}||'';
 	my $name			= &name;
 	my $fncall_self		= '';
-	my $tk_accmod		= token 'accessmod';
+	my $tk_accmod		= &tk_accessmod;
 	# my $fn_list			= &var_members->{$parent_class}||'';
 	# my $method			= '__METHOD__';
 	my $members_list	= &var_members->{$parent_class}||'';
@@ -1625,7 +1626,7 @@ sub _syntax_thread_compile {
 	# $arguments			= &kw_local." ".&kw_variable." ($self_args) = ($args_def);" if $self_args;
     $arguments			= &kw_local." ".&kw_variable." ".&kw_self." = \$_[0]; ";
     $arguments			.= &kw_local." ".&kw_variable." ($self_args) = ($args_def);" if $self_args;
-	$arguments			= $self->parse($arguments, &grammar, [@{var 'parser_variable_function'}], { parent => $name });
+	$arguments			= $self->parse($arguments, &grammar, [@{&var_parser_variable_function}], { parent => $name });
 
     if ($type) {
         my ($thr_type, $thr_type_args)	= $type =~ m/\:\s*(\w+)(?:\((.*?)\))?/;
@@ -1641,7 +1642,7 @@ sub _syntax_thread_compile {
     &var_wrap_code_header->{$name} = $header;
     $header = '%%%WRAP_CODEHEADER_' . $name . '%%%';
 
-    $block 				= $self->parse($block, &grammar, [@{var 'parser_code_function'}], { parent => $name, parent_type => 'function' });
+    $block 				= $self->parse($block, &grammar, [@{&var_parser_code_function}], { parent => $name, parent_type => 'function' });
 
     $res				= "${anon_code_open}${anon_code}{ package ${name}; ${header}${s1}$retval sub ${trd_name}${s2}${s3}{ ${accmod} my \$thr; \$thr = threads->create(sub{${arguments}${s4}${block}}, \@_); { no strict; no warnings; \@{${parent_class}::THREAD::${trd_name}}[\$thr->tid] = \$thr; } return \$thr; }}${anon_code_close}";
 	&var_wrap_code->{$name} = $res;
@@ -1654,9 +1655,9 @@ sub _syntax_thread_compile {
 sub _syntax_nonamedblock {
 	my $block			= &block_brace;
 	my $unblk_pref		= &unblk_pref;
-	my $tk_accmod		= token 'accessmod';
-	my $tk_var			= token 'variable';
-	my $tk_const		= token 'constant';
+	my $tk_accmod		= &tk_accessmod;
+	my $tk_var			= &tk_variable;
+	my $tk_const		= &tk_constant;
 
 	$block 				=~ s/\b(?:$tk_accmod)?\s*($tk_var|$tk_const)/local $1/gsx;
 
@@ -1667,8 +1668,8 @@ sub _syntax_variable_list {
 	my ($self, $rule_name, $confs)			= @_;
 	my $var_def				= &name_list_wtype;
 	my $var_init			= &name_list_wtype;
-	my $tk_name				= token 'name';
-	my $tk_name_type		= token 'name_type';
+	my $tk_name				= &tk_name;
+	my $tk_name_type		= &tk_name_type;
 	my $op_end				= '';
 
 	$var_def				=~ s/($tk_name_type)\,?/<accessmod> <variable> $1;/gsx;
@@ -1684,8 +1685,8 @@ sub _syntax_variable_observe {
 	my $parent_class	= $confs->{parent};
 	my $accmod			= &accessmod || &var_accessmod;
 	my $name			= &name;
-	my $tk_accmod		= token 'accessmod';
-	my $tk_name			= token 'name';
+	my $tk_accmod		= &tk_accessmod;
+	my $tk_name			= &tk_name;
 	my $members_var		= $accmod.'-var-'.$name;
 	my $members_list	= &var_members->{$parent_class} || '';
 
@@ -1705,7 +1706,7 @@ sub _syntax_variable_observe {
 
     # print "$parent_class -> ".$members_list."\n";
 
-	token 'var_all'		=> $members_list||1;
+	token var_all			=> $members_list||1;
 	rule _variable_boost	=> q/(_NOT:sigils|\.|\:)(_NOT:sub\s)<var_all>/;
 	# rule _variable_boost	=> q/(_NOT:\$self\.|\.|\:)(_NOT:sub\s)<var_all>/;
 
@@ -1717,7 +1718,7 @@ sub _syntax_variable_boost {
 	my ($self, $rule_name, $confs)			= @_;
 	my $parent_class	= $confs->{parent};
 	my $name			= &var_all;
-	my $tk_name			= token 'name';
+	my $tk_name			= &tk_name;
 	my $sigil			= "";
 	my $varboost		= "";
 	my $members_list	= &var_members->{$parent_class}||'';
@@ -1746,7 +1747,7 @@ sub _syntax_variable_optimize		{ '<kw_variable> ' }
 sub _syntax_variable_compile_class {
 	my ($self, $rule_name, $confs)			= @_;
 
-	my $accmod			= &accessmod || var 'accessmod';
+	my $accmod			= &accessmod || &var_accessmod;
 	my $name			= &name;
 	my $member_type	    = &member_type;
 	my $var_type		= '';
@@ -1805,8 +1806,12 @@ sub _syntax_variable_compile_class {
 	# $op_end				= " \$$name".&op_end." " if !&op_end;
 	$op_end				= " $name".&op_end." " if !&op_end;
 
-	# $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings; $op_end";
-    $res = "${var_type} ${local_var}sub ${name} ():lvalue; no warnings; *__${name}__ = sub ():lvalue { ${accmod} my \$self = shift; \$self->{'${name}'} }; *${name} = sub ():lvalue { ${accmod} \$".&var_pkg_self."->{'${name}'} }; use warnings;";
+	# $res = "my \$${name}; ${var_type}no warnings; ${local_var}sub ${name} ():lvalue; *${name} = sub ():lvalue { ${accmod} \$${name} }; use warnings; ${op_end}";
+	# $res = "my \$${name}; ${var_type}no warnings; ${local_var}sub ${name} ():lvalue; *${name} = sub ():lvalue { ${accmod} \$${name} }; use warnings;";
+
+    # $res = "${var_type} ${local_var}sub ${name} ():lvalue; no warnings; *__${name}__ = sub ():lvalue { ${accmod} my \$self = shift; \$self->{'${name}'} }; *${name} = sub ():lvalue { ${accmod} \$".&var_pkg_self."->{'${name}'} }; use warnings;";
+	# $res = "${var_type} ${local_var}sub ${name} ():lvalue; *__${name}__ = sub ():lvalue { ${accmod} my \$self = shift; \$self->{'${name}'} }; *${name} = sub ():lvalue { ${accmod} \$".&var_pkg_self."->{'${name}'} }; ";
+    $res = "${var_type} ${local_var}sub ${name} ():lvalue; *${name} = sub ():lvalue {${accmod} \$".&var_pkg_self."->{'${name}'} };";
 
     # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = ref \$_[0] || \$_[0] || \$".&var_pkg_self.";  \$self->{'$name'} }; use warnings;";
     # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { ${accmod} \$".&var_pkg_self."->{'$name'} }; use warnings;";
@@ -1829,7 +1834,7 @@ sub _syntax_variable_compile_class {
 sub _syntax_variable_compile_function {
 	my ($self, $rule_name, $confs)			= @_;
 
-	# my $accmod			= &accessmod || var 'accessmod';
+	# my $accmod			= &accessmod || &var_accessmod;
 	my $name			= &name;
 	my $member_type	    = &member_type;
 	my $var_type		= '';
@@ -1907,7 +1912,7 @@ sub _syntax_variable_call {
 	my $parent_class	= $confs->{parent};
 	my $name			= &name;
 	my $this			= '';
-	my $tk_accmod		= token 'accessmod';
+	my $tk_accmod		= &tk_accessmod;
 	# my $fn_list			= &var_members->{$parent_class}||'';
 	# my $method			= '__METHOD__';
 	my $members_list	= &var_members->{$parent_class}||'';
@@ -1933,7 +1938,7 @@ sub _syntax_variable_call {
 sub _syntax_constant_compile {
 	my ($self, $rule_name, $confs)			= @_;
 
-	my $accmod			= &accessmod || var 'accessmod';
+	my $accmod			= &accessmod || &var_accessmod;
 	my $name			= &name;
 	my $parent_class	= $confs->{parent};
 	my $local_var		= '';
@@ -2019,7 +2024,7 @@ sub _syntax_namespace {
 	$name				= $parent_name . '::' . $name if $parent_name;
 
 	$block 				=~ s/\{(.*)\}/$1/gsx;
-	$block 				= $self->parse($block, grammar, [@{var 'parser_namespace'}], { parent => $name });
+	$block 				= $self->parse($block, grammar, [@{&var_parser_namespace}], { parent => $name });
 
 	#print ">>>>>> parent_class - ". &name ." | name - ".&name."\n";
 
@@ -2031,7 +2036,7 @@ sub _syntax_namespace {
 sub _syntax_class {
 	return '' if !&name;
 	my ($self, $rule_name, $confs)			= @_;
-	$confs->{accessmod}						= &accessmod_class || var 'accessmod';
+	$confs->{accessmod}						= &accessmod_class || &var_accessmod;
 	return __object($self, 'class', $rule_name, $confs);
 }
 
@@ -2052,7 +2057,7 @@ sub _syntax_interface {
 
 sub _syntax_interface_set {
 	my ($self, $rule_name, $confs)			= @_;
-	my $accmod			= &accessmod_class || var 'accessmod';
+	my $accmod			= &accessmod_class || &var_accessmod;
 	my $object_members	= &object_members;
 	my $name			= &name;
 	my $op_end			= &op_end;
@@ -2120,7 +2125,7 @@ sub __object {
 
 	#$block 				= $self->parse($block, &grammar, ['_variable_boost', '_variable_optimize'], { parent => $parent_class });
 	$block 				= $self->parse($block, &grammar, [@{var 'parser_'.$object}], { parent => $name, parent_type => $object });
-	# $block 				= $self->parse($block, &grammar, [@{var 'parser_code'}], { parent => $name });
+	# $block 				= $self->parse($block, &grammar, [@{&var_parser_code}], { parent => $name });
 
     # &var_wrap_code_header->{$name.'_CLASS_SELF_H'} = '__PACKAGE__->{\'SELF\'} = shift;';
     # &var_wrap_code_footer->{$name.'_CLASS_SELF_F'} = 'return __PACKAGE__->{\'SELF\'};';
@@ -2174,7 +2179,7 @@ sub __object_header {
 
 	$header			= {
         namespace   => "use rise::core::object::namespace;",
-		class		=> 'our $AUTHORITY = "'.$auth.'"; sub AUTHORITY {"'.$auth.'"}; our $VERSION = "'.$ver.'"; sub VERSION {"'.$ver.'"}; my $'.&var_pkg_self.' = bless {}; sub '.&var_pkg_self.' ():lvalue { $'.&var_pkg_self.' } sub __class__ { $'.&var_pkg_self.' } ',
+		class		=> 'our $AUTHORITY = "'.$auth.'"; sub AUTHORITY {"'.$auth.'"}; our $VERSION = "'.$ver.'"; sub VERSION {"'.$ver.'"}; my $'.&var_pkg_self.' = bless {}; sub '.&var_pkg_self.' ():lvalue { $'.&var_pkg_self.' } sub __class__ { __PACKAGE__ } ',
 		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; ",
 		# class		=> " sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
 		# class		=> " BEGIN { no strict 'refs'; *{'".$name."::'.\$_} = \\&{'".$parent_class."::IMPORT::'.\$_} for keys \%".$parent_class."::IMPORT::; }; sub super { \$${name}::ISA[1] } my \$<kw_self> = '${name}'; sub <kw_self> { \$<kw_self> }; BEGIN { __PACKAGE__->__RISE_COMMANDS }",
@@ -2213,10 +2218,10 @@ sub __object_header {
     	$args_def       =~ s/\,$//;
 
         # my $args            = &kw_public.' var ' . $class_args . '; sub __CLASS_ARGS__ { my $self = shift; '.$class_args.' = @_; };';
-        # $args 				= $self->parse($args, &grammar, [@{var 'parser_variable_class'}], { parent => $name });
+        # $args 				= $self->parse($args, &grammar, [@{&var_parser_variable_class}], { parent => $name });
 
         my $args            = &kw_public.' var (' . $self_args . '); sub __CLASS_ARGS__ { ('.$self_args.') = ('.$args_def.'); };';
-        $args 				= $self->parse($args, &grammar, [@{var 'parser_variable_class'}], { parent => $name });
+        $args 				= $self->parse($args, &grammar, [@{&var_parser_variable_class}], { parent => $name });
 
         $header->{class}	.= $args;
     }
@@ -2269,12 +2274,12 @@ sub __accessmod {
 sub __list_extends {
 	my $self					= shift;
 	my $args_attr				= shift;
-	my $tk_name_list			= token 'name_list';
+	my $tk_name_list			= &tk_name_list;
 	my $list_extends			= '';
 	my $list_implements			= '';
 	my $comma					= '';
-	my $tk_extends				= token 'inherits';
-	my $tk_implements			= token 'implements';
+	my $tk_extends				= &tk_inherits;
+	my $tk_implements			= &tk_implements;
 	my $sps						= '';
     my $npsmbl                  = '';
 
@@ -2333,8 +2338,8 @@ sub _syntax_op_array_block {
 sub _syntax_op_array_hash { return '__RISE_' . uc &op_array_hash }
 sub _syntax_op_for_each {
     my $op_for_each = &op_for_each;
-    my $tk_for      = token 'for';
-    my $tk_foreach  = token 'foreach';
+    my $tk_for      = &tk_for;
+    my $tk_foreach  = &tk_foreach;
 
     $op_for_each = 'for' if &op_for_each eq '__FOR__' || &op_for_each_cond eq '__FOR_COND__';
     $op_for_each = 'foreach' if &op_for_each eq '__FOREACH__' || &op_for_each_cond eq '__FOREACH_COND__';

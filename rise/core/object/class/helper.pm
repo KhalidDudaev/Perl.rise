@@ -62,7 +62,8 @@ sub new {
         __PACKAGE__->__RISE_CAST($m_cast, \$self->{$m_name}, $m_cast_args) if $m_cast;
         $self->{$m_name} = $self->__RISE_SELF__->{$m_name} if $m_name &&  exists &{$class.'::__RISE_SELF__'};
 
-        *{$class.'::'.$m_name} = *{$class.'::__'.$m_name.'__'} if $m_type eq 'var' && $m_accmod eq 'public';
+        # *{$class.'::'.$m_name} = *{$class.'::__'.$m_name.'__'} if $m_type eq 'var' && $m_accmod eq 'public'; # var instancing
+        *{$class.'::'.$m_name} = sub ():lvalue {  my $self = shift; $self->{$m_name} } if $m_type eq 'var' && $m_accmod eq 'public'; # var instancing
 
         # *{$class.'::'.$m_name} = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PRIVATE', $m_name) unless (caller eq $class || caller =~ m/^$class\b/o); my $self = shift; $self->{$m_name} } if $m_type eq 'var' && $m_accmod eq 'private';
         # *{$class.'::'.$m_name} = sub ():lvalue { __PACKAGE__->__RISE_ERR('VAR_PROTECTED', $m_name) unless caller->isa($class); my $self = shift; $self->{$m_name} } if $m_type eq 'var' && $m_accmod eq 'protected';

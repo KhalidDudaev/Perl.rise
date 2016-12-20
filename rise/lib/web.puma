@@ -17,12 +17,15 @@ namespace rise.lib {
         var server					= new rise.lib.web.server;
         var tmpl					= new rise.lib.web.template;
 
+		var controllerPath			= "C:/_DATA_EXT/_server/_localhost/psgi_fcgi/app/controller/";
+
         // var data;
         var out;
         var qobj					= {};
         var tout;
         var args;
 		var dmsg_used				= false;
+		const aaaa = 321;
 
 		// public var rparam			= ['NO DATA'];
         // var apptrue;
@@ -66,10 +69,29 @@ namespace rise.lib {
 
         export:simple function query {
             var qstring = self.env.{'QUERY_STRING'};
-            qstring =~ s{\:}{=>}gsx;
+            self.qobj = eval qstring;
             self.qobj = eval qstring;
             return self.qobj;
         }
+
+		export:simple function controller (name) {	// TODO controller
+			var iname		= self.controllerPath ~ name ~ '.pm';
+			name			= 'controller::' ~ name;
+
+			return sub {
+				inject iname;
+				name.controller(@_);
+				// name.new.controller(@_);
+			};
+		}
+
+		export:simple function model (agrg1) {		// TODO: model
+
+		}
+
+		export:simple function view (agrg1) {		// TODO: view
+
+		}
 
         export:simple function start {
             return self.server.start(self.route);

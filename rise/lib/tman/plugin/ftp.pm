@@ -1,9 +1,9 @@
 use rise::lib::ftp;
 
 { package rise::lib::tman::plugin; use rise::core::object::namespace;   
-	{ package rise::lib::tman::plugin::ftp; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1114205141"; sub VERSION {"2016.1114205141"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __class__ { $__RISE_SELF__ } sub __CLASS_MEMBERS__ {q{public-function-plugin}} 
+	{ package rise::lib::tman::plugin::ftp; use rise::core::object::class;  our $AUTHORITY = "unknown"; sub AUTHORITY {"unknown"}; our $VERSION = "2016.1204003026"; sub VERSION {"2016.1204003026"}; my $__RISE_SELF__ = bless {}; sub __RISE_SELF__ ():lvalue { $__RISE_SELF__ } sub __class__ { __PACKAGE__ } sub __CLASS_MEMBERS__ {q{public-function-plugin}} 
 
-		{ package rise::lib::tman::plugin::ftp::plugin; use rise::core::object::function;  sub plugin {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings;  $self = shift; my $args; no warnings; sub args ():lvalue; *args = sub ():lvalue { $args }; use warnings;  $args = \@_; my $conf; no warnings; sub conf ():lvalue; *conf = sub ():lvalue { $conf }; use warnings;  ($conf) = ($_[0]); 
+		{ package rise::lib::tman::plugin::ftp::plugin; use rise::core::object::function; sub __function__ { __PACKAGE__ }   sub plugin {  my $self; no warnings; sub self ():lvalue; *self = sub ():lvalue { $self }; use warnings;  $self = shift; my $args; no warnings; sub args ():lvalue; *args = sub ():lvalue { $args }; use warnings;  $args = \@_; my $conf; no warnings; sub conf ():lvalue; *conf = sub ():lvalue { $conf }; use warnings;  ($conf) = ($_[0]); 
 			# if (self.src_name){
 				my $ftppath; no warnings; sub ftppath ():lvalue; *ftppath = sub ():lvalue { $ftppath }; use warnings;  $ftppath = $conf->{path} . '/' . $self->referPath();
 				my $ftppath_full; no warnings; sub ftppath_full ():lvalue; *ftppath_full = sub ():lvalue { $ftppath_full }; use warnings;  $ftppath_full = $ftppath . $self->filename;

@@ -29,7 +29,7 @@ namespace rise.lib.web {
             foreach var r (self.routes.{reqmeth}) {
 				// local %+;
                 if (requri =~ m{^(?:$r->[0])$}gsx) {
-					r.[2]				= [$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15];
+					r.[2]				= clone [$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15];
 					r.[3]				= clone \%+;
 					// self.dmsg(dump r.[3]);
                     objref = r;
@@ -43,14 +43,14 @@ namespace rise.lib.web {
 			var nn				= 1;
 			var stat			= '';
 
-			route					=~ s/\*/'(?<m'. $nn++ .'>.*?)'/gsxe;
+			route					=~ s/\*/'(?<q'. $nn++ .'>.*?)'/gsxe;
 
 			route					=~ s/
 				\:(?<name>(?!\d)[a-zA-Z0-9]+)(?:\[(?<data>.*?)\])?
 			/
 				my $data			= '.*?';
 				$data = $+{data}						if $+{data};
-				$data = __PACKAGE__->codedata($data)	if $data;
+				$data = __function__->codedata($data)	if $data;
 				'(?<'.$+{name}.'>'.$data.')';
 			/gsxe;
 

@@ -1,0 +1,5 @@
+#marker-rule: /namespace (\w+((?:\.|\:\:)\w+)*)/||%1||Namespace
+#marker-rule: /class (\w+((?:\.|\:\:)\w+)*)/||%1||Class
+#marker-rule: /function (\w+)/i||%1||Function
+#marker-rule: /const (\w+)/||%1||Constant
+#marker-rule: /var (\w+)/||%1||Variable
