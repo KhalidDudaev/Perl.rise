@@ -8,10 +8,11 @@ use feature 'say';
 use Data::Dump 'dump';
 #########################################################
 
-use DateTime;
+use DateTime; # при компиляции класса с именем "Used" пакет начинает глючить
 #use ExtUtils::Installed;
 use Time::HiRes qw(time);
 # use Clone 'clone';
+# use Cwd;
 
 our $VERSION = '0.001';
 
@@ -20,6 +21,7 @@ our $VERSION = '0.001';
 #use dialect::Parents;
 use rise::lib::fs::file;
 use rise::lib::fs::path;
+use rise::lib::fs::dir;
 use rise::syntax;
 
 our @EXPORT = qw/conf set_conf run compile compile_list/;
@@ -34,8 +36,10 @@ my $inst;
 my $modules;
 my $dt                          = DateTime->now();
 my $ver_set                     = $dt->year . '.' . sprintf("%02d", $dt->month) . sprintf("%02d", $dt->day) . $dt->hms('');
+# my $ver_set                     = '0.01';
 my $file						= new rise::lib::fs::file::;
 my $path						= new rise::lib::fs::path::;
+my $dir						    = new rise::lib::fs::dir::;
 my $syntax						= new rise::syntax:: $conf;
 
 my $rules = $syntax->confirm;
@@ -62,6 +66,7 @@ sub import {
 	$conf						= $self->__init();
 	$self->run ($self->{run})			if $self->{run};
 	$self->compile_list ($self->{compile})	if $self->{compile};
+	$self->compile_dir ($self->{compile_dir})	if $self->{compile_dir};
 
 	no strict 'refs';
     if ($self->{command} eq ':simple') {
@@ -130,6 +135,12 @@ sub run {
 	my $time_run = $time_end_run - $time_start_run;
 
 	__message_box("running time $time_run seconds ...");
+}
+
+sub compile_dir {
+    my ($self, $dir_name)				= @_;
+    my $appname_source = $dir->listf($dir_name . '**/*.puma');
+    return $self->compile_list($appname_source);
 }
 
 sub compile_list { #print "#### COMPILE ####\n";

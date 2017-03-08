@@ -53,6 +53,12 @@ sub import { no strict "refs";
 	$caller->rise::core::ops::commands::init;
 }
 
-sub DESTROY {}
+# sub DESTROY {
+#     print "\n### DESTROY ###\n";
+# }
+#
+# END {
+#     print "\n### END ###\n";
+# }
 
 1;

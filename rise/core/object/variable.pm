@@ -13,16 +13,15 @@ our $VERSION 	= '0.01';
 
 my $vt = new rise::core::object::variable::type;
 
-
-
 my $atr; # = $vt->__RISE_ENV->{VARIABLE}{TYPE}{anytype_rule} || '';
 # print "\n>>>>>>>>>>>>>>>> 1 $vt <<<<<<<<<<<<<<<<\n";
 { no warnings;
-	$vt->type_regs ('type'     => [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'type')		unless ${$_[0]} eq $atr || ${$_[0]} =~ m/^$atr/sx }]);
-	$vt->type_regs ('num'      => [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'num')	unless ref $_[0] eq 'SCALAR' && ${$_[0]} + 0; }]);
-	$vt->type_regs ('str'      => [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'str')	unless ref $_[0] eq 'SCALAR' && (${$_[0]} =~ m/\D+/ || ${$_[0]} eq ''); }]);
-	$vt->type_regs ('arr'      => [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'arr')	unless ref ${$_[0]} eq 'ARRAY'	}]);
-	$vt->type_regs ('hsh'      => [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'hsh')		unless ref ${$_[0]} eq 'HASH' }]);
+	$vt->type_regs ('type'     => [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'type')     unless ${$_[0]} eq $atr || ${$_[0]} =~ m/^$atr/sx }]);
+	$vt->type_regs ('object'   => [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'object')   unless ref $_[0] && ${$_[0]} =~ m/\w+(::\w+)*\=HASH\(0x[0-9a-f]{7}\)/; }]);
+	$vt->type_regs ('number'   => [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'number')   unless ref $_[0] eq 'SCALAR' && ${$_[0]} + 0; }]);
+	$vt->type_regs ('string'   => [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'string')   unless ref $_[0] eq 'SCALAR' && (${$_[0]} =~ m/\D+/ || ${$_[0]} eq ''); }]);
+	$vt->type_regs ('array'    => [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'array')    unless ref ${$_[0]} eq 'ARRAY' }]);
+	$vt->type_regs ('hash'     => [ 'set' => sub { __PACKAGE__->__RISE_ERR('VAR_CAST', 'hash')     unless ref ${$_[0]} eq 'HASH' }]);
 }
 # print "\n>>>>>>>>>>>>>>>> 2 $vt <<<<<<<<<<<<<<<<\n";
 

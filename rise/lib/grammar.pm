@@ -236,7 +236,8 @@ sub parse {
 		$rule 			= grammar->{RULE}{$rule_name} || '';
 		($regex_g)		= $rule =~ s/^(G\:)//gsx;
 		$rule			= '\b'.$rule if $rule !~ m/^\(\?\<\w+\>(?<!\\b)\W+/;
-        $source         =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse)/gmsxe if $source ne $last_sourse;
+        # $source         =~ s/$rule/__parse($self, $rule_name, $source, $confs, \$last_sourse)/gmsxe if $source ne $last_sourse;
+        $source         =~ s/(?>$rule)/__parse($self, $rule_name, $source, $confs, \$last_sourse)/gmsxe if $source ne $last_sourse;
 
 		push (@{$self->{rule_order}}, $rule_name) unless exists $self->{info_rule}{$rule_name};
 

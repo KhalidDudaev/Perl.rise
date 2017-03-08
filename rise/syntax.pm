@@ -119,25 +119,32 @@ sub confirm {
 	var('protected_code')			= q/'__PACKAGE__->__RISE_ERR(\'PROTECTED_CODE\', \''.$name.'\') unless caller->isa(\''.$parent_class.'\');'/;
 	var('public_code')				= q/''/;
 
-	var ('parser_variable_class')	= [
+    var ('parser_variable')	= [
         '_variable_list',
-		# '_variable_observe',
-		# '_variable_boost',
 		'_variable_optimize',
-		'_variable_compile_class',
+		'_variable_compile',
 		'_constant_compile',
-        # '_variable_call',
 	];
 
-    var ('parser_variable_function')	= [
-        '_variable_list',
-		# '_variable_observe',
-		# '_variable_boost',
-		'_variable_optimize',
-		'_variable_compile_function',
-		'_constant_compile',
-        '_variable_call',
-	];
+	# var ('parser_variable_class')	= [
+    #     '_variable_list',
+	# 	# '_variable_observe',
+	# 	# '_variable_boost',
+	# 	'_variable_optimize',
+	# 	'_variable_compile_class',
+	# 	'_constant_compile',
+    #     # '_variable_call',
+	# ];
+    #
+    # var ('parser_variable_function')	= [
+    #     '_variable_list',
+	# 	# '_variable_observe',
+	# 	# '_variable_boost',
+	# 	'_variable_optimize',
+	# 	'_variable_compile_function',
+	# 	'_constant_compile',
+    #     '_variable_call',
+	# ];
 
     var ('parser_loops')            = [
         ########## LOOPS ##########
@@ -160,34 +167,25 @@ sub confirm {
 		'_thread_call',
 	];
 
-    var ('parser_code_function')	= [
-        # '_variable_list',
-        # '_variable_observe',
-        # '_variable_boost',
+    var ('parser_code')	= [
         '_regex_match',
 		'_regex_replace',
 
 		@{&var_parser_function},
 		@{&var_parser_thread},
 		@{&var_parser_loops},
-        @{&var_parser_variable_function},
+        @{&var_parser_variable},
 
         '_foreach_arr',
 	];
 
+    var ('parser_code_function')	= [
+		@{&var_parser_code},
+        '_variable_call',
+	];
+
 	var ('parser_code_class')	= [
-        # '_variable_list',
-        # '_variable_observe',
-        # '_variable_boost',
-        '_regex_match',
-		'_regex_replace',
-
-		@{&var_parser_function},
-		@{&var_parser_thread},
-		@{&var_parser_loops},
-        @{&var_parser_variable_class},
-
-        '_foreach_arr',
+        @{&var_parser_code},
 	];
 
 	var ('parser_class')	= [
@@ -648,7 +646,8 @@ sub confirm {
 	token block_angle				=> q/(?<BLOCK_ANGLE>\<(?>[^\<\>]+|(?&BLOCK_ANGLE))*\>)/; # <...>
 	token block_slash				=> q/(?<BLOCK_SLASH>\/(?>[^\/]+|(?&BLOCK_SLASH))*\/)/; # /.../
 
-	token unblk_pref				=> q/[\}\;]\s*/;
+	# token unblk_pref				=> q/[\}\;]\s*/;
+	token unblk_pref				=> q/(?:\}|\;|\%\%\%)\s*/;
 
 	token condition					=> q/content/;
 	token STATEMENT					=> q/content/;
@@ -740,6 +739,26 @@ sub confirm {
 												<comma_long_short>] [<not>](<regex_pattern_txt>|<self_name>)
 												<comma_long_short> (<regex_expr_txt>|<regex_expr_block>|<self_name> <code_args>)/;
 
+    rule _variable_list						=> q/[<accessmod>] <variable> \( <name_list_wtype> \) [<op_end>]/;
+	rule _variable_observe					=> q/[<accessmod>] <variable> <name>/;
+	# rule _variable_boost					=> q/(_NOT:sigils|\.)(_NOT:sub\s)<name>/;
+    # rule _variable_boost					=> q/(_NOT:sigils|\.|\:)(_NOT:sub\s)(_NOT:new\s)(_NOT:require\s)<name>/;
+	rule _variable_boost					=> q/(_NOT:sigils|\.|\:)(_NOT:sub\s)<var_all>/;
+	rule _variable_optimize					=> q/variable \$/;
+	#rule _variable_boost					=> q/((_NOT:sigils)(_NOT:sub)<spss>)<name>/;
+	#rule _variable_boost					=> q/(_NOT:__VARBOOSTED__)(_NOT:sigils)<name>/;
+    rule _variable_compile			        => q/[<accessmod>] <variable> <name> [<member_type>] [<op_end>]/;
+	rule _variable_compile_class			=> q/[<accessmod>] <variable> <name> [<member_type>] [<op_end>]/;
+	rule _variable_compile_function			=> q/[<accessmod>] <variable> <name> [<member_type>] [<op_end>]/;
+	rule _constant_compile					=> q/[<accessmod>] <const> <name> = <content> <op_end>/;
+    rule _variable_call					    => q/(_NOT:op_dot)<name>(NOT:%)/;
+
+	rule _variable_boost_post				=> q/__VARBOOSTED__/;
+	# rule _variable_boost					=> q/<word> (_NOT:sigils)<name>/;
+	# rule _var_boost2						=> q/(_NOT:sigils|\.)(_NOT:sub\s)<var_all>/;
+	# rule _var_boost_post1					=> q/_var_ \$/;
+	# rule _var_boost_post2					=> q/\.\$/;
+
 	# rule _function_compile 							=> q/[<accessmod>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
     # rule _function_compile 							=> q/[<accessmod>] [<override>] <function> [<name>] [<code_args>] [<code_attr>] <block_brace>/;
     rule _function_compile 					=> q/[<accessmod>] [<override>] <function> [<name>] [<code_args>] [<code_type>] <block_brace>/;
@@ -759,25 +778,6 @@ sub confirm {
     rule _thread_call_post1				    => q/(__METHOD__)+/;
     # rule _thread_call_post2				    => q/self_pkg\,\)/;
     rule _thread_call_post2				    => q/<self_con>\,\)/;
-
-	rule _variable_list						=> q/[<accessmod>] <variable> \( <name_list_wtype> \) [<op_end>]/;
-	rule _variable_observe					=> q/[<accessmod>] <variable> <name>/;
-	# rule _variable_boost					=> q/(_NOT:sigils|\.)(_NOT:sub\s)<name>/;
-    # rule _variable_boost					=> q/(_NOT:sigils|\.|\:)(_NOT:sub\s)(_NOT:new\s)(_NOT:require\s)<name>/;
-	rule _variable_boost					=> q/(_NOT:sigils|\.|\:)(_NOT:sub\s)<var_all>/;
-	rule _variable_optimize					=> q/variable \$/;
-	#rule _variable_boost					=> q/((_NOT:sigils)(_NOT:sub)<spss>)<name>/;
-	#rule _variable_boost					=> q/(_NOT:__VARBOOSTED__)(_NOT:sigils)<name>/;
-	rule _variable_compile_class			=> q/[<accessmod>] <variable> <name> [<member_type>] [<op_end>]/;
-	rule _variable_compile_function			=> q/[<accessmod>] <variable> <name> [<member_type>] [<op_end>]/;
-	rule _constant_compile					=> q/[<accessmod>] <const> <name> = <content> <op_end>/;
-    rule _variable_call					    => q/(_NOT:op_dot)<name>(NOT:%)/;
-
-	rule _variable_boost_post				=> q/__VARBOOSTED__/;
-	# rule _variable_boost					=> q/<word> (_NOT:sigils)<name>/;
-	# rule _var_boost2						=> q/(_NOT:sigils|\.)(_NOT:sub\s)<var_all>/;
-	# rule _var_boost_post1					=> q/_var_ \$/;
-	# rule _var_boost_post2					=> q/\.\$/;
 
 	# rule _op_regex							=> q/<sigils><self_name> <op_regex> REGEX_MATH/;
 	rule _op_regex							=> q/<spec_name> <op_regex> REGEX_MATH/;
@@ -863,6 +863,17 @@ sub confirm {
 	action _regex_match						=> \&_syntax_regex_match;
 	action _regex_replace					=> \&_syntax_regex_replace;
 
+	action _variable_list 					=> \&_syntax_variable_list;
+    action _variable_compile			    => \&_syntax_variable_compile;
+	action _variable_compile_class			=> \&_syntax_variable_compile_class;
+	action _variable_compile_function		=> \&_syntax_variable_compile_function;
+	action _constant_compile 				=> \&_syntax_constant_compile;
+	action _variable_observe				=> \&_syntax_variable_observe;
+	action _variable_boost					=> \&_syntax_variable_boost;
+	action _variable_optimize				=> \&_syntax_variable_optimize;
+	action _variable_boost_post				=> \&_syntax_variable_boost_post;
+	action _variable_call				    => \&_syntax_variable_call;
+
 	action _function_defs 					=> \&_syntax_function_defs;
 	action _function_compile 				=> \&_syntax_function_compile;
 	action _function_call					=> \&_syntax_function_call;
@@ -874,15 +885,6 @@ sub confirm {
 	action _thread_call_post1			    => \&_syntax_thread_call_post1;
 	action _thread_call_post2			    => \&_syntax_thread_call_post2;
 
-	action _variable_list 					=> \&_syntax_variable_list;
-	action _variable_compile_class			=> \&_syntax_variable_compile_class;
-	action _variable_compile_function		=> \&_syntax_variable_compile_function;
-	action _constant_compile 				=> \&_syntax_constant_compile;
-	action _variable_observe				=> \&_syntax_variable_observe;
-	action _variable_boost					=> \&_syntax_variable_boost;
-	action _variable_optimize				=> \&_syntax_variable_optimize;
-	action _variable_boost_post				=> \&_syntax_variable_boost_post;
-	action _variable_call				    => \&_syntax_variable_call;
 
 	action _unwrap_code						=> \&_syntax_unwrap_code;
 	action _unwrap_code_header				=> \&_syntax_unwrap_code_header;
@@ -1076,6 +1078,8 @@ sub _syntax_for {
     $for 				= $for_each.$sps1.' ('.$sps3.$name.' ='.$sps4.$cond.$sps5.')'.$sps6.$block;
 	$for 				= '{ <kw_local> '.$sps2.'<variable> '.$name.'; '.$for.'}' if &variable;
 
+    # say ">>> FOR " . $for;
+
     return $for;
     # return "{ <kw_local> <variable> <name>; $for_each...(...<name>...<condition>...)...$block}";
 }
@@ -1140,6 +1144,8 @@ sub _syntax_foreach_var {
     # $for 				= $for_each.'<sps1>('.$cond.')<sps4>'.$block;
     $for 				= $for_each.&sps1.'('.$cond.')'.&sps2.$block;
 	$for 				= '{ <kw_local> <variable>'.&sps2.$name.&sps3.'; '.$for.'}' if &variable;
+
+    # say ">>> FOREACH VAR " . $for;
 
 	return $for;
 }
@@ -1237,6 +1243,8 @@ sub __for_arr {
     # print $name . "\n" if $name;
     # print $members_list ."\n";
 
+    # say ">>> $cond";
+
     return $cond;
     # return '@{'.$cond.'}';
 }
@@ -1286,6 +1294,422 @@ sub _syntax_regex_replace {
 	$expr_block			||= '%%%REGEXBLOCK'.&regex_expr_txt.'REGEXBLOCK%%%';
 
 	return "<sigils><regex_sorce><sps3>${re_op}s<sps1>${pattern}${expr_block}${mods}";
+}
+
+#-------------------------------------------------------------------------------------< variable
+sub _syntax_nonamedblock {
+
+
+	my $block			= &block_brace;
+	my $unblk_pref		= &unblk_pref;
+	my $tk_accmod		= &tk_accessmod;
+	my $tk_var			= &tk_variable;
+	my $tk_const		= &tk_constant;
+
+	$block 				=~ s/\b(?:$tk_accmod)?\s*($tk_var|$tk_const)/local $1/gsx;
+
+    # say "NONAME BLOCK";
+
+	return "${unblk_pref}_UNNAMEDBLOCK_${block}";
+}
+
+sub _syntax_variable_list {
+	my ($self, $rule_name, $confs)			= @_;
+	my $var_def				= &name_list_wtype;
+	my $var_init			= &name_list_wtype;
+	my $tk_name				= &tk_name;
+	my $tk_name_type		= &tk_name_type;
+	my $op_end				= '';
+
+	$var_def				=~ s/($tk_name_type)\,?/<accessmod> <variable> $1;/gsx;
+	# $var_init				=~ s/(?<!\$)\b($tk_name)\b(?:\s*\:\s*\w+)?/\$$1/gsx;
+	$var_init				=~ s/(?<!\$)\b($tk_name)\b(?:\s*\:\s*\w+)?/$1/gsx;
+	$op_end					= " ($var_init) " if !&op_end;
+
+	return $var_def.$op_end;
+}
+
+sub _syntax_variable_observe {
+	my ($self, $rule_name, $confs)			= @_;
+	my $parent_class	= $confs->{parent};
+	my $accmod			= &accessmod || &var_accessmod;
+	my $name			= &name;
+	my $tk_accmod		= &tk_accessmod;
+	my $tk_name			= &tk_name;
+	my $members_var		= $accmod.'-var-'.$name;
+	my $members_list	= &var_members->{$parent_class} || '';
+
+    $members_list		=~ s/\s+/\\b\|\\b/gsx;
+
+    warn "ERROR VARIABLE: variable $name redefined in class $parent_class\n" if $members_var =~ /\b$members_list\b/gsx;
+
+	&var_members->{$parent_class} .= ' '.$members_var if $members_var !~ /\b$members_list\b/gsx;  # if $accmod ne 'local';
+	# &var_members->{$parent_class} .= ' local-var-self' if 'local-var-self' !~ /$members_list/gsx;
+	&var_members->{$parent_class} =~ s/^\s+//;
+    $members_list = &var_members->{$parent_class};
+
+    #######################################################################################
+    $members_list = join ('\b|\b', $members_list =~ m/\b\w+\-var\-($tk_name)\b/gsx);
+    $members_list = '\b'.$members_list.'\b';
+    #######################################################################################
+
+    # print "$parent_class -> ".$members_list."\n";
+
+	token var_all			=> $members_list||1;
+	rule _variable_boost	=> q/(_NOT:sigils|\.|\:)(_NOT:sub\s)<var_all>/;
+	# rule _variable_boost	=> q/(_NOT:\$self\.|\.|\:)(_NOT:sub\s)<var_all>/;
+
+	return "$accmod <kw_variable> $name";
+	# return "...<kw_variable>...$name";
+}
+
+sub _syntax_variable_boost {
+	my ($self, $rule_name, $confs)			= @_;
+	my $parent_class	= $confs->{parent};
+	my $name			= &var_all;
+	my $tk_name			= &tk_name;
+	my $sigil			= "";
+	my $varboost		= "";
+	my $members_list	= &var_members->{$parent_class}||'';
+
+
+	#######################################################################################
+	$members_list		= join ('\b|\b', $members_list =~ /\b\w+\-var\-($tk_name)\b/gsx);
+    $members_list = '\b'.$members_list.'\b';
+	#######################################################################################
+
+
+	if ($members_list && $name =~ m/\b(?:$members_list)\b/gsx) {
+    # if (($members_list && $name =~ m/\b(?:$members_list)\b/gsx) || $name =~ m/\bself\b/gsx) {
+		$sigil				= "\$";
+		# $sigil				= '$self.';
+		$varboost			= "__VARBOOSTED__";
+		#print "VAR $parent_class->$name | fnlist - *$members_list* \n";
+	}
+
+	return "${sigil}${name}";
+	# return '$self.'.$name;
+}
+
+sub _syntax_variable_optimize		{ '<kw_variable> ' }
+
+sub _syntax_variable_compile {
+	my ($self, $rule_name, $confs)			= @_;
+
+	my $accmod			= &accessmod || &var_accessmod;
+	my $name			= &name;
+	my $member_type	    = &member_type;
+	my $var_type		= '';
+	my $var_type_ref	= $name;
+	my $var_type_args	= '';
+	my $parent_class	= $confs->{parent};
+	my $boost_vars		= '';
+	my $local_var		= '';
+    my $wrap_local      = '';
+	my $op_end			= '';
+    my $res;
+
+
+
+    $accmod             = &kw_public if $confs->{parent_type} eq 'function';
+
+    ############################################# add variable to class members ###############################################
+	my $members_var		= $accmod.'-var-'.$name.$member_type;
+
+    &var_members->{$parent_class} .= ' ';
+	&var_members->{$parent_class} .= ' '.$members_var;
+	&var_members->{$parent_class} =~ s/^\s+//;
+    ############################################################################################################################
+
+    if ($confs->{parent_type} eq 'class') {
+        if ($accmod =~ s/export//sx){
+
+            my @export_tags                 = $accmod =~ m/\:\w+/gsx;
+
+            push @export_tags, ':import' if !$accmod;
+            $accmod                         = 'public';
+
+            foreach my $t ($name, ':all', ':var', @export_tags){ no strict 'refs';
+                &var_exports->{$parent_class}{$t} .= ' '.$name;
+        		&var_exports->{$parent_class}{$t} =~ s/^\s+//;
+        		&var_exports->{$parent_class.'::'.$name}{$t} .= &var_exports->{$parent_class}{$t}; # for recursion caller
+            }
+        }
+
+        $accmod = __accessmod($self, 'var_'.$accmod, $parent_class, $name);
+
+
+        $var_type_ref = &var_pkg_self."->{'$name'}";
+    }
+
+
+    if (&accessmod eq 'local') {
+        #$accmod			= '';
+        $local_var		= "local *$name; ";
+        $wrap_local     = 'local';
+    }
+
+
+	($var_type, $var_type_args)	= $member_type =~ m/^\:\s*(\w+)(?:\((.*?)\))?$/;
+	$var_type_args		= ", ".$var_type_args if $var_type_args;
+	$var_type_args		||= '';
+    $var_type			= "__PACKAGE__->__RISE_CAST('$var_type', \\\$${var_type_ref}${var_type_args}); " if $var_type;
+    $var_type			||= '';
+
+    # say ">>>> " . $var_type . "\n";
+
+	# $op_end				= " \$$name".&op_end." " if !&op_end;
+	$op_end				= " $name".&op_end." " if !&op_end;
+
+    if ($confs->{parent_type} eq 'class') {
+    	$res = "${var_type}${local_var}sub ${name} ():lvalue; *${name} = sub ():lvalue {${accmod} \$".&var_pkg_self."->{'${name}'} };";
+        $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;" if $local_var;
+    }
+
+    $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { \$$name }; use warnings;" if $confs->{parent_type} eq 'function';
+
+    &var_wrap_variable->{$wrap_local.$parent_class.'::'.$name} = $res;
+
+	$res = '%%%WRAP_VARIABLE_'.$wrap_local . $parent_class.'::'.$name . '%%% ' . $op_end;
+
+    return $res;
+}
+
+sub _syntax_variable_compile_class {
+	my ($self, $rule_name, $confs)			= @_;
+
+	my $accmod			= &accessmod || &var_accessmod;
+	my $name			= &name;
+	my $member_type	    = &member_type;
+	my $var_type		= '';
+	my $var_type_args	= '';
+	my $parent_class	= $confs->{parent};
+	my $boost_vars		= '';
+	my $local_var		= '';
+    my $wrap_local      = '';
+	my $op_end			= '';
+
+    my $res;
+
+    ############################################# add variable to class members ###############################################
+	my $members_var		= $accmod.'-var-'.$name.$member_type;
+	my $members_list	= &var_members->{$parent_class}||'';
+
+	$members_list		=~ s/\s+/\\b\|\\b/gsx;
+
+    # warn "ERROR VARIABLE: variable $name redefined in class $parent_class\n" if $members_var =~ m/\b$members_list\b/gsx;
+    &var_members->{$parent_class} .= ' ';
+	&var_members->{$parent_class} .= ' '.$members_var if $members_var !~ /\b$members_list\b/gsx;  # if $accmod ne 'local';
+	&var_members->{$parent_class} =~ s/^\s+//;
+    ############################################################################################################################
+
+    if ($accmod =~ s/export//sx){
+
+        my @export_tags                 = $accmod =~ m/\:\w+/gsx;
+
+        push @export_tags, ':import' if !$accmod;
+        $accmod                         = 'public';
+
+        foreach my $t ($name, ':all', ':var', @export_tags){ no strict 'refs';
+            &var_exports->{$parent_class}{$t} .= ' '.$name;
+    		&var_exports->{$parent_class}{$t} =~ s/^\s+//;
+    		&var_exports->{$parent_class.'::'.$name}{$t} .= &var_exports->{$parent_class}{$t}; # for recursion caller
+        }
+    }
+
+	$accmod = __accessmod($self, 'var_'.$accmod, $parent_class, $name);
+	#$accmod				= eval var($accmod.'_var');
+    # $accmod = '';
+
+	if (&accessmod eq 'local') {
+		#$accmod			= '';
+		$local_var		= "local *$name; ";
+        $wrap_local     = 'local';
+	}
+
+
+	($var_type, $var_type_args)	= $member_type =~ m/^\:\s*(\w+)(?:\((.*?)\))?$/;
+	$var_type_args		= ", ".$var_type_args if $var_type_args;
+	$var_type_args		||= '';
+	# $var_type			= "__PACKAGE__->__RISE_CAST('$var_type', \\\$$name".$var_type_args."); " if $var_type;
+	$var_type			= "__PACKAGE__->__RISE_CAST('$var_type', \\\$".&var_pkg_self."->{'$name'}".$var_type_args."); " if $var_type;
+	$var_type			||= '';
+
+    # say ">>>> " . $var_type . "\n";
+
+	# $op_end				= " \$$name".&op_end." " if !&op_end;
+	$op_end				= " $name".&op_end." " if !&op_end;
+
+	# $res = "my \$${name}; ${var_type}no warnings; ${local_var}sub ${name} ():lvalue; *${name} = sub ():lvalue { ${accmod} \$${name} }; use warnings; ${op_end}";
+	# $res = "my \$${name}; ${var_type}no warnings; ${local_var}sub ${name} ():lvalue; *${name} = sub ():lvalue { ${accmod} \$${name} }; use warnings;";
+
+    # $res = "${var_type} ${local_var}sub ${name} ():lvalue; no warnings; *__${name}__ = sub ():lvalue { ${accmod} my \$self = shift; \$self->{'${name}'} }; *${name} = sub ():lvalue { ${accmod} \$".&var_pkg_self."->{'${name}'} }; use warnings;";
+	# $res = "${var_type} ${local_var}sub ${name} ():lvalue; *__${name}__ = sub ():lvalue { ${accmod} my \$self = shift; \$self->{'${name}'} }; *${name} = sub ():lvalue { ${accmod} \$".&var_pkg_self."->{'${name}'} }; ";
+    $res = "${var_type}${local_var}sub ${name} ():lvalue; *${name} = sub ():lvalue {${accmod} \$".&var_pkg_self."->{'${name}'} };";
+
+    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = ref \$_[0] || \$_[0] || \$".&var_pkg_self.";  \$self->{'$name'} }; use warnings;";
+    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { ${accmod} \$".&var_pkg_self."->{'$name'} }; use warnings;";
+    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift; if (\$self) { *$name = sub ():lvalue { ${accmod} \$self = shift || \$".&var_pkg_self."; \$self->{'$name'}; }; } \$self ||= \$".&var_pkg_self."; \$self->{'$name'} ||= \$".&var_pkg_self."->{'$name'}; \$self->{'$name'} }; use warnings;";
+    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift || \$".&var_pkg_self."; \$self->{'$name'} ||= \$".&var_pkg_self."->{'$name'}; *$name = sub ():lvalue { ${accmod} my \$self = shift || \$".&var_pkg_self."; \$self->{'$name'} }; \$self->{'$name'} }; use warnings;";
+    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift || \$".&var_pkg_self."; \$self->{'$name'} ||= \$".&var_pkg_self."->{'$name'}; \$self->{'$name'} }; use warnings;";
+    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift || \$".&var_pkg_self."; \$self->{'$name'} }; use warnings;";
+    # $res = "no warnings; sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} my \$self = shift; \$self->{$name}; }; use warnings;";
+
+    $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;" if $local_var;
+    # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;" if &accessmod eq 'local';
+    # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;";
+
+    &var_wrap_variable->{$wrap_local.$parent_class.'::'.$name} = $res;
+	$res = '%%%WRAP_VARIABLE_'.$wrap_local . $parent_class.'::'.$name . '%%% ' . $op_end;
+
+    return $res;
+}
+
+sub _syntax_variable_compile_function {
+	my ($self, $rule_name, $confs)			= @_;
+
+	# my $accmod			= &accessmod || &var_accessmod;
+	my $name			= &name;
+	my $member_type	    = &member_type;
+	my $var_type		= '';
+	my $var_type_args	= '';
+	my $parent_class	= $confs->{parent};
+	my $boost_vars		= '';
+	my $local_var		= '';
+	my $op_end			= '';
+    my $res;
+
+    ############################################ add variable to class members ###############################################
+	# my $members_var		= $accmod.'-var-'.$name;
+	# my $members_var		= &kw_public.'-var-'.$name;
+	my $members_var		= &kw_public.'-var-'.$name.$member_type;
+	my $members_list	= &var_members->{$parent_class}||'';
+
+	$members_list		=~ s/\s+/\\b\|\\b/gsx;
+
+    # warn "ERROR VARIABLE: variable $name redefined in class $parent_class\n" if $members_var =~ m/\b$members_list\b/gsx;
+
+	&var_members->{$parent_class} .= ' '.$members_var if $members_var !~ /\b$members_list\b/gsx;  # if $accmod ne 'local';
+	&var_members->{$parent_class} =~ s/^\s+//;
+    ###########################################################################################################################
+
+    # if ($accmod =~ s/export//sx){
+    #
+    #     my @export_tags                 = $accmod =~ m/\:\w+/gsx;
+    #
+    #     push @export_tags, ':import' if !$accmod;
+    #     $accmod                         = 'public';
+    #
+    #     foreach my $t ($name, ':all', ':var', @export_tags){ no strict 'refs';
+    #         &var_exports->{$parent_class}{$t} .= ' '.$name;
+    # 		&var_exports->{$parent_class}{$t} =~ s/^\s+//;
+    # 		&var_exports->{$parent_class.'::'.$name}{$t} .= &var_exports->{$parent_class}{$t}; # for recursion caller
+    #     }
+    # }
+
+	# $accmod = __accessmod($self, 'var_'.$accmod, $parent_class, $name);
+	#$accmod				= eval var($accmod.'_var');
+
+	# if (&accessmod eq 'local') {
+	# 	#$accmod			= '';
+	# 	$local_var		= "local *$name; ";
+	# }
+
+	($var_type, $var_type_args)	= $member_type =~ m/^\:\s*(\w+)(?:\((.*?)\))?$/;
+
+	$var_type_args		= ", ".$var_type_args if $var_type_args;
+	$var_type_args		||= '';
+
+	$var_type			= "__PACKAGE__->__RISE_CAST('$var_type', \\\$$name".$var_type_args."); " if $var_type;
+	$var_type			||= '';
+
+	# $op_end				= " \$$name".&op_end." " if !&op_end;
+	$op_end				= " $name".&op_end." " if !&op_end;
+
+	# $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings; $op_end";
+
+	# $res = "${var_type} ${local_var}sub $name ():lvalue; { no strict; no warnings; *$name = sub ():lvalue { ${accmod} my \$self = shift || \$${parent_class}::__SELF__; \$self->{$name} }; }";
+    # $res = "no warnings; sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} my \$self = shift; \$self->{$name}; }; use warnings;";
+    # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;" if &accessmod eq 'local';
+
+    # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;";
+    $res = "my \$$name; ${var_type}no warnings; sub $name ():lvalue; *$name = sub ():lvalue { \$$name }; use warnings;";
+
+    &var_wrap_variable->{$parent_class.'::'.$name} = $res;
+	$res = '%%%WRAP_VARIABLE_' . $parent_class.'::'.$name . '%%% ' . $op_end;
+
+    return $res;
+}
+
+sub _syntax_variable_call {
+	my ($self, $rule_name, $confs)			= @_;
+	my $parent_class	= $confs->{parent};
+	my $name			= &name;
+	my $this			= '';
+	my $tk_accmod		= &tk_accessmod;
+	# my $fn_list			= &var_members->{$parent_class}||'';
+	# my $method			= '__METHOD__';
+	my $members_list	= &var_members->{$parent_class}||'';
+
+	# $members_list		=~ s/$tk_accmod//gsx;
+	# $members_list		=~ s/\-var\-//gsx;
+	# $members_list		=~ s/^\s+(.*?)\s+$/$1/sx;
+	# $members_list		=~ s/\s/\\b\|\\b/gsx;
+
+    $members_list = join '\b|\b', $members_list =~ m/var-(\w+)/gsx;
+
+    # print $members_list . "\n";
+
+	# if ($members_list && $name =~ m/\b(?:$members_list)\b/sx && $name !~ m/WRAP\_VARIABLE\_/sx) {
+	if ($members_list && $name =~ m/\b(?:$members_list)\b/sx && $name !~ m/WRAP\_/sx) {
+		$this			= '$';
+		# print ">>> $parent_class->$name | fnlist - *$members_list* \n";
+	}
+
+	return "$this${name}";
+}
+#-------------------------------------------------------------------------------------< constant
+sub _syntax_constant_compile {
+	my ($self, $rule_name, $confs)			= @_;
+
+	my $accmod			= &accessmod || &var_accessmod;
+	my $name			= &name;
+	my $parent_class	= $confs->{parent};
+	my $local_var		= '';
+    my $members_const		= $accmod.'-const-'.$name;
+    my $members_list	= &var_members->{$parent_class}||'';
+    my $res;
+
+    $members_list		=~ s/\s/\\b\|\\b/gsx;
+
+    &var_members->{$parent_class} .= ' ';
+	&var_members->{$parent_class} .= ' '.$members_const if $accmod ne 'local' and $members_const !~ /$members_list/;
+	&var_members->{$parent_class} =~ s/^\s+//;
+
+    if ($accmod =~ s/export//sx){
+        my @export_tags                 = $accmod =~ m/\:\w+/gsx;
+
+        push @export_tags, ':import' if !$accmod;
+        $accmod                         = 'public';
+
+        foreach my $t ($name, ':all', ':const', @export_tags){ no strict 'refs';
+            &var_exports->{$parent_class}{$t} .= ' '.$name;
+    		&var_exports->{$parent_class}{$t} =~ s/^\s+//;
+    		&var_exports->{$parent_class.'::'.$name}{$t} .= &var_exports->{$parent_class}{$t}; # for recursion caller
+        }
+        # print dump &var_exports->{$parent_class};
+    }
+
+	$accmod				= __accessmod($self, 'var_'.$accmod, $parent_class, $name);
+
+	if (&accessmod eq 'local') {
+		#$accmod			= '';
+		$local_var		= "local *$name; ";
+	}
+
+	$res = "${local_var}sub $name () { $accmod<content> }";
+
+    return $res;
 }
 
 #-------------------------------------------------------------------------------------< function_defs | prepare function | function
@@ -1448,7 +1872,7 @@ sub _syntax_function_compile {
 	$arguments			= &kw_local." ".&kw_variable." ".&kw_self." = shift; ".&kw_local." ".&kw_variable." ".&kw_fnargs." = \\\@_; ";
 	$arguments			.= &kw_local." ".&kw_variable." ($self_args) = ($args_def);" if $self_args;
 
-	$arguments			= $self->parse($arguments, &grammar, [@{&var_parser_variable_function}], { parent => $name });
+	$arguments			= $self->parse($arguments, &grammar, [@{&var_parser_variable}, '_variable_call'], { parent => $name, parent_type => 'function' });
 	&var_wrap_code_header->{'FNARGS_'.$name} = $arguments;
 	$arguments = '%%%WRAP_CODEHEADER_FNARGS_' . $name . '%%%';
 
@@ -1651,332 +2075,6 @@ sub _syntax_thread_compile {
 	return $res;
 }
 
-#-------------------------------------------------------------------------------------< variable
-sub _syntax_nonamedblock {
-	my $block			= &block_brace;
-	my $unblk_pref		= &unblk_pref;
-	my $tk_accmod		= &tk_accessmod;
-	my $tk_var			= &tk_variable;
-	my $tk_const		= &tk_constant;
-
-	$block 				=~ s/\b(?:$tk_accmod)?\s*($tk_var|$tk_const)/local $1/gsx;
-
-	return "${unblk_pref}_UNNAMEDBLOCK_${block}";
-}
-
-sub _syntax_variable_list {
-	my ($self, $rule_name, $confs)			= @_;
-	my $var_def				= &name_list_wtype;
-	my $var_init			= &name_list_wtype;
-	my $tk_name				= &tk_name;
-	my $tk_name_type		= &tk_name_type;
-	my $op_end				= '';
-
-	$var_def				=~ s/($tk_name_type)\,?/<accessmod> <variable> $1;/gsx;
-	# $var_init				=~ s/(?<!\$)\b($tk_name)\b(?:\s*\:\s*\w+)?/\$$1/gsx;
-	$var_init				=~ s/(?<!\$)\b($tk_name)\b(?:\s*\:\s*\w+)?/$1/gsx;
-	$op_end					= " ($var_init) " if !&op_end;
-
-	return $var_def.$op_end;
-}
-
-sub _syntax_variable_observe {
-	my ($self, $rule_name, $confs)			= @_;
-	my $parent_class	= $confs->{parent};
-	my $accmod			= &accessmod || &var_accessmod;
-	my $name			= &name;
-	my $tk_accmod		= &tk_accessmod;
-	my $tk_name			= &tk_name;
-	my $members_var		= $accmod.'-var-'.$name;
-	my $members_list	= &var_members->{$parent_class} || '';
-
-    $members_list		=~ s/\s+/\\b\|\\b/gsx;
-
-    warn "ERROR VARIABLE: variable $name redefined in class $parent_class\n" if $members_var =~ /\b$members_list\b/gsx;
-
-	&var_members->{$parent_class} .= ' '.$members_var if $members_var !~ /\b$members_list\b/gsx;  # if $accmod ne 'local';
-	# &var_members->{$parent_class} .= ' local-var-self' if 'local-var-self' !~ /$members_list/gsx;
-	&var_members->{$parent_class} =~ s/^\s+//;
-    $members_list = &var_members->{$parent_class};
-
-    #######################################################################################
-    $members_list = join ('\b|\b', $members_list =~ m/\b\w+\-var\-($tk_name)\b/gsx);
-    $members_list = '\b'.$members_list.'\b';
-    #######################################################################################
-
-    # print "$parent_class -> ".$members_list."\n";
-
-	token var_all			=> $members_list||1;
-	rule _variable_boost	=> q/(_NOT:sigils|\.|\:)(_NOT:sub\s)<var_all>/;
-	# rule _variable_boost	=> q/(_NOT:\$self\.|\.|\:)(_NOT:sub\s)<var_all>/;
-
-	return "$accmod <kw_variable> $name";
-	# return "...<kw_variable>...$name";
-}
-
-sub _syntax_variable_boost {
-	my ($self, $rule_name, $confs)			= @_;
-	my $parent_class	= $confs->{parent};
-	my $name			= &var_all;
-	my $tk_name			= &tk_name;
-	my $sigil			= "";
-	my $varboost		= "";
-	my $members_list	= &var_members->{$parent_class}||'';
-
-
-	#######################################################################################
-	$members_list		= join ('\b|\b', $members_list =~ /\b\w+\-var\-($tk_name)\b/gsx);
-    $members_list = '\b'.$members_list.'\b';
-	#######################################################################################
-
-
-	if ($members_list && $name =~ m/\b(?:$members_list)\b/gsx) {
-    # if (($members_list && $name =~ m/\b(?:$members_list)\b/gsx) || $name =~ m/\bself\b/gsx) {
-		$sigil				= "\$";
-		# $sigil				= '$self.';
-		$varboost			= "__VARBOOSTED__";
-		#print "VAR $parent_class->$name | fnlist - *$members_list* \n";
-	}
-
-	return "${sigil}${name}";
-	# return '$self.'.$name;
-}
-
-sub _syntax_variable_optimize		{ '<kw_variable> ' }
-
-sub _syntax_variable_compile_class {
-	my ($self, $rule_name, $confs)			= @_;
-
-	my $accmod			= &accessmod || &var_accessmod;
-	my $name			= &name;
-	my $member_type	    = &member_type;
-	my $var_type		= '';
-	my $var_type_args	= '';
-	my $parent_class	= $confs->{parent};
-	my $boost_vars		= '';
-	my $local_var		= '';
-    my $wrap_local      = '';
-	my $op_end			= '';
-
-    my $res;
-
-    ############################################# add variable to class members ###############################################
-	my $members_var		= $accmod.'-var-'.$name.$member_type;
-	my $members_list	= &var_members->{$parent_class}||'';
-
-	$members_list		=~ s/\s+/\\b\|\\b/gsx;
-
-    # warn "ERROR VARIABLE: variable $name redefined in class $parent_class\n" if $members_var =~ m/\b$members_list\b/gsx;
-    &var_members->{$parent_class} .= ' ';
-	&var_members->{$parent_class} .= ' '.$members_var if $members_var !~ /\b$members_list\b/gsx;  # if $accmod ne 'local';
-	&var_members->{$parent_class} =~ s/^\s+//;
-    ############################################################################################################################
-
-    if ($accmod =~ s/export//sx){
-
-        my @export_tags                 = $accmod =~ m/\:\w+/gsx;
-
-        push @export_tags, ':import' if !$accmod;
-        $accmod                         = 'public';
-
-        foreach my $t ($name, ':all', ':var', @export_tags){ no strict 'refs';
-            &var_exports->{$parent_class}{$t} .= ' '.$name;
-    		&var_exports->{$parent_class}{$t} =~ s/^\s+//;
-    		&var_exports->{$parent_class.'::'.$name}{$t} .= &var_exports->{$parent_class}{$t}; # for recursion caller
-        }
-    }
-
-	$accmod = __accessmod($self, 'var_'.$accmod, $parent_class, $name);
-	#$accmod				= eval var($accmod.'_var');
-    # $accmod = '';
-
-	if (&accessmod eq 'local') {
-		#$accmod			= '';
-		$local_var		= "local *$name; ";
-        $wrap_local     = 'local';
-	}
-
-	($var_type, $var_type_args)	= $member_type =~ m/^\:\s*(\w+)(?:\((.*?)\))?$/;
-	$var_type_args		= ", ".$var_type_args if $var_type_args;
-	$var_type_args		||= '';
-	# $var_type			= "__PACKAGE__->__RISE_CAST('$var_type', \\\$$name".$var_type_args."); " if $var_type;
-	$var_type			= "__PACKAGE__->__RISE_CAST('$var_type', \\\$".&var_pkg_self."->{'$name'}".$var_type_args."); " if $var_type;
-	$var_type			||= '';
-
-	# $op_end				= " \$$name".&op_end." " if !&op_end;
-	$op_end				= " $name".&op_end." " if !&op_end;
-
-	# $res = "my \$${name}; ${var_type}no warnings; ${local_var}sub ${name} ():lvalue; *${name} = sub ():lvalue { ${accmod} \$${name} }; use warnings; ${op_end}";
-	# $res = "my \$${name}; ${var_type}no warnings; ${local_var}sub ${name} ():lvalue; *${name} = sub ():lvalue { ${accmod} \$${name} }; use warnings;";
-
-    # $res = "${var_type} ${local_var}sub ${name} ():lvalue; no warnings; *__${name}__ = sub ():lvalue { ${accmod} my \$self = shift; \$self->{'${name}'} }; *${name} = sub ():lvalue { ${accmod} \$".&var_pkg_self."->{'${name}'} }; use warnings;";
-	# $res = "${var_type} ${local_var}sub ${name} ():lvalue; *__${name}__ = sub ():lvalue { ${accmod} my \$self = shift; \$self->{'${name}'} }; *${name} = sub ():lvalue { ${accmod} \$".&var_pkg_self."->{'${name}'} }; ";
-    $res = "${var_type} ${local_var}sub ${name} ():lvalue; *${name} = sub ():lvalue {${accmod} \$".&var_pkg_self."->{'${name}'} };";
-
-    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = ref \$_[0] || \$_[0] || \$".&var_pkg_self.";  \$self->{'$name'} }; use warnings;";
-    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { ${accmod} \$".&var_pkg_self."->{'$name'} }; use warnings;";
-    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift; if (\$self) { *$name = sub ():lvalue { ${accmod} \$self = shift || \$".&var_pkg_self."; \$self->{'$name'}; }; } \$self ||= \$".&var_pkg_self."; \$self->{'$name'} ||= \$".&var_pkg_self."->{'$name'}; \$self->{'$name'} }; use warnings;";
-    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift || \$".&var_pkg_self."; \$self->{'$name'} ||= \$".&var_pkg_self."->{'$name'}; *$name = sub ():lvalue { ${accmod} my \$self = shift || \$".&var_pkg_self."; \$self->{'$name'} }; \$self->{'$name'} }; use warnings;";
-    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift || \$".&var_pkg_self."; \$self->{'$name'} ||= \$".&var_pkg_self."->{'$name'}; \$self->{'$name'} }; use warnings;";
-    # $res = "${var_type} ${local_var}sub $name ():lvalue; no warnings; *$name = sub ():lvalue { no strict; ${accmod} my \$self = shift || \$".&var_pkg_self."; \$self->{'$name'} }; use warnings;";
-    # $res = "no warnings; sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} my \$self = shift; \$self->{$name}; }; use warnings;";
-
-    $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;" if $local_var;
-    # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;" if &accessmod eq 'local';
-    # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;";
-
-    &var_wrap_variable->{$wrap_local.$parent_class.'::'.$name} = $res;
-	$res = '%%%WRAP_VARIABLE_'.$wrap_local . $parent_class.'::'.$name . '%%% ' . $op_end;
-
-    return $res;
-}
-
-sub _syntax_variable_compile_function {
-	my ($self, $rule_name, $confs)			= @_;
-
-	# my $accmod			= &accessmod || &var_accessmod;
-	my $name			= &name;
-	my $member_type	    = &member_type;
-	my $var_type		= '';
-	my $var_type_args	= '';
-	my $parent_class	= $confs->{parent};
-	my $boost_vars		= '';
-	my $local_var		= '';
-	my $op_end			= '';
-    my $res;
-
-    ############################################ add variable to class members ###############################################
-	# my $members_var		= $accmod.'-var-'.$name;
-	# my $members_var		= &kw_public.'-var-'.$name;
-	my $members_var		= &kw_public.'-var-'.$name.$member_type;
-	my $members_list	= &var_members->{$parent_class}||'';
-
-	$members_list		=~ s/\s+/\\b\|\\b/gsx;
-
-    # warn "ERROR VARIABLE: variable $name redefined in class $parent_class\n" if $members_var =~ m/\b$members_list\b/gsx;
-
-	&var_members->{$parent_class} .= ' '.$members_var if $members_var !~ /\b$members_list\b/gsx;  # if $accmod ne 'local';
-	&var_members->{$parent_class} =~ s/^\s+//;
-    ###########################################################################################################################
-
-    # if ($accmod =~ s/export//sx){
-    #
-    #     my @export_tags                 = $accmod =~ m/\:\w+/gsx;
-    #
-    #     push @export_tags, ':import' if !$accmod;
-    #     $accmod                         = 'public';
-    #
-    #     foreach my $t ($name, ':all', ':var', @export_tags){ no strict 'refs';
-    #         &var_exports->{$parent_class}{$t} .= ' '.$name;
-    # 		&var_exports->{$parent_class}{$t} =~ s/^\s+//;
-    # 		&var_exports->{$parent_class.'::'.$name}{$t} .= &var_exports->{$parent_class}{$t}; # for recursion caller
-    #     }
-    # }
-
-	# $accmod = __accessmod($self, 'var_'.$accmod, $parent_class, $name);
-	#$accmod				= eval var($accmod.'_var');
-
-	# if (&accessmod eq 'local') {
-	# 	#$accmod			= '';
-	# 	$local_var		= "local *$name; ";
-	# }
-
-	($var_type, $var_type_args)	= $member_type =~ m/^\:\s*(\w+)(?:\((.*?)\))?$/;
-
-	$var_type_args		= ", ".$var_type_args if $var_type_args;
-	$var_type_args		||= '';
-
-	$var_type			= "__PACKAGE__->__RISE_CAST('$var_type', \\\$$name".$var_type_args."); " if $var_type;
-	$var_type			||= '';
-
-	# $op_end				= " \$$name".&op_end." " if !&op_end;
-	$op_end				= " $name".&op_end." " if !&op_end;
-
-	# $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings; $op_end";
-
-	# $res = "${var_type} ${local_var}sub $name ():lvalue; { no strict; no warnings; *$name = sub ():lvalue { ${accmod} my \$self = shift || \$${parent_class}::__SELF__; \$self->{$name} }; }";
-    # $res = "no warnings; sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} my \$self = shift; \$self->{$name}; }; use warnings;";
-    # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;" if &accessmod eq 'local';
-
-    # $res = "my \$$name; ${var_type}no warnings; ${local_var}sub $name ():lvalue; *$name = sub ():lvalue { ${accmod} \$$name }; use warnings;";
-    $res = "my \$$name; ${var_type}no warnings; sub $name ():lvalue; *$name = sub ():lvalue { \$$name }; use warnings;";
-
-    &var_wrap_variable->{$parent_class.'::'.$name} = $res;
-	$res = '%%%WRAP_VARIABLE_' . $parent_class.'::'.$name . '%%% ' . $op_end;
-
-    return $res;
-}
-
-sub _syntax_variable_call {
-	my ($self, $rule_name, $confs)			= @_;
-	my $parent_class	= $confs->{parent};
-	my $name			= &name;
-	my $this			= '';
-	my $tk_accmod		= &tk_accessmod;
-	# my $fn_list			= &var_members->{$parent_class}||'';
-	# my $method			= '__METHOD__';
-	my $members_list	= &var_members->{$parent_class}||'';
-
-	# $members_list		=~ s/$tk_accmod//gsx;
-	# $members_list		=~ s/\-var\-//gsx;
-	# $members_list		=~ s/^\s+(.*?)\s+$/$1/sx;
-	# $members_list		=~ s/\s/\\b\|\\b/gsx;
-
-    $members_list = join '\b|\b', $members_list =~ m/var-(\w+)/gsx;
-
-    # print $members_list . "\n";
-
-	# if ($members_list && $name =~ m/\b(?:$members_list)\b/sx && $name !~ m/WRAP\_VARIABLE\_/sx) {
-	if ($members_list && $name =~ m/\b(?:$members_list)\b/sx && $name !~ m/WRAP\_/sx) {
-		$this			= '$';
-		# print ">>> $parent_class->$name | fnlist - *$members_list* \n";
-	}
-
-	return "$this${name}";
-}
-#-------------------------------------------------------------------------------------< constant
-sub _syntax_constant_compile {
-	my ($self, $rule_name, $confs)			= @_;
-
-	my $accmod			= &accessmod || &var_accessmod;
-	my $name			= &name;
-	my $parent_class	= $confs->{parent};
-	my $local_var		= '';
-    my $members_const		= $accmod.'-const-'.$name;
-    my $members_list	= &var_members->{$parent_class}||'';
-    my $res;
-
-    $members_list		=~ s/\s/\\b\|\\b/gsx;
-
-    &var_members->{$parent_class} .= ' ';
-	&var_members->{$parent_class} .= ' '.$members_const if $accmod ne 'local' and $members_const !~ /$members_list/;
-	&var_members->{$parent_class} =~ s/^\s+//;
-
-    if ($accmod =~ s/export//sx){
-        my @export_tags                 = $accmod =~ m/\:\w+/gsx;
-
-        push @export_tags, ':import' if !$accmod;
-        $accmod                         = 'public';
-
-        foreach my $t ($name, ':all', ':const', @export_tags){ no strict 'refs';
-            &var_exports->{$parent_class}{$t} .= ' '.$name;
-    		&var_exports->{$parent_class}{$t} =~ s/^\s+//;
-    		&var_exports->{$parent_class.'::'.$name}{$t} .= &var_exports->{$parent_class}{$t}; # for recursion caller
-        }
-        # print dump &var_exports->{$parent_class};
-    }
-
-	$accmod				= __accessmod($self, 'var_'.$accmod, $parent_class, $name);
-
-	if (&accessmod eq 'local') {
-		#$accmod			= '';
-		$local_var		= "local *$name; ";
-	}
-
-	$res = "${local_var}sub $name () { $accmod<content> }";
-
-    return $res;
-}
 #-------------------------------------------------------------------------------------< namespace
 sub _syntax_auth {
     my ($self, $rule_name, $confs)			= @_;

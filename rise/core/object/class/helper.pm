@@ -274,6 +274,12 @@ sub __accessmod {
 	return $access{$accmod};
 }
 
-sub DESTROY {}
+DESTROY {
+    # print "\n### DESTROY ". shift ." ###\n";
+}
+#
+# END {
+#     print "\n### END ".__PACKAGE__." ###\n";
+# }
 
 1;
